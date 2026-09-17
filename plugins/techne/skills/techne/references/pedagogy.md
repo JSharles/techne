@@ -11,7 +11,7 @@ For a new or fragile concept, use:
 5. immediate evidence-based feedback;
 6. later transfer and spaced retrieval.
 
-Steps 1 to 3 form a short browser lesson shown before the exercise (see [exercises.md](exercises.md#lesson-before-practice)). Teach before demanding autonomous transfer. A first difficulty adjusts instruction; it does not establish a general level.
+Steps 1 to 3 form a short browser lesson shown before the exercise (see [exercises.md](exercises.md#lesson-before-practice)). Teach before demanding autonomous transfer. Difficulty climbs from easy, one step at a time, following [curriculum.md](curriculum.md#adaptation-rules). A first difficulty adjusts instruction; it does not establish a general level.
 
 ## Intensive morning shape
 
@@ -22,7 +22,7 @@ A normal block contains:
 - up to ten minutes of due recall;
 - one senior web activity centred on TypeScript, JavaScript, React, or Next.js;
 - one DSA activity;
-- one rotating CS, mathematics, backend, architecture, system-design, production, or Product activity;
+- one rotating CS, mathematics, backend (NestJS), architecture, system-design, production, or Product activity;
 - a short evidence and checkpoint close.
 
 Breaks are human needs, not curriculum state. Techne does not schedule rest days or semesters.

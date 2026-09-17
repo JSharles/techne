@@ -12,7 +12,7 @@ Priority lanes:
 2. TypeScript and JavaScript depth;
 3. React and Next.js depth;
 4. CS and mathematics for engineering;
-5. backend, data, architecture, production, system design, and Product foundations.
+5. backend with Node.js and NestJS, data, architecture, production, system design, and Product foundations.
 
 ## Sequence
 
@@ -33,6 +33,7 @@ Exit evidence: unfamiliar Easy-level iteration and hash problems completed indep
 - TypeScript: generics with constraints, `keyof`, indexed access, type predicates, domain modelling, public API design.
 - React: reconciliation, keys, composition, async UI states, forms, accessibility, behaviour tests, rendering performance.
 - Next.js: App Router, layouts, routing, Server and Client Components, request boundaries, error and loading states.
+- Backend with NestJS: modules, controllers, providers and dependency injection, DTOs with validation pipes, exception filters, configuration.
 - Browser/network: DOM events, critical rendering path, HTTP request lifecycle, DNS/TCP/TLS at an engineering level.
 - Mathematics: invariants, sets, simple combinatorics and probability only where they improve reasoning.
 
@@ -42,7 +43,7 @@ Exit evidence: pattern choice explained rather than guessed; a React/Next behavi
 
 - DSA: linked structures where useful, trees, BSTs, heaps, BFS, DFS, graph representation.
 - Next.js: data fetching, caching and invalidation, rendering strategies, metadata, middleware when justified, profiling.
-- Backend: HTTP API contracts, validation, error taxonomy, authentication vs authorization, modular service boundaries.
+- Backend with NestJS: HTTP API contracts, validation, error taxonomy, authentication vs authorization with guards, interceptors, persistence integration, unit and e2e tests with the Nest testing module.
 - SQL/data: relational modelling, keys, constraints, joins, indexes, query plans, transactions and isolation intuition.
 - Testing: unit, integration, contract and end-to-end boundaries; test doubles and failure-focused cases.
 - CS: processes, threads, concurrency, memory, file systems and I/O models.
@@ -53,7 +54,7 @@ Exit evidence: a data model and API defended under constraints; a query investig
 
 - DSA: topological reasoning, greedy patterns, backtracking, dynamic programming only after prerequisites are demonstrated.
 - Concurrency: races, idempotency, retries, cancellation, backpressure and partial failure.
-- Architecture: deep modules, cohesion, coupling, boundaries, dependency direction, ports/adapters, domain modelling, evolutionary design.
+- Architecture: NestJS modules as boundaries, deep modules, cohesion, coupling, boundaries, dependency direction, ports/adapters, domain modelling, evolutionary design.
 - Distributed systems: consistency, availability, delivery semantics, clocks, queues, caches and failure modes without empty formalism.
 - System design: requirements, estimates, API, data model, data flow, bottlenecks, trade-offs and failure handling.
 - Product: discovery evidence, prioritization, instrumentation, adoption and outcome metrics.
@@ -64,6 +65,7 @@ Exit evidence: race or partial failure reproduced and protected; architecture ch
 
 - Security: hostile input, authorization boundaries, OWASP-relevant risks, secrets, dependency and supply-chain awareness.
 - Performance: profiling before optimization, latency budgets, memory, network, database and frontend bottlenecks.
+- NestJS in production: health checks, structured logging, graceful shutdown, configuration per environment.
 - Observability: structured logs, metrics, traces, correlation, actionable alerts, SLI/SLO fundamentals.
 - Delivery: Linux essentials, processes, containers, CI/CD, deployment strategies, rollback, configuration and cloud fundamentals.
 - TypeScript/tooling: ESM/CJS, module resolution, declaration files, monorepos, builds, type tests and compiler diagnosis.
@@ -107,6 +109,8 @@ Free LeetCode problems to base DSA exercises on, at `https://leetcode.com/proble
 | Dynamic programming | `climbing-stairs` | `house-robber`, `coin-change` |
 
 ## Adaptation rules
+
+Every new topic starts easy. Raise the difficulty one step after an unassisted success; lower it one step after a failure, with a short explanation first. Never start a topic at Medium because of job tenure or declared experience.
 
 - Score 0–1 or failed recall: reduce novelty and schedule a smaller attempt within two mornings.
 - Score 2: provide an analogous attempt without reusing the previous solution.

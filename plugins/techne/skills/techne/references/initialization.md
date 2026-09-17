@@ -2,6 +2,8 @@
 
 Use this branch when workspace resolution fails: the learner is starting Techne, whatever command they used. If a workspace already resolves, do not initialize; offer to resume or `reset` instead.
 
+This is always a fresh start. Never read or reuse `.techne-archive-*` folders left by a `reset`, and never refer to a previous start.
+
 Keep the whole start conversational and short. The learner should never see a shell command, a file path they must act on, or internal vocabulary.
 
 ## Choose the learning language
@@ -24,20 +26,17 @@ The workspace registration stores only an absolute path. The learning evidence r
 
 If a valid existing workspace needs to become active again, run `python3 scripts/resolve_workspace.py --set /absolute/workspace/path`. Do not initialize a parallel curriculum.
 
-## Establish facts, not preferences about the syllabus
+## Establish facts, not self-assessment
 
-Techne ships a curriculum. Do not ask the learner to choose subjects, their order, a session duration, or when architecture begins.
+Techne ships a curriculum and measures the learner's level by observation. Do not ask the learner to choose subjects, their order, or a session duration, and do not ask them to rate their experience, stack, or weaknesses.
 
-Collect only facts that change the first probes:
+Ask only:
 
-- professional experience and strongest daily stack;
-- recent examples of work completed without assistance;
-- known gaps or anxiety triggers;
-- accessibility needs;
-- available local tools and ability to run a browser and VS Code;
 - realistic daily availability and any hard deadline.
 
-Update `.techne/PROFILE.md`. Treat every declaration as unverified context.
+Check the environment yourself: Node.js, a package manager, Git, VS Code, a browser, and Python for the lesson server. When something is missing, say what and why, and install it only after the learner agrees.
+
+Record the answers and the verified environment in `.techne/PROFILE.md`.
 
 ## Placement test
 
@@ -45,19 +44,28 @@ The baseline is presented to the learner as a **placement test** (translated nat
 
 - this is not the curriculum yet: it measures where the learner stands so the curriculum starts at the right level;
 - it is not graded and mistakes are useful;
-- how many short exercises it contains (typically four to six) and that each takes at most about fifteen minutes;
+- that each area starts with an easy exercise and gets harder only while the learner succeeds, so it stays short (about an hour in total, each exercise at most fifteen minutes);
 - the curriculum, with a short lesson before each exercise, starts right after.
 
-Label every placement exercise with its position ("Placement test — exercise 2 of 5"). Do not teach before a placement exercise; it measures prior knowledge. After the last one, give a two- or three-line summary and announce the first curriculum lesson.
+Label every placement exercise with its area and position ("Placement test — algorithms, exercise 2"). Do not teach before a placement exercise; it measures prior knowledge. After the last one, give a two- or three-line summary and announce the first curriculum lesson.
 
-Run short, production-oriented probes across the morning domains. A probe is not a surprise exam on an untaught advanced concept. Prefer debugging, explanation, small implementation, and trade-off questions over trivia.
+Run short, production-oriented probes across the morning domains. Prefer debugging, explanation, small implementation, and trade-off questions over trivia.
+
+For each area, climb a difficulty ladder:
+
+1. start with an easy probe;
+2. after an unassisted success, give a harder probe in the same area;
+3. stop the area at the first real difficulty, or after the hardest probe the curriculum needs at this stage; the last success sets the starting level.
+
+A failed probe is information, not a grade: say so briefly, give no correction yet, and move on.
 
 At minimum observe:
 
 - DSA iteration, data representation, tests, and basic complexity;
 - TypeScript runtime boundaries and narrowing;
 - React state, rendering, effects, and component boundaries;
-- Next.js server/client mental model when the learner has used it;
+- Next.js server/client mental model;
+- Node.js backend with NestJS: modules, controllers, providers, and validation;
 - JavaScript runtime and async reasoning;
 - HTTP, SQL, architecture, and Product fundamentals.
 
@@ -68,7 +76,7 @@ Use `unassessed` rather than guessing. Store evidence and the help level in `STA
 Initialization is complete when:
 
 - the environment needed for the first morning activity works;
-- the first diagnostic evidence is recorded without inflating it into mastery;
+- every placement area has a recorded starting level or `unassessed`, without inflating it into mastery;
 - `CURRENT.md` contains exactly one ready morning action;
 - the afternoon track is marked `discovery_pending`;
 - due-review scheduling can begin after the first successful evidence.

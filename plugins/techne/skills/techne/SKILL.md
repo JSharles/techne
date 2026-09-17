@@ -56,6 +56,8 @@ These rules apply to every learner-facing message, in every language.
 - Record observed evidence, help level, and uncertainty. Years of experience and self-report guide probes but never establish mastery.
 - The learner never maintains Techne's logs, scores, reminders, or checkpoints manually.
 - A method change is discussed, impact-checked, explicitly approved, and versioned before it becomes persistent.
+- Read only the learning workspace. Never inspect the learner's other folders, repositories, or files without asking first.
+- Never install software silently. When an exercise needs a missing tool, name it, say why it is needed, and install it only after the learner agrees.
 - Keep skill source, repository documentation, schemas, code comments, and maintenance-facing text in English.
 - Conduct the learning experience in the language recorded in `STATE.json` `language`, chosen by the learner during `init`. Lessons, exercise prompts, feedback, progress reports, and browser UI are learner-facing content and therefore use that language; preserve established English technical terms when they are clearer. Change it only when the learner asks, and record the change in `STATE.json`.
 

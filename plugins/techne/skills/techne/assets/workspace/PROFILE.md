@@ -8,6 +8,6 @@
 
 ## Declared context
 
-No learner claim has been recorded yet. Initialization must capture relevant professional experience, strongest stack, known gaps, accessibility needs, available environment, daily availability, and hard deadlines.
+No learner fact has been recorded yet. Initialization records daily availability, hard deadlines, and the environment Techne verified.
 
-Declarations guide the first probes but do not establish mastery.
+Levels come only from observed work, starting with the placement test.

@@ -101,7 +101,7 @@ Do not merge the two tracks into one progress percentage.
 
 `reset` lets the learner start Techne over, for example to retry installation and initialization from the beginning.
 
-1. Say in one or two sentences what will happen: saved progress is put aside (archived in the workspace, not deleted) and the next start begins again with the language question. Exercise files the learner wrote stay where they are.
+1. Say in one or two sentences what will happen: saved progress is put aside (archived in the workspace, not deleted) and the next start begins from zero with the language question; Techne will not reuse anything from it. Exercise files the learner wrote stay where they are.
 2. Ask for an explicit yes. Offer permanent deletion only if the learner asks for it.
 3. Run `python3 <this-skill-directory>/scripts/reset_workspace.py <workspace> --confirm` (add `--delete` only when the learner asked for deletion).
 4. Ask whether to also remove exercise folders Techne created in the workspace; remove them only on an explicit yes.
