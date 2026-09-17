@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -172,6 +173,27 @@ class WorkspaceTests(unittest.TestCase):
         self.assertEqual(marketplace["plugins"][0]["source"], "./plugins/techne")
         self.assertEqual(marketplace["plugins"][0]["version"], plugin["version"])
         self.assertTrue((SKILL_ROOT / "SKILL.md").is_file())
+
+    def test_shipped_changes_bump_the_plugin_version(self):
+        # Claude Code caches plugins by version: plugin changes since the last
+        # upstream commit must come with a version different from upstream's.
+        def git(*args):
+            return subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True)
+
+        if git("rev-parse", "--verify", "--quiet", "origin/main").returncode != 0:
+            self.skipTest("no origin/main to compare against")
+        changed = git("diff", "--name-only", "origin/main", "--", "plugins/techne").stdout.split()
+        if not changed:
+            return
+        upstream = git("show", "origin/main:plugins/techne/.claude-plugin/plugin.json")
+        if upstream.returncode != 0:
+            self.skipTest("plugin manifest not on origin/main")
+        current = json.loads((ROOT / "plugins" / "techne" / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))
+        self.assertNotEqual(
+            json.loads(upstream.stdout)["version"],
+            current["version"],
+            f"plugin files changed ({', '.join(changed)}) without a version bump",
+        )
 
     def test_every_documented_command_has_a_claude_slash_command(self):
         commands_dir = ROOT / "plugins" / "techne" / "commands"

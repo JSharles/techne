@@ -11,7 +11,7 @@
       "displayName": "Techne",
       "source": "./plugins/techne",
       "description": "An intensive twelve-week bootcamp: a Senior Engineer curriculum in the morning and an Applied AI curriculum in the afternoon.",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "author": {
         "name": "Jean-Charles",
         "url": "https://github.com/JSharles"
