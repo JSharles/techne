@@ -28,15 +28,13 @@ If a valid existing workspace needs to become active again, run `python3 scripts
 
 ## Establish facts, not self-assessment
 
-Techne ships a curriculum and measures the learner's level by observation. Do not ask the learner to choose subjects, their order, or a session duration, and do not ask them to rate their experience, stack, or weaknesses.
+Techne ships a fixed twelve-week program and measures the learner's level by observation. After the language and folder, ask nothing else: no subjects, order, session duration, availability, deadline, experience, stack, or weaknesses.
 
-Ask only:
-
-- realistic daily availability and any hard deadline.
+State the rhythm instead, in one sentence: twelve weeks, about three hours on the Senior Engineer curriculum in the morning and three hours on Applied AI in the afternoon, at the learner's pace within each block.
 
 Check the environment yourself: Node.js, a package manager, Git, VS Code, a browser, and Python for the lesson server. When something is missing, say what and why, and install it only after the learner agrees.
 
-Record the answers and the verified environment in `.techne/PROFILE.md`.
+Record the verified environment in `.techne/PROFILE.md`.
 
 ## Placement test
 
