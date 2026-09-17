@@ -1,9 +1,17 @@
-<!-- BEGIN:nextjs-agent-rules -->
+# Techne contributor guidance
 
-# This is NOT the Next.js you know
+Techne is one Agent Skill shared by Codex and Claude Code. Keep `plugins/techne/skills/techne/SKILL.md` and its `references/` as the single source of truth; do not create divergent agent-specific copies.
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+Write skill source, repository documentation, schemas, code comments, and maintenance-facing text in English. Write learner-facing lessons, exercises, feedback, progress reports, and browser UI in French by default. Preserve established English technical terms where they improve precision.
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+Before changing the skill, read `plugins/techne/skills/techne/SKILL.md` and every reference affected by the change. Preserve the separation between the morning Senior Engineer curriculum and the independent afternoon Applied AI product studio.
 
-<!-- END:nextjs-agent-rules -->
+After changes, run:
+
+```bash
+python3 -m unittest discover -s tests
+python3 plugins/techne/skills/techne/scripts/validate_workspace.py --template
+claude plugin validate .
+```
+
+Also run the available Agent Skill validator against `plugins/techne/skills/techne`. Treat `.techne/` as learner runtime state, not skill source.

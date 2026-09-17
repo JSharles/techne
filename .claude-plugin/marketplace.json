@@ -1,0 +1,28 @@
+{
+  "name": "jsharles",
+  "owner": {
+    "name": "Jean-Charles",
+    "url": "https://github.com/JSharles"
+  },
+  "description": "Agent plugins maintained by JSharles.",
+  "plugins": [
+    {
+      "name": "techne",
+      "displayName": "Techne",
+      "source": "./plugins/techne",
+      "description": "An intensive engineering academy with a Senior Engineer curriculum and an Applied AI product studio.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Jean-Charles",
+        "url": "https://github.com/JSharles"
+      },
+      "repository": "https://github.com/JSharles/techne",
+      "category": "Education",
+      "tags": [
+        "learning",
+        "software-engineering",
+        "applied-ai"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "techne",
+  "displayName": "Techne",
+  "version": "0.1.0",
+  "description": "An intensive engineering academy with a Senior Engineer curriculum and an Applied AI product studio.",
+  "author": {
+    "name": "Jean-Charles",
+    "url": "https://github.com/JSharles"
+  },
+  "repository": "https://github.com/JSharles/techne",
+  "keywords": [
+    "learning",
+    "software-engineering",
+    "applied-ai"
+  ]
+}

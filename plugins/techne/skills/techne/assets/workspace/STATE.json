@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "status": "diagnostic_pending",
+  "initialized_at": null,
+  "workspace": null,
+  "mode": "initialization",
+  "day": {
+    "date": null,
+    "curriculum": "pending",
+    "project": "discovery_pending",
+    "active_block": null
+  },
+  "current": {
+    "id": null,
+    "track": null,
+    "status": "none",
+    "help_level": "H0"
+  },
+  "mastery": {},
+  "reviews": {
+    "last_opened_at": null,
+    "due_count": 0
+  },
+  "project": {
+    "phase": "discovery_pending",
+    "hypothesis": null,
+    "repository": null,
+    "milestone": null
+  },
+  "browser": {
+    "last_event_line": 0
+  }
+}
