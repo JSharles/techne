@@ -20,7 +20,7 @@ Propose a dedicated folder, `~/techne` by default, in one sentence ("Your work a
 
 Run `python3 scripts/init_workspace.py <folder> --language <tag>`; it creates the folder when missing. It refuses to create a second curriculum while one is registered as active, or to create a workspace that would hide an existing one. On such a refusal, do not work around it: offer to resume the existing curriculum or to `reset` it. Pass `--replace-active` only when the learner explicitly wants a separate, parallel curriculum. Refuse to merge with an existing `.techne/` directory; inspect and recover it instead. The initializer registers this directory as the global active workspace in `~/.techne/config.json` so future agent sessions can resume from any directory.
 
-Initialization records the learning language in `STATE.json` and the lesson template, and creates the durable state, browser runtime, event log directory, and empty project-discovery record. It does not choose an afternoon product.
+Initialization records the learning language in `STATE.json` and the lesson template, and creates the durable state, browser runtime, event log directory, and an empty Applied AI lab record. The Applied AI track is set up on its first afternoon (see [ai-curriculum.md](ai-curriculum.md#start-of-the-track)).
 
 The workspace registration stores only an absolute path. The learning evidence remains inside the workspace. A workspace found in the current directory or one of its parents takes precedence over the global registration.
 
@@ -49,7 +49,7 @@ The baseline is presented to the learner as a **placement test** (translated nat
 
 Label every placement exercise with its area and position ("Placement test — algorithms, exercise 2"). Do not teach before a placement exercise; it measures prior knowledge. After the last one, give a two- or three-line summary and announce the first curriculum lesson.
 
-Run short, production-oriented probes across the morning domains. Prefer debugging, explanation, small implementation, and trade-off questions over trivia.
+Run short, production-oriented probes across the morning domains. The Applied AI track has its own short placement test on its first afternoon. Prefer debugging, explanation, small implementation, and trade-off questions over trivia.
 
 For each area, climb a difficulty ladder:
 
@@ -78,7 +78,7 @@ Initialization is complete when:
 - the environment needed for the first morning activity works;
 - every placement area has a recorded starting level or `unassessed`, without inflating it into mastery;
 - `CURRENT.md` contains exactly one ready morning action;
-- the afternoon track is marked `discovery_pending`;
+- the Applied AI track is marked `not_started`;
 - due-review scheduling can begin after the first successful evidence.
 
-Do not ask the learner to define an overarching learning objective. Techne's shipped objective is the curriculum described in `curriculum.md`, with an independent Applied AI product studio described in `project-studio.md`.
+Do not ask the learner to define an overarching learning objective. Techne's shipped objective is the Senior Engineer curriculum in `curriculum.md` and the Applied AI curriculum in `ai-curriculum.md`.

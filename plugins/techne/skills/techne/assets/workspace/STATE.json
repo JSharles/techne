@@ -7,8 +7,8 @@
   "mode": "initialization",
   "day": {
     "date": null,
-    "curriculum": "pending",
-    "project": "discovery_pending",
+    "engineering": "pending",
+    "ai": "pending",
     "active_block": null
   },
   "current": {
@@ -22,11 +22,12 @@
     "last_opened_at": null,
     "due_count": 0
   },
-  "project": {
-    "phase": "discovery_pending",
-    "hypothesis": null,
-    "repository": null,
-    "milestone": null
+  "ai": {
+    "phase": "not_started",
+    "week": null,
+    "lab_repository": null,
+    "provider": null,
+    "capstone": null
   },
   "browser": {
     "last_event_line": 0

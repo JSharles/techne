@@ -1,6 +1,6 @@
 # Exercise standard
 
-Read this file before creating, opening, resuming, or revising any morning lesson, exercise, or review.
+Read this file before creating, opening, resuming, or revising any lesson, exercise, or review, in either curriculum.
 
 ## Preflight
 
@@ -19,7 +19,7 @@ Keep the activity closed until preflight passes.
 
 ## Lesson before practice
 
-Every curriculum activity starts with a short lesson, except placement-test exercises, due reviews, and transfer work on an already demonstrated skill.
+Every activity in either curriculum starts with a short lesson, except placement-test exercises, due reviews, transfer work on an already demonstrated skill, and capstone milestones.
 
 - Generate it as a browser page (see "Browser or repository"), readable in five to ten minutes: the engineering problem, a mental model with its vocabulary, one worked example distinct from the exercise, and one or two quick checks (quiz or recall).
 - Serve and open it yourself, then tell the learner to read it and to say when they are done.
@@ -72,6 +72,6 @@ When Techne's wording causes confusion, stop the timebox, consume no help level,
 
 Use the browser for lessons, short recall, mental tracing, and quizzes. Generate the lesson under `.techne/browser/lessons/` from `.techne/browser/lesson-template.html`, which already carries the learning language, use the bundled assets, start `.techne/browser/serve.py`, and inspect the local event log before feedback.
 
-Use a local exercise folder or real repository for coding: DSA, TypeScript, React, Next.js, NestJS and backend, multi-file debugging, architecture, performance, and production work. Scaffold only what removes irrelevant setup; leave the reasoning and target implementation to the learner.
+Use a local exercise folder or real repository for coding: the Applied AI lab, DSA, TypeScript, React, Next.js, NestJS and backend, multi-file debugging, architecture, performance, and production work. Scaffold only what removes irrelevant setup; leave the reasoning and target implementation to the learner.
 
 At the end of a timebox, checkpoint the work even when incomplete.

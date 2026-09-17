@@ -7,12 +7,12 @@ Use `.techne/STATE.json` for machine-readable state and `.techne/CURRENT.md` for
 The durable records are:
 
 - `PROFILE.md`: declared context and verified constraints;
-- `STATE.json`: block state, mastery evidence, help levels, and project phase;
+- `STATE.json`: block state, mastery evidence, help levels, and Applied AI track progress;
 - `CURRENT.md`: one ready or in-progress activity;
 - `REVIEW_QUEUE.md`: spaced-retrieval obligations;
 - `SESSION_LOG.md`: append-only narrative evidence;
 - `DECISIONS.md`: approved calibration decisions;
-- `PROJECT.md`: current discovery or product facts;
+- `AI_LAB.md`: Applied AI lab repository, model provider, and capstone facts;
 - `events/browser.jsonl`: browser interactions recorded locally.
 
 ## Select the logical block
@@ -20,10 +20,10 @@ The durable records are:
 Use this order:
 
 1. Resume an explicitly in-progress activity unless the learner requests a checkpoint or switch.
-2. On a new local date with no in-progress activity, open the morning curriculum.
-3. After Techne closes the morning block, the next ordinary resume opens the afternoon project.
-4. A checkpointed afternoon milestone resumes on the next afternoon block until completed.
-5. A `project` or `curriculum` command (or the equivalent natural-language request) overrides the ordinary transition after a checkpoint is saved.
+2. On a new local date with no in-progress activity, open the morning Senior Engineer block.
+3. After Techne closes the morning block, the next ordinary resume opens the afternoon Applied AI block.
+4. A checkpointed afternoon activity or capstone milestone resumes on the next afternoon block.
+5. An `engineering` or `ai` command (or the equivalent natural-language request) overrides the ordinary transition after a checkpoint is saved.
 
 Never switch because the clock crosses noon. Never let unfinished afternoon work consume the next morning block automatically.
 
@@ -39,16 +39,16 @@ Before resuming:
 Name the active block at the top of the learning response, translated into the learning language:
 
 ```text
-TECHNE — CURRICULUM
+TECHNE — ENGINEERING
 ```
 
 or:
 
 ```text
-TECHNE — PROJECT
+TECHNE — APPLIED AI
 ```
 
-For example, a French learner sees `TECHNE — CURSUS` and `TECHNE — PROJET`.
+For example, a French learner sees `TECHNE — INGÉNIERIE` and `TECHNE — IA APPLIQUÉE`.
 
 Do not expose internal file maintenance unless it blocks learning.
 
@@ -74,7 +74,7 @@ After an error, report one observed fact and ask one H1 question. Wait. Increase
 
 ## Checkpoint and close
 
-On `pause`, a block switch (`project`, `curriculum`), or `end`:
+On `pause`, a block switch (`engineering`, `ai`), or `end`:
 
 - record what was attempted and observed;
 - store the highest help level used;
@@ -83,19 +83,19 @@ On `pause`, a block switch (`project`, `curriculum`), or `end`:
 - update block status;
 - distinguish advancement from mastery.
 
-Tell the learner in plain words that their work is saved; do not name the files. `pause` keeps the day open so the next `resume` continues the same block. `end` closes the session. At closure report curriculum advancement and demonstrated mastery separately. Never turn completed time or pages into a mastery percentage.
+Tell the learner in plain words that their work is saved; do not name the files. `pause` keeps the day open so the next `resume` continues the same block. `end` closes the session. At closure report advancement and demonstrated mastery separately, for each curriculum. Never turn completed time or pages into a mastery percentage.
 
 ## Status
 
 For a `status` command, report:
 
 - current logical block and activity;
-- completed curriculum units;
+- completed units in each curriculum;
 - demonstrated scores with confidence and strongest evidence;
 - due reviews and fragile areas;
-- afternoon discovery or project milestone and its independent status.
+- the Applied AI week, lab progress, and capstone milestone when started.
 
-Do not merge the two tracks into one progress percentage.
+Do not merge the two curricula into one progress percentage.
 
 ## Reset
 

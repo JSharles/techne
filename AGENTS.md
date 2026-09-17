@@ -6,7 +6,7 @@ Write skill source, repository documentation, schemas, code comments, and mainte
 
 Techne commands are defined in the skill's `SKILL.md`. Each one also has a thin Claude Code slash command in `plugins/techne/commands/<name>.md` that only forwards to the skill; keep both in sync and never put behaviour in the command files.
 
-Before changing the skill, read `plugins/techne/skills/techne/SKILL.md` and every reference affected by the change. Preserve the separation between the morning Senior Engineer curriculum and the independent afternoon Applied AI product studio.
+Before changing the skill, read `plugins/techne/skills/techne/SKILL.md` and every reference affected by the change. Preserve the separation between the morning Senior Engineer curriculum and the independent afternoon Applied AI curriculum.
 
 After changes, run:
 

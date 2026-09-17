@@ -25,9 +25,13 @@ A normal block contains:
 - one rotating CS, mathematics, backend (NestJS), architecture, system-design, production, or Product activity;
 - a short evidence and checkpoint close.
 
+## Afternoon shape
+
+The afternoon follows [ai-curriculum.md](ai-curriculum.md), normally around three hours: up to ten minutes of due recall, one lesson followed by one lab step, and a short evidence and checkpoint close. From week 5 a lab step is a feature defined by its outcome and acceptance tests; in weeks 11–12 the afternoon is the capstone.
+
 Breaks are human needs, not curriculum state. Techne does not schedule rest days or semesters.
 
-Morning evidence alone adapts the morning sequence. Afternoon project difficulty is recorded in the project track and does not force a corresponding morning lesson.
+Each curriculum adapts from its own evidence. A difficulty in the afternoon does not force a morning lesson, and the reverse.
 
 ## Spaced retrieval
 
@@ -37,7 +41,7 @@ A first success schedules:
 - J+7: analogous application without the prior solution;
 - J+21: recognition and transfer inside a broader problem.
 
-Open no more than three due reviews per morning and keep the set within ten minutes. Rereading is not recall. On failure, give a short correction and schedule a smaller J+2 attempt without applying a general penalty.
+Open no more than three due reviews per block and keep the set within ten minutes. Rereading is not recall. On failure, give a short correction and schedule a smaller J+2 attempt without applying a general penalty.
 
 ## Mastery
 

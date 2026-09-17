@@ -1,6 +1,6 @@
 interface:
   display_name: "Techne"
-  short_description: "Adaptive engineering academy and AI product studio"
+  short_description: "Adaptive Senior Engineer and Applied AI bootcamp"
   default_prompt: "Use $techne to resume my next learning activity."
 policy:
   allow_implicit_invocation: true

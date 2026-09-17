@@ -17,9 +17,9 @@ REQUIRED_FILES = (
     "REVIEW_QUEUE.md",
     "SESSION_LOG.md",
     "DECISIONS.md",
-    "PROJECT.md",
+    "AI_LAB.md",
 )
-REQUIRED_STATE_KEYS = ("version", "status", "language", "mode", "day", "current", "mastery", "project", "browser")
+REQUIRED_STATE_KEYS = ("version", "status", "language", "mode", "day", "current", "mastery", "ai", "browser")
 BROWSER_FILES = ("serve.py", "lesson-template.html", "assets/i18n.js", "assets/progress.js", "assets/exercise.js")
 
 

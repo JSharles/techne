@@ -1,8 +1,8 @@
 {
   "name": "techne",
   "displayName": "Techne",
-  "version": "0.2.0",
-  "description": "An intensive engineering academy with a Senior Engineer curriculum and an Applied AI product studio.",
+  "version": "0.3.0",
+  "description": "An intensive twelve-week bootcamp: a Senior Engineer curriculum in the morning and an Applied AI curriculum in the afternoon.",
   "author": {
     "name": "Jean-Charles",
     "url": "https://github.com/JSharles"

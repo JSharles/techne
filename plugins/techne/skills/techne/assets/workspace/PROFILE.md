@@ -4,7 +4,7 @@
 
 - Techne curriculum: active
 - Duration ceiling: twelve intensive weeks
-- Daily structure: morning curriculum, then independent afternoon product studio
+- Daily structure: morning Senior Engineer curriculum, then afternoon Applied AI curriculum
 
 ## Declared context
 

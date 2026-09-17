@@ -1,11 +1,11 @@
 # Techne
 
-Techne is an intensive, adaptive engineering academy delivered as one Agent Skill for Codex, Claude Code, and compatible coding agents.
+Techne is an intensive, adaptive bootcamp delivered as one Agent Skill for Codex, Claude Code, and compatible coding agents. It is designed for developers with a TypeScript/frontend background who want to reach a senior level and build LLM applications.
 
-It runs two independent tracks over a maximum of twelve weeks:
+It runs two independent curricula over a maximum of twelve weeks, with the same method (a short lesson, then hands-on practice, starting easy):
 
-- a morning curriculum for Senior Engineer foundations, led and sequenced by Techne;
-- an afternoon Applied AI product studio, guided by product and technical milestones.
+- **morning — Senior Engineer:** DSA, TypeScript and JavaScript, React and Next.js, CS fundamentals, then NestJS backend, data, architecture, production, system design, and Product;
+- **afternoon — Applied AI:** Python, FastAPI, LLM applications, RAG with LangChain, agents with LangGraph, evaluation with LangSmith, and a final capstone.
 
 Techne stores progress outside the installed skill, records answers from browser exercises, scaffolds real coding environments, and adapts from observed evidence rather than self-assessment alone.
 
@@ -109,9 +109,9 @@ Techne decides what comes next: the subject, due reviews, difficulty, and activi
 | `init` | Asks your learning language, sets up your learning folder, and runs the placement test. | Once, the first time you use Techne. |
 | `resume` | Picks up where you left off and gives you exactly one next action. Typing the entry point alone does the same. | To start the day or come back after a break, from any folder or a new conversation. |
 | `hint` | Gives one more step of help on the current exercise, from a guiding question up to a full solution. | When you are stuck. Each call gives a little more help; work done after heavy help counts as practice, not as proof of mastery. |
-| `status` | Shows the current activity, curriculum progress, demonstrated skills, due reviews, and the project milestone, with morning and afternoon kept separate. | When you want to know where you stand. |
-| `project` | Saves your progress and switches to the afternoon Applied AI product studio. | When the morning block is done, or you want to work on the project now. |
-| `curriculum` | Saves your progress and switches back to the morning curriculum. | When you want to return to lessons and exercises. |
+| `status` | Shows the current activity, curriculum progress, demonstrated skills, due reviews, and Applied AI progress, with the two curricula kept separate. | When you want to know where you stand. |
+| `engineering` | Saves your progress and switches to the Senior Engineer curriculum. | When you want to work on the morning curriculum. |
+| `ai` | Saves your progress and switches to the Applied AI curriculum. | When the morning block is done, or you want to work on Applied AI now. |
 | `pause` | Saves your progress and keeps the day open; `resume` continues exactly where you stopped. | Before a short break. |
 | `end` | Saves your progress, closes the session, and gives a short report. | At the end of your working session. |
 | `feedback <text>` | Pauses the exercise and opens a discussion about the teaching: method, content, difficulty, or pace. Agreed changes are recorded. | When something does not work for you, e.g. `/techne:feedback the exercises are too long`. |
@@ -231,4 +231,4 @@ For local `skills` discovery without publishing to GitHub:
 npx skills@latest add . --skill techne --agent codex
 ```
 
-Python, FastAPI, LangChain, LangGraph, and LangSmith are curriculum technologies for the afternoon product studio. They are not runtime dependencies of the Techne skill itself.
+Python, FastAPI, LangChain, LangGraph, and LangSmith are taught in the afternoon Applied AI curriculum. They are not runtime dependencies of the Techne skill itself. The Applied AI track makes model API calls with the learner's own key (or a local model), so it can incur small provider costs.

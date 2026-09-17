@@ -4,7 +4,7 @@
 
 This is an intensive twelve-week ceiling for an experienced developer with a frontend/TypeScript background and uneven fundamentals. Techne controls the order from observed evidence. It may accelerate demonstrated material, repeat fragile material, or substitute an equivalent exercise, but it preserves the domain coverage and prerequisite order.
 
-The morning does not teach Python, FastAPI, LangChain, LangGraph, or LangSmith. Those belong to the independent afternoon studio. The morning may teach general backend, architecture, distributed-systems, mathematics, and Product principles without tying them to the afternoon project's current needs.
+The morning does not teach Python, FastAPI, LangChain, LangGraph, or LangSmith. Those belong to the independent afternoon Applied AI curriculum in [ai-curriculum.md](ai-curriculum.md).
 
 Priority lanes:
 

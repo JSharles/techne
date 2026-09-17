@@ -8,8 +8,8 @@ Enter calibration when the learner uses `feedback <text>`, or explicitly comment
 2. Set the mode to `calibration` and announce `TECHNE — CALIBRATION`, translated into the learning language when it differs.
 3. Classify the scope:
    - current activity;
-   - morning curriculum;
-   - afternoon studio;
+   - morning Senior Engineer curriculum;
+   - afternoon Applied AI curriculum;
    - global method or assessment.
 4. Identify the observed problem before discussing a preferred fix.
 
