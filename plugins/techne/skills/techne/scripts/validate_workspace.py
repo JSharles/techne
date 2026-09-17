@@ -19,10 +19,11 @@ REQUIRED_FILES = (
     "DECISIONS.md",
     "PROJECT.md",
 )
-REQUIRED_STATE_KEYS = ("version", "status", "mode", "day", "current", "mastery", "project", "browser")
+REQUIRED_STATE_KEYS = ("version", "status", "language", "mode", "day", "current", "mastery", "project", "browser")
+BROWSER_FILES = ("serve.py", "lesson-template.html", "assets/i18n.js", "assets/progress.js", "assets/exercise.js")
 
 
-def validate(state_root: Path, require_browser: bool = True) -> list[str]:
+def validate(state_root: Path, require_browser: bool = True, template: bool = False) -> list[str]:
     errors: list[str] = []
     for name in REQUIRED_FILES:
         path = state_root / name
@@ -43,10 +44,15 @@ def validate(state_root: Path, require_browser: bool = True) -> list[str]:
                 errors.append("STATE.json version must be 1")
             if state.get("current", {}).get("help_level") not in {f"H{value}" for value in range(7)}:
                 errors.append("current.help_level must be H0 through H6")
+            language = state.get("language")
+            if template and language is not None:
+                errors.append("template STATE.json language must be null until initialization")
+            if not template and not (isinstance(language, str) and language):
+                errors.append("STATE.json language must record the learner's chosen language")
 
     if require_browser:
         browser = state_root / "browser"
-        for relative in ("serve.py", "lesson-template.html", "assets/progress.js", "assets/exercise.js"):
+        for relative in BROWSER_FILES:
             if not (browser / relative).is_file():
                 errors.append(f"missing browser runtime file: {browser / relative}")
 
@@ -64,9 +70,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     if args.template:
         state_root = SKILL_ROOT / "assets" / "workspace"
-        errors = validate(state_root, require_browser=False)
+        errors = validate(state_root, require_browser=False, template=True)
         browser = SKILL_ROOT / "assets" / "browser"
-        for relative in ("serve.py", "lesson-template.html", "assets/progress.js", "assets/exercise.js"):
+        for relative in BROWSER_FILES:
             if not (browser / relative).is_file():
                 errors.append(f"missing browser template file: {browser / relative}")
     else:

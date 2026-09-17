@@ -2,11 +2,17 @@
 
 Use this branch only when workspace resolution fails and the learner explicitly initializes Techne.
 
+## Choose the learning language
+
+Before creating anything, ask the learner which language the curriculum should be taught in. Always ask, even when the learner's message suggests a language; do not assume a default. Ask in the language the learner is writing in.
+
+Record the answer as a BCP 47 tag (`en`, `fr`, `es`, `pt-BR`…). Technical terms stay in English whatever the choice.
+
 ## Create the workspace
 
-Run `python3 scripts/init_workspace.py` with the intended learning workspace. Refuse to merge with an existing `.techne/` directory; inspect and recover it instead. The initializer registers this directory as the global active workspace in `~/.techne/config.json` so future agent sessions can resume from any directory.
+Run `python3 scripts/init_workspace.py --language <tag>` with the intended learning workspace. Refuse to merge with an existing `.techne/` directory; inspect and recover it instead. The initializer registers this directory as the global active workspace in `~/.techne/config.json` so future agent sessions can resume from any directory.
 
-Initialization creates the durable state, browser runtime, event log directory, and empty project-discovery record. It does not choose an afternoon product.
+Initialization records the learning language in `STATE.json` and the lesson template, and creates the durable state, browser runtime, event log directory, and empty project-discovery record. It does not choose an afternoon product.
 
 The workspace registration stores only an absolute path. The learning evidence remains inside the workspace. A workspace found in the current directory or one of its parents takes precedence over the global registration.
 
@@ -21,7 +27,7 @@ Collect only facts that change the first probes:
 - professional experience and strongest daily stack;
 - recent examples of work completed without assistance;
 - known gaps or anxiety triggers;
-- language and accessibility needs;
+- accessibility needs;
 - available local tools and ability to run a browser and VS Code;
 - realistic daily availability and any hard deadline.
 

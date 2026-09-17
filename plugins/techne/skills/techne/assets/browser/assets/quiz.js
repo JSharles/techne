@@ -34,10 +34,10 @@
           const isCorrect = index === question.answer;
           button.classList.add(isCorrect ? "correct" : "wrong");
           if (!isCorrect) options.querySelector(`[data-index="${question.answer}"]`)?.classList.add("correct");
-          feedback.textContent = `${isCorrect ? "Oui." : "Non."} ${question.explain || ""}`;
+          feedback.textContent = `${window.I18n.t(isCorrect ? "quiz.correct" : "quiz.wrong")} ${question.explain || ""}`;
           answered += 1;
           if (isCorrect) correct += 1;
-          score.textContent = `${answered}/${questions.length} répondues · ${correct} correctes`;
+          score.textContent = window.I18n.t("quiz.score", { answered, total: questions.length, correct });
           window.Progress?.send({
             kind: "quiz",
             question: questionIndex + 1,

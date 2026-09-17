@@ -1,11 +1,11 @@
 # Calibration mode
 
-Enter calibration when the learner explicitly comments on or asks to change Techne's method, curriculum, schedule, assessment, exercise design, or content. Natural language is the interface; no configuration command is required.
+Enter calibration when the learner uses `feedback <text>`, or explicitly comments on or asks to change Techne's method, curriculum, schedule, assessment, exercise design, or content in natural language. `feedback` needs no further syntax: the text is the learner's description of the problem.
 
 ## Transition
 
 1. Save the current activity checkpoint without grading the interruption.
-2. Set the mode to `calibration` and announce `TECHNE — CALIBRATION`.
+2. Set the mode to `calibration` and announce `TECHNE — CALIBRATION`, translated into the learning language when it differs.
 3. Classify the scope:
    - current activity;
    - morning curriculum;

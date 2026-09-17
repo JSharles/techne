@@ -1,6 +1,6 @@
 ---
 name: techne
-description: Run Techne's intensive three-month engineering academy. Use when the learner invokes Techne, asks to initialize or resume the curriculum, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, resumes the Applied AI project, or requests a change to the teaching method or curriculum. Do not use for ordinary coding help outside a Techne learning workspace.
+description: Run Techne's intensive three-month engineering academy. Use when the learner invokes Techne, asks to initialize or resume the curriculum, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, resumes the Applied AI project, or requests a change to the teaching method or curriculum, or uses a Techne command (init, resume, hint, status, project, curriculum, pause, end, feedback). Do not use for ordinary coding help outside a Techne learning workspace.
 metadata:
   short-description: Adaptive Senior Engineer and Applied AI academy
 ---
@@ -44,15 +44,24 @@ If no workspace exists, only initialize when the learner invokes Techne with `in
 - The learner never maintains Techne's logs, scores, reminders, or checkpoints manually.
 - A method change is discussed, impact-checked, explicitly approved, and versioned before it becomes persistent.
 - Keep skill source, repository documentation, schemas, code comments, and maintenance-facing text in English.
-- Conduct the learning experience in French unless the learner asks for another language. Lessons, exercise prompts, feedback, progress reports, and browser UI are learner-facing content and therefore use French; preserve established English technical terms when they are clearer.
+- Conduct the learning experience in the language recorded in `STATE.json` `language`, chosen by the learner during `init`. Lessons, exercise prompts, feedback, progress reports, and browser UI are learner-facing content and therefore use that language; preserve established English technical terms when they are clearer. Change it only when the learner asks, and record the change in `STATE.json`.
 
 ## Minimal interface
 
-The normal interface is deliberately small:
+The interface is a small set of English commands, passed after the skill invocation (`$techne <command>` in Codex, `/techne:techne <command>` in Claude Code). Commands are the same whatever the learning language.
 
-- `techne init` initializes and globally registers the learning workspace, then begins the baseline;
-- invoking Techne without an operation, or asking naturally to resume, returns the single next action;
-- natural-language requests handle hints, status, track switches, pauses, and session closure;
-- natural-language meta feedback enters calibration mode.
+| Command | Operation | Reference |
+| --- | --- | --- |
+| `init` | Ask the learning language, initialize and globally register the workspace, then begin the baseline. | [initialization.md](references/initialization.md) |
+| *(none)* or `resume` | Resume from persisted state and give the single next action. | [operations.md](references/operations.md) |
+| `hint` | Raise the help level on the current activity by one step. | [operations.md](references/operations.md) |
+| `status` | Report progress for both tracks separately. | [operations.md](references/operations.md) |
+| `project` | Checkpoint, then switch to the afternoon product studio. | [operations.md](references/operations.md) |
+| `curriculum` | Checkpoint, then switch to the morning curriculum. | [operations.md](references/operations.md) |
+| `pause` | Save a checkpoint without closing the day. | [operations.md](references/operations.md) |
+| `end` | Checkpoint and close the session with a closure report. | [operations.md](references/operations.md) |
+| `feedback <text>` | Enter calibration mode to discuss the method or content. | [calibration.md](references/calibration.md) |
+
+Natural language in any language remains accepted: map a clear request such as "on reprend" or "can I get a hint?" to the matching command and run it exactly as if the command had been typed. When the intent is ambiguous, ask which command the learner means instead of guessing.
 
 Do not require topic-selection, plan, review, or session-duration commands. Techne schedules content, opens due reviews, and chooses the next learning action.

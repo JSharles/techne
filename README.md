@@ -44,7 +44,7 @@ Claude Code invokes plugin skills with a namespace:
 /techne:techne
 ```
 
-Natural language such as `Techne init` or `On reprend` also works.
+Natural language also works; Techne maps it to the matching command (see [Commands](#commands)).
 
 ### Codex
 
@@ -87,11 +87,10 @@ $techne init
 /techne:techne init
 ```
 
-You can also say `Techne init` in natural language.
-
 Techne then:
 
-- creates `.techne/` in the learning workspace;
+- asks which language you want to learn in (English, French, or any other language); commands and technical terms stay in English;
+- creates `.techne/` in the learning workspace and records your language;
 - registers that workspace in `~/.techne/config.json`;
 - collects only facts needed to calibrate the first diagnostic activities;
 - begins the baseline without asking you to design the syllabus.
@@ -100,19 +99,32 @@ Do not commit `.techne/`: it contains personal progress, evidence, and local exe
 
 ## Daily use
 
-Techne uses a deliberately small interface. Natural language is preferred over configuration commands.
+Techne has a single entry point followed by an optional English command:
 
-| Intent | Codex | Claude Code | Natural language example |
-| --- | --- | --- | --- |
-| Resume | `$techne` | `/techne:techne` | `On reprend` |
-| Request help | `$techne` | `/techne:techne` | `Indice` |
-| Check progress | `$techne` | `/techne:techne` | `Où en suis-je ?` |
-| Switch to the studio | `$techne` | `/techne:techne` | `On passe au projet` |
-| Return to the curriculum | `$techne` | `/techne:techne` | `Je reprends le cursus` |
-| Save a checkpoint | `$techne` | `/techne:techne` | `Pause` or `Fin de session` |
-| Discuss the method | `$techne` | `/techne:techne` | Describe the problem in ordinary language |
+```text
+$techne <command>          # Codex
+/techne:techne <command>   # Claude Code
+```
 
-Techne chooses the next subject, due reviews, difficulty, and activity format. The learner does not choose when to study architecture, DSA, React, Product, or another curriculum domain.
+Commands are the same whatever language you learn in. Techne decides what comes next: the subject, due reviews, difficulty, and activity format. You never pick when to study architecture, DSA, React, Product, or any other curriculum domain.
+
+### Commands
+
+| Command | What it does | When to use it |
+| --- | --- | --- |
+| `init` | Asks your learning language, creates `.techne/` in the current folder, registers it globally, and starts the diagnostic baseline. | Once, in the folder that will hold your learning work. |
+| *(none)* or `resume` | Reloads your saved state and gives you exactly one next action. | To start the day or come back after a break, from any folder or a new conversation. |
+| `hint` | Raises the help level on the current activity by one step, from a guiding question up to a full solution. | When you are stuck on an exercise. Each call gives slightly more help; work done after heavy help counts as practice, not as proof of mastery. |
+| `status` | Reports the current activity, curriculum progress, demonstrated mastery, due reviews, and the project milestone, with the two tracks kept separate. | When you want to know where you stand. |
+| `project` | Saves a checkpoint and switches to the afternoon Applied AI product studio. | When you are done with the morning block, or want to work on the project now. |
+| `curriculum` | Saves a checkpoint and switches back to the morning curriculum. | When you want to return to lessons and exercises. |
+| `pause` | Saves a checkpoint and keeps the day open; the next `resume` continues exactly where you stopped. | Before a short break. |
+| `end` | Saves a checkpoint, closes the session, and reports progress and mastery separately. | At the end of your working session. |
+| `feedback <text>` | Pauses the activity and opens a discussion about Techne's method, content, difficulty, or schedule. Approved changes are recorded in `.techne/DECISIONS.md`. | When something in the teaching does not work for you, e.g. `feedback the exercises are too long`. |
+
+### Natural language
+
+You can also just talk to the agent, in any language: "on reprend", "I'm stuck", "où en suis-je ?". The agent maps a clear request to the matching command and runs it. If your intent is ambiguous, it asks which command you mean. Inside an active Techne workspace, you can often skip the invocation entirely.
 
 ## Resume from another directory or a new conversation
 
@@ -162,7 +174,11 @@ Uninstallation removes the teaching package, not `.techne/` or `~/.techne/config
 
 ## Language policy
 
-Techne's source, agent instructions, repository documentation, schemas, and code comments are written in English. The learning experience is delivered in French by default: lessons, exercise prompts, feedback, progress reports, and browser UI. Established technical terms remain in English when that is clearer.
+Techne's source, agent instructions, repository documentation, schemas, code comments, and commands are written in English.
+
+The learning experience is delivered in the language you choose during `init`: lessons, exercise prompts, feedback, progress reports, and browser UI. The choice is stored in `.techne/STATE.json`; ask Techne to switch language at any time. Established technical terms remain in English when that is clearer.
+
+The browser UI ships with English and French strings (`assets/browser/assets/i18n.js`); other languages fall back to English in the browser while the lessons themselves are written in your language.
 
 ## Repository structure
 

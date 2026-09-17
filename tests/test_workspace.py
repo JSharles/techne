@@ -33,7 +33,7 @@ class WorkspaceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)
             config = workspace / "registry" / "config.json"
-            state_root = initializer.initialize(workspace, config)
+            state_root = initializer.initialize(workspace, "fr", config)
 
             self.assertEqual(state_root, (workspace / ".techne").resolve())
             self.assertEqual(validator.validate(state_root), [])
@@ -41,12 +41,39 @@ class WorkspaceTests(unittest.TestCase):
             self.assertIn(str(workspace), (state_root / "STATE.json").read_text(encoding="utf-8"))
             self.assertEqual(registry.load_active_workspace(config), workspace.resolve())
 
+    def test_records_learning_language_in_state_and_lesson_template(self):
+        with tempfile.TemporaryDirectory() as directory:
+            state_root = initializer.initialize(Path(directory), "PT-br")
+
+            state = json.loads((state_root / "STATE.json").read_text(encoding="utf-8"))
+            template = (state_root / "browser" / "lesson-template.html").read_text(encoding="utf-8")
+            self.assertEqual(state["language"], "pt-br")
+            self.assertIn('<html lang="pt-br">', template)
+            self.assertNotIn("__LANG__", template)
+
+    def test_rejects_invalid_language(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            with self.assertRaises(ValueError):
+                initializer.initialize(workspace, "")
+            self.assertFalse((workspace / ".techne").exists())
+
+    def test_validator_requires_language_in_initialized_workspace(self):
+        with tempfile.TemporaryDirectory() as directory:
+            state_root = initializer.initialize(Path(directory), "fr")
+            state_path = state_root / "STATE.json"
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+            state["language"] = None
+            state_path.write_text(json.dumps(state), encoding="utf-8")
+
+            self.assertIn("STATE.json language must record the learner's chosen language", validator.validate(state_root))
+
     def test_refuses_to_overwrite_workspace(self):
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)
-            initializer.initialize(workspace)
+            initializer.initialize(workspace, "fr")
             with self.assertRaises(FileExistsError):
-                initializer.initialize(workspace)
+                initializer.initialize(workspace, "fr")
 
     def test_resolves_local_workspace_before_registered_workspace(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -56,8 +83,8 @@ class WorkspaceTests(unittest.TestCase):
             registered.mkdir()
             local.mkdir()
             config = root / "config.json"
-            initializer.initialize(registered, config)
-            initializer.initialize(local)
+            initializer.initialize(registered, "en", config)
+            initializer.initialize(local, "fr")
 
             nested = local / "project" / "src"
             nested.mkdir(parents=True)
@@ -71,7 +98,7 @@ class WorkspaceTests(unittest.TestCase):
             workspace.mkdir()
             elsewhere.mkdir()
             config = root / "config.json"
-            initializer.initialize(workspace, config)
+            initializer.initialize(workspace, "en", config)
 
             self.assertEqual(registry.resolve_workspace(elsewhere, config), workspace.resolve())
 

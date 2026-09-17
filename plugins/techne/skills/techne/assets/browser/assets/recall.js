@@ -7,11 +7,11 @@
 
     const answer = document.createElement("textarea");
     answer.rows = config.rows || 5;
-    answer.placeholder = "Réponds de mémoire avant d’afficher le modèle…";
+    answer.placeholder = window.I18n.t("recall.placeholder");
 
     const button = document.createElement("button");
     button.type = "button";
-    button.textContent = "Comparer avec le modèle";
+    button.textContent = window.I18n.t("recall.compare");
 
     const model = document.createElement("div");
     model.className = "model";

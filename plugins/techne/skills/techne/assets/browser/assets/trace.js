@@ -3,7 +3,7 @@
     root.classList.add("activity");
     const table = document.createElement("table");
     const head = document.createElement("tr");
-    ["itération", ...config.columns].forEach((label) => {
+    [window.I18n.t("trace.iteration"), ...config.columns].forEach((label) => {
       const cell = document.createElement("th");
       cell.textContent = label;
       head.append(cell);
@@ -24,7 +24,7 @@
         } else {
           const input = document.createElement("input");
           input.dataset.expected = expected;
-          input.setAttribute("aria-label", `${config.columns[columnIndex]}, itération ${rowIndex + 1}`);
+          input.setAttribute("aria-label", window.I18n.t("trace.cellLabel", { column: config.columns[columnIndex], row: rowIndex + 1 }));
           inputs.push(input);
           cell.append(input);
         }
@@ -35,7 +35,7 @@
 
     const button = document.createElement("button");
     button.type = "button";
-    button.textContent = "Vérifier ma trace";
+    button.textContent = window.I18n.t("trace.check");
     const result = document.createElement("p");
     button.addEventListener("click", () => {
       let correct = 0;
@@ -47,7 +47,7 @@
         if (matches) correct += 1;
         else wrong.push({ cell: input.getAttribute("aria-label"), value: input.value });
       });
-      result.textContent = `${correct}/${inputs.length} cases correctes.`;
+      result.textContent = window.I18n.t("trace.summary", { correct, total: inputs.length });
       window.Progress?.send({ kind: "trace", activity: config.id || "trace", correct, total: inputs.length, wrong });
     });
 

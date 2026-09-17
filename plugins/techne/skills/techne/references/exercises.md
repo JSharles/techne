@@ -53,7 +53,7 @@ When Techne's wording causes confusion, stop the timebox, consume no help level,
 
 ## Browser or repository
 
-Choose browser practice for short recall, mental tracing, quizzes, and isolated algorithms. Generate the lesson under `.techne/browser/lessons/`, use the bundled assets, start `.techne/browser/serve.py`, and inspect the local event log before feedback.
+Choose browser practice for short recall, mental tracing, quizzes, and isolated algorithms. Generate the lesson under `.techne/browser/lessons/` from `.techne/browser/lesson-template.html`, which already carries the learning language, use the bundled assets, start `.techne/browser/serve.py`, and inspect the local event log before feedback.
 
 Choose a real repository for TypeScript, React, Next.js, backend, multi-file debugging, architecture, performance, and production work. Scaffold only what removes irrelevant setup; leave the reasoning and target implementation to the learner.
 

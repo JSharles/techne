@@ -62,4 +62,4 @@ Prefer normal development environments with stable scripts, tests, and VS Code d
 
 ## Language
 
-Teach in French while retaining standard English technical terms. Explain unfamiliar vocabulary in ordinary language before starting a timebox.
+Teach in the language recorded in `STATE.json` `language` while retaining standard English technical terms. Explain unfamiliar vocabulary in ordinary language before starting a timebox.

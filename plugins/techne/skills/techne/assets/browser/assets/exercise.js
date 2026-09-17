@@ -5,7 +5,7 @@ self.onmessage = (event) => {
   try {
     const target = new Function(code + "\\n;return typeof " + fn + " === 'function' ? " + fn + " : undefined;")();
     if (!target) {
-      self.postMessage({ error: "La fonction " + fn + " n'est pas définie." });
+      self.postMessage({ errorKey: "exercise.undefinedFunction", params: { fn } });
       return;
     }
     const output = args.map((input) => {
@@ -14,7 +14,7 @@ self.onmessage = (event) => {
     });
     self.postMessage({ output });
   } catch (error) {
-    self.postMessage({ error: "Erreur de syntaxe : " + String(error?.message || error) });
+    self.postMessage({ errorKey: "exercise.syntaxError", params: { detail: String(error?.message || error) } });
   }
 };`;
 
@@ -35,14 +35,14 @@ self.onmessage = (event) => {
 
     const run = document.createElement("button");
     run.type = "button";
-    run.textContent = "Lancer les tests";
+    run.textContent = window.I18n.t("exercise.run");
     const summary = document.createElement("p");
     const details = document.createElement("ul");
 
     function execute() {
       run.disabled = true;
       details.replaceChildren();
-      summary.textContent = "Exécution…";
+      summary.textContent = window.I18n.t("exercise.running");
       const url = URL.createObjectURL(new Blob([workerSource], { type: "text/javascript" }));
       const worker = new Worker(url);
       const stop = () => {
@@ -53,7 +53,7 @@ self.onmessage = (event) => {
       const timer = setTimeout(() => {
         stop();
         attempts += 1;
-        summary.textContent = "Délai dépassé : boucle infinie possible.";
+        summary.textContent = window.I18n.t("exercise.timeout");
         window.Progress?.send({ kind: "exercise", activity: config.storageKey || config.fn, attempt: attempts, error: "timeout", code: editor.value });
       }, config.timeoutMs || 2000);
 
@@ -61,9 +61,10 @@ self.onmessage = (event) => {
         clearTimeout(timer);
         stop();
         attempts += 1;
-        if (event.data.error) {
-          summary.textContent = event.data.error;
-          window.Progress?.send({ kind: "exercise", activity: config.storageKey || config.fn, attempt: attempts, error: event.data.error, code: editor.value });
+        if (event.data.errorKey) {
+          const message = window.I18n.t(event.data.errorKey, event.data.params);
+          summary.textContent = message;
+          window.Progress?.send({ kind: "exercise", activity: config.storageKey || config.fn, attempt: attempts, error: message, code: editor.value });
           return;
         }
 
@@ -78,14 +79,14 @@ self.onmessage = (event) => {
             passed += 1;
             item.textContent = `✓ ${test.name || `test ${index + 1}`}`;
           } else {
-            const reason = actual.error || `attendu ${JSON.stringify(test.expect)}, obtenu ${JSON.stringify(actual.value)}`;
+            const reason = actual.error || window.I18n.t("exercise.mismatch", { expected: JSON.stringify(test.expect), actual: JSON.stringify(actual.value) });
             item.textContent = `✗ ${test.name || `test ${index + 1}`} — ${reason}`;
             failing.push(test.name || String(index + 1));
           }
           item.className = matches ? "pass" : "fail";
           details.append(item);
         });
-        summary.textContent = `${passed}/${config.tests.length} tests réussis.`;
+        summary.textContent = window.I18n.t("exercise.summary", { passed, total: config.tests.length });
         window.Progress?.send({
           kind: "exercise",
           activity: config.storageKey || config.fn,

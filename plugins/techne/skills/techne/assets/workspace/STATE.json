@@ -3,6 +3,7 @@
   "status": "diagnostic_pending",
   "initialized_at": null,
   "workspace": null,
+  "language": null,
   "mode": "initialization",
   "day": {
     "date": null,
