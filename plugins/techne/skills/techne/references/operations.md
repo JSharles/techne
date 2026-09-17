@@ -83,7 +83,7 @@ On `pause`, a block switch (`project`, `curriculum`), or `end`:
 - update block status;
 - distinguish advancement from mastery.
 
-`pause` keeps the day open so the next `resume` continues the same block. `end` closes the session. At closure report curriculum advancement and demonstrated mastery separately. Never turn completed time or pages into a mastery percentage.
+Tell the learner in plain words that their work is saved; do not name the files. `pause` keeps the day open so the next `resume` continues the same block. `end` closes the session. At closure report curriculum advancement and demonstrated mastery separately. Never turn completed time or pages into a mastery percentage.
 
 ## Status
 
@@ -96,3 +96,23 @@ For a `status` command, report:
 - afternoon discovery or project milestone and its independent status.
 
 Do not merge the two tracks into one progress percentage.
+
+## Reset
+
+`reset` lets the learner start Techne over, for example to retry installation and initialization from the beginning.
+
+1. Say in one or two sentences what will happen: saved progress is put aside (archived in the workspace, not deleted) and the next start begins again with the language question. Exercise files the learner wrote stay where they are.
+2. Ask for an explicit yes. Offer permanent deletion only if the learner asks for it.
+3. Run `python3 <this-skill-directory>/scripts/reset_workspace.py <workspace> --confirm` (add `--delete` only when the learner asked for deletion).
+4. Ask whether to also remove exercise folders Techne created in the workspace; remove them only on an explicit yes.
+5. Offer to start again now; if the learner agrees, follow [initialization.md](initialization.md).
+
+## Uninstall
+
+`uninstall` removes the Techne skill from the host agent. It never deletes learner progress unless the learner also asks for `reset`.
+
+1. Ask whether the learner also wants to reset their progress first; if so, run the reset procedure above.
+2. Ask for an explicit yes, then run the command for the host, or give it to the learner when the host cannot run it:
+   - Claude Code plugin: `claude plugin uninstall techne@jsharles`, then `claude plugin marketplace remove jsharles` if the learner wants a completely clean slate;
+   - `skills` installation (Codex and others): `npx skills@latest remove techne --global --yes`.
+3. Give the reinstallation commands from the repository README (https://github.com/JSharles/techne#installation-30-second-setup) and say a new session is needed after reinstalling.

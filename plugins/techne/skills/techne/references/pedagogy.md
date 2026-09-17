@@ -11,7 +11,7 @@ For a new or fragile concept, use:
 5. immediate evidence-based feedback;
 6. later transfer and spaced retrieval.
 
-Teach before demanding autonomous transfer. A first difficulty adjusts instruction; it does not establish a general level.
+Steps 1 to 3 form a short browser lesson shown before the exercise (see [exercises.md](exercises.md#lesson-before-practice)). Teach before demanding autonomous transfer. A first difficulty adjusts instruction; it does not establish a general level.
 
 ## Intensive morning shape
 
@@ -62,4 +62,4 @@ Prefer normal development environments with stable scripts, tests, and VS Code d
 
 ## Language
 
-Teach in the language recorded in `STATE.json` `language` while retaining standard English technical terms. Explain unfamiliar vocabulary in ordinary language before starting a timebox.
+Teach in the language recorded in `STATE.json` `language` while retaining standard English technical terms. Write natural, idiomatic prose, as a native speaker would; translate meaning rather than the English wording of this skill. Explain unfamiliar vocabulary in ordinary language before an exercise starts.

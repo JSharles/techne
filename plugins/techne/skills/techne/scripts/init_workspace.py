@@ -11,7 +11,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from workspace_registry import default_config_path, register_workspace
+from workspace_registry import default_config_path, is_workspace, load_active_workspace, register_workspace
 
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
@@ -30,14 +30,49 @@ def normalize_language(language: str) -> str:
     return tag
 
 
-def initialize(workspace: Path, language: str, registry_path: Path | None = None) -> Path:
+class WorkspaceConflictError(Exception):
+    """Initialization would create a second curriculum or hide an existing one."""
+
+
+def check_conflicts(workspace: Path, registry_path: Path | None, replace_active: bool) -> None:
+    try:
+        active = load_active_workspace(registry_path) if registry_path is not None else None
+    except (FileNotFoundError, ValueError):
+        active = None
+    if active is None or active == workspace:
+        return
+    if workspace in active.parents:
+        # A workspace in a parent directory takes precedence over the registry,
+        # so it would silently hide the learner's existing curriculum.
+        raise WorkspaceConflictError(
+            f"{workspace} contains the active Techne workspace {active}; "
+            "initializing here would hide it. Choose another directory."
+        )
+    if not replace_active:
+        raise WorkspaceConflictError(
+            f"An active Techne workspace already exists: {active}. "
+            "Resume it, reset it, or pass --replace-active to start a separate curriculum."
+        )
+
+
+def initialize(
+    workspace: Path,
+    language: str,
+    registry_path: Path | None = None,
+    replace_active: bool = False,
+) -> Path:
     language = normalize_language(language)
     workspace = workspace.expanduser().resolve()
     state_root = workspace / ".techne"
     if state_root.exists():
         raise FileExistsError(f"Techne workspace already exists: {state_root}")
-    if not workspace.exists() or not workspace.is_dir():
-        raise FileNotFoundError(f"Workspace directory does not exist: {workspace}")
+    if workspace.exists() and not workspace.is_dir():
+        raise FileNotFoundError(f"Workspace path is not a directory: {workspace}")
+    ancestor = next((parent for parent in workspace.parents if is_workspace(parent)), None)
+    if ancestor is not None:
+        raise WorkspaceConflictError(f"{workspace} is inside the existing Techne workspace {ancestor}.")
+    check_conflicts(workspace, registry_path, replace_active)
+    workspace.mkdir(parents=True, exist_ok=True)
 
     shutil.copytree(WORKSPACE_TEMPLATE, state_root)
     shutil.copytree(BROWSER_TEMPLATE, state_root / "browser")
@@ -76,6 +111,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="Language the learner chose for the curriculum, as a BCP 47 tag (e.g. en, fr, pt-BR)",
     )
     parser.add_argument(
+        "--replace-active",
+        action="store_true",
+        help="Start a new curriculum even though another workspace is registered as active",
+    )
+    parser.add_argument(
         "--registry",
         type=Path,
         default=default_config_path(),
@@ -87,8 +127,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     try:
-        state_root = initialize(Path(args.workspace), args.language, args.registry)
-    except (FileExistsError, FileNotFoundError, OSError, ValueError) as exc:
+        state_root = initialize(Path(args.workspace), args.language, args.registry, args.replace_active)
+    except (FileExistsError, FileNotFoundError, OSError, ValueError, WorkspaceConflictError) as exc:
         print(f"Techne initialization failed: {exc}", file=sys.stderr)
         return 1
     print(f"Techne workspace initialized: {state_root}")

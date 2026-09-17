@@ -37,14 +37,7 @@ When Techne becomes available in the official marketplace, installation can beco
 claude plugin install techne
 ```
 
-Claude Code invokes plugin skills with a namespace:
-
-```text
-/techne:techne init
-/techne:techne
-```
-
-Natural language also works; Techne maps it to the matching command (see [Commands](#commands)).
+Then start Techne with `/techne:init` (type `/techne:` to see every command). Natural language also works; Techne maps it to the matching command (see [Commands](#commands)).
 
 ### Codex
 
@@ -77,50 +70,53 @@ Installation makes the teaching method available. Initialization creates your pe
 
 1. Open the folder that should hold your learning work and progress.
 2. Start Codex or Claude Code in that folder.
-3. Invoke Techne with `init`:
+Start Techne from any folder:
 
 ```text
-# Codex
-$techne init
-
-# Claude Code plugin
-/techne:techne init
+/techne:init     # Claude Code
+$techne init     # Codex
 ```
 
 Techne then:
 
 - asks which language you want to learn in (English, French, or any other language); commands and technical terms stay in English;
-- creates `.techne/` in the learning workspace and records your language;
-- registers that workspace in `~/.techne/config.json`;
-- collects only facts needed to calibrate the first diagnostic activities;
-- begins the baseline without asking you to design the syllabus.
+- proposes a dedicated folder for your work and progress (`~/techne` by default), creates `.techne/` there, and remembers it so you can resume from anywhere;
+- asks a few questions about your experience and setup;
+- runs a short **placement test**: four to six unmarked exercises of at most fifteen minutes each, so the curriculum starts at the right level;
+- starts the curriculum, where each exercise is preceded by a short lesson in your browser.
+
+Techne refuses to start a second curriculum while one is in progress; use `reset` to start over.
 
 Do not commit `.techne/`: it contains personal progress, evidence, and local exercise events.
 
 ## Daily use
 
-Techne has a single entry point followed by an optional English command:
+Each command is typed after the Techne entry point:
 
 ```text
-$techne <command>          # Codex
-/techne:techne <command>   # Claude Code
+/techne:<command>          # Claude Code, e.g. /techne:hint
+$techne <command>          # Codex, e.g. $techne hint
 ```
 
-Commands are the same whatever language you learn in. Techne decides what comes next: the subject, due reviews, difficulty, and activity format. You never pick when to study architecture, DSA, React, Product, or any other curriculum domain.
+In Claude Code, type `/techne:` and pick a command from the menu. Commands are the same whatever language you learn in.
+
+Techne decides what comes next: the subject, due reviews, difficulty, and activity format. You never pick when to study architecture, DSA, React, Product, or any other curriculum domain.
 
 ### Commands
 
 | Command | What it does | When to use it |
 | --- | --- | --- |
-| `init` | Asks your learning language, creates `.techne/` in the current folder, registers it globally, and starts the diagnostic baseline. | Once, in the folder that will hold your learning work. |
-| *(none)* or `resume` | Reloads your saved state and gives you exactly one next action. | To start the day or come back after a break, from any folder or a new conversation. |
-| `hint` | Raises the help level on the current activity by one step, from a guiding question up to a full solution. | When you are stuck on an exercise. Each call gives slightly more help; work done after heavy help counts as practice, not as proof of mastery. |
-| `status` | Reports the current activity, curriculum progress, demonstrated mastery, due reviews, and the project milestone, with the two tracks kept separate. | When you want to know where you stand. |
-| `project` | Saves a checkpoint and switches to the afternoon Applied AI product studio. | When you are done with the morning block, or want to work on the project now. |
-| `curriculum` | Saves a checkpoint and switches back to the morning curriculum. | When you want to return to lessons and exercises. |
-| `pause` | Saves a checkpoint and keeps the day open; the next `resume` continues exactly where you stopped. | Before a short break. |
-| `end` | Saves a checkpoint, closes the session, and reports progress and mastery separately. | At the end of your working session. |
-| `feedback <text>` | Pauses the activity and opens a discussion about Techne's method, content, difficulty, or schedule. Approved changes are recorded in `.techne/DECISIONS.md`. | When something in the teaching does not work for you, e.g. `feedback the exercises are too long`. |
+| `init` | Asks your learning language, sets up your learning folder, and runs the placement test. | Once, the first time you use Techne. |
+| `resume` | Picks up where you left off and gives you exactly one next action. Typing the entry point alone does the same. | To start the day or come back after a break, from any folder or a new conversation. |
+| `hint` | Gives one more step of help on the current exercise, from a guiding question up to a full solution. | When you are stuck. Each call gives a little more help; work done after heavy help counts as practice, not as proof of mastery. |
+| `status` | Shows the current activity, curriculum progress, demonstrated skills, due reviews, and the project milestone, with morning and afternoon kept separate. | When you want to know where you stand. |
+| `project` | Saves your progress and switches to the afternoon Applied AI product studio. | When the morning block is done, or you want to work on the project now. |
+| `curriculum` | Saves your progress and switches back to the morning curriculum. | When you want to return to lessons and exercises. |
+| `pause` | Saves your progress and keeps the day open; `resume` continues exactly where you stopped. | Before a short break. |
+| `end` | Saves your progress, closes the session, and gives a short report. | At the end of your working session. |
+| `feedback <text>` | Pauses the exercise and opens a discussion about the teaching: method, content, difficulty, or pace. Agreed changes are recorded. | When something does not work for you, e.g. `/techne:feedback the exercises are too long`. |
+| `reset` | After you confirm, puts your progress aside (archived, not deleted unless you ask) so Techne starts again from `init`. Your exercise files stay unless you ask to remove them. | To start the whole curriculum over, or to retest the first-run experience. |
+| `uninstall` | After you confirm, removes Techne from your agent, optionally after a `reset`, and tells you how to reinstall. | When you no longer want Techne, or to retest installation. |
 
 ### Natural language
 
@@ -138,6 +134,24 @@ It resolves the workspace in this order:
 This allows a new agent conversation to locate the current curriculum from another directory. The host agent may still request filesystem permission before writing outside its current project sandbox.
 
 Updating or uninstalling Techne does not remove learner progress. Progress remains in the learning workspace until the learner explicitly deletes it.
+
+## Start over from scratch
+
+To retest the whole journey (installation, initialization, placement test):
+
+1. In a Techne session, run `reset`, then `uninstall` (or run the commands below yourself).
+2. Start a new session and follow [Installation](#installation-30-second-setup) again.
+
+Manual equivalent for Claude Code:
+
+```bash
+claude plugin uninstall techne@jsharles
+claude plugin marketplace remove jsharles
+mv <learning-folder>/.techne <learning-folder>/.techne-archive   # or delete it
+rm -f ~/.techne/config.json
+```
+
+Then reinstall with the two commands from [Claude Code](#claude-code) and run `/techne:init` in a new session.
 
 ## Update
 
@@ -187,10 +201,11 @@ The repository contains one canonical skill and two distribution adapters:
 ```text
 .claude-plugin/marketplace.json              Claude Code marketplace
 plugins/techne/.claude-plugin/plugin.json    Claude Code plugin manifest
+plugins/techne/commands/                     Claude Code slash commands (thin wrappers)
 plugins/techne/skills/techne/                Canonical Agent Skill
 ```
 
-Claude Code and `npx skills` install the same `plugins/techne/skills/techne` source. There are no agent-specific copies of the curriculum.
+Claude Code and `npx skills` install the same `plugins/techne/skills/techne` source. There are no agent-specific copies of the curriculum; the Claude Code slash commands only forward to the skill.
 
 ## Development and validation
 
@@ -199,7 +214,7 @@ Run the test suite, workspace-template validator, skill validator, and Claude pl
 ```bash
 python3 -m unittest discover -s tests
 python3 plugins/techne/skills/techne/scripts/validate_workspace.py --template
-python3 /path/to/skill-creator/scripts/quick_validate.py plugins/techne/skills/techne
+uvx --from skills-ref agentskills validate plugins/techne/skills/techne
 claude plugin validate .
 ```
 

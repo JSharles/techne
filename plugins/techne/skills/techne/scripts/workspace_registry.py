@@ -55,6 +55,24 @@ def resolve_workspace(start: Path, config_path: Path | None = None) -> Path:
     raise FileNotFoundError("No Techne workspace found. Run 'techne init' to initialize one.")
 
 
+def unregister_workspace(workspace: Path, config_path: Path | None = None) -> bool:
+    """Remove the registry entry when it points at workspace. Return True if removed."""
+    path = (config_path or default_config_path()).expanduser()
+    if not path.is_file():
+        return False
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except ValueError:
+        return False
+    raw_workspace = data.get("active_workspace") if isinstance(data, dict) else None
+    if not isinstance(raw_workspace, str):
+        return False
+    if Path(raw_workspace).expanduser().resolve() != workspace.expanduser().resolve():
+        return False
+    path.unlink()
+    return True
+
+
 def register_workspace(workspace: Path, config_path: Path | None = None) -> Path:
     resolved = workspace.expanduser().resolve()
     if not is_workspace(resolved):

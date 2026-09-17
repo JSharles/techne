@@ -26,6 +26,7 @@ sys.path.insert(0, str(SKILL_ROOT / "scripts"))
 registry = load_module("workspace_registry", SKILL_ROOT / "scripts" / "workspace_registry.py")
 initializer = load_module("techne_initializer", SKILL_ROOT / "scripts" / "init_workspace.py")
 validator = load_module("techne_validator", SKILL_ROOT / "scripts" / "validate_workspace.py")
+resetter = load_module("techne_resetter", SKILL_ROOT / "scripts" / "reset_workspace.py")
 
 
 class WorkspaceTests(unittest.TestCase):
@@ -67,6 +68,64 @@ class WorkspaceTests(unittest.TestCase):
             state_path.write_text(json.dumps(state), encoding="utf-8")
 
             self.assertIn("STATE.json language must record the learner's chosen language", validator.validate(state_root))
+
+    def test_refuses_second_curriculum_while_one_is_active(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config = root / "config.json"
+            initializer.initialize(root / "first", "fr", config)
+
+            with self.assertRaises(initializer.WorkspaceConflictError):
+                initializer.initialize(root / "second", "fr", config)
+            self.assertFalse((root / "second" / ".techne").exists())
+
+            initializer.initialize(root / "second", "fr", config, replace_active=True)
+            self.assertEqual(registry.load_active_workspace(config), (root / "second").resolve())
+
+    def test_refuses_to_hide_active_workspace_from_parent_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config = root / "config.json"
+            initializer.initialize(root / "dev" / "techne", "fr", config)
+
+            with self.assertRaises(initializer.WorkspaceConflictError):
+                initializer.initialize(root / "dev", "en", config, replace_active=True)
+            self.assertFalse((root / "dev" / ".techne").exists())
+
+    def test_refuses_to_nest_inside_existing_workspace(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            initializer.initialize(root, "fr")
+            with self.assertRaises(initializer.WorkspaceConflictError):
+                initializer.initialize(root / "exercises", "fr")
+
+    def test_reset_archives_state_and_allows_a_fresh_init(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workspace = root / "learning"
+            config = root / "config.json"
+            initializer.initialize(workspace, "fr", config)
+            (workspace / "exercises").mkdir()
+
+            archive = resetter.reset(workspace, config)
+
+            self.assertTrue((archive / "STATE.json").is_file())
+            self.assertFalse((workspace / ".techne").exists())
+            self.assertTrue((workspace / "exercises").is_dir())
+            self.assertIsNone(registry.load_active_workspace(config))
+            initializer.initialize(workspace, "en", config)
+            self.assertEqual(registry.load_active_workspace(config), workspace.resolve())
+
+    def test_reset_can_delete_state(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            config = workspace / "config.json"
+            initializer.initialize(workspace, "fr", config)
+
+            self.assertIsNone(resetter.reset(workspace, config, delete=True))
+            self.assertFalse((workspace / ".techne").exists())
+            self.assertEqual(list(workspace.glob(".techne-archive-*")), [])
+            self.assertFalse(config.exists())
 
     def test_refuses_to_overwrite_workspace(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -111,7 +170,17 @@ class WorkspaceTests(unittest.TestCase):
         self.assertEqual(plugin["name"], "techne")
         self.assertEqual(marketplace["plugins"][0]["name"], "techne")
         self.assertEqual(marketplace["plugins"][0]["source"], "./plugins/techne")
+        self.assertEqual(marketplace["plugins"][0]["version"], plugin["version"])
         self.assertTrue((SKILL_ROOT / "SKILL.md").is_file())
+
+    def test_every_documented_command_has_a_claude_slash_command(self):
+        commands_dir = ROOT / "plugins" / "techne" / "commands"
+        skill = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
+        for name in ("init", "resume", "hint", "status", "project", "curriculum", "pause", "end", "feedback", "reset", "uninstall"):
+            self.assertIn(f"`{name}", skill)
+            command = (commands_dir / f"{name}.md").read_text(encoding="utf-8")
+            self.assertTrue(command.startswith("---\ndescription: "), name)
+            self.assertIn(f"Techne `{name}` command", command)
 
 
 if __name__ == "__main__":

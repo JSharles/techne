@@ -83,6 +83,29 @@ Exit evidence: bottleneck measured before/after; threat model produces verified 
 
 Exit evidence: independent problem-solving loop, defended system design, cross-layer diagnosis, honest mastery matrix, and a prioritized post-Techne plan.
 
+## DSA problem bank
+
+Free LeetCode problems to base DSA exercises on, at `https://leetcode.com/problems/<slug>/`. All slugs were verified to exist and not be paid-only on 2026-09-17. Pick by topic and observed level; the bank is a starting point, not an exhaustive list or a fixed order.
+
+| Topic | Easy | Medium |
+| --- | --- | --- |
+| Arrays, iteration | `move-zeroes`, `majority-element`, `best-time-to-buy-and-sell-stock` | `merge-intervals` |
+| Hashing, `Map`/`Set`, frequency counting | `two-sum`, `contains-duplicate`, `valid-anagram`, `first-unique-character-in-a-string` | `group-anagrams`, `top-k-frequent-elements` |
+| Strings | `valid-palindrome`, `find-the-index-of-the-first-occurrence-in-a-string` | `longest-substring-without-repeating-characters` |
+| Two pointers | `valid-palindrome`, `move-zeroes` | `two-sum-ii-input-array-is-sorted`, `container-with-most-water` |
+| Sliding window | `maximum-average-subarray-i` | `minimum-size-subarray-sum`, `longest-substring-without-repeating-characters` |
+| Stack, queue | `valid-parentheses`, `implement-queue-using-stacks` | `min-stack`, `daily-temperatures` |
+| Binary search | `binary-search`, `sqrtx` | `search-in-rotated-sorted-array` |
+| Recursion | `fibonacci-number`, `climbing-stairs` | `subsets` |
+| Linked lists | `reverse-linked-list`, `merge-two-sorted-lists` | — |
+| Trees, BST | `maximum-depth-of-binary-tree`, `invert-binary-tree` | `validate-binary-search-tree`, `lowest-common-ancestor-of-a-binary-search-tree`, `binary-tree-level-order-traversal` |
+| Heaps | `kth-largest-element-in-a-stream`, `last-stone-weight` | `kth-largest-element-in-an-array` |
+| Graphs, BFS/DFS | — | `number-of-islands`, `clone-graph` |
+| Topological order | — | `course-schedule`, `course-schedule-ii` |
+| Greedy | `best-time-to-buy-and-sell-stock` | `jump-game` |
+| Backtracking | — | `subsets`, `permutations`, `combination-sum` |
+| Dynamic programming | `climbing-stairs` | `house-robber`, `coin-change` |
+
 ## Adaptation rules
 
 - Score 0–1 or failed recall: reduce novelty and schedule a smaller attempt within two mornings.

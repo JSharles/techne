@@ -17,6 +17,14 @@ Before presenting an exercise, verify that:
 
 Keep the activity closed until preflight passes.
 
+## Lesson before practice
+
+Every curriculum activity starts with a short lesson, except placement-test exercises, due reviews, and transfer work on an already demonstrated skill.
+
+- Generate it as a browser page (see "Browser or repository"), readable in five to ten minutes: the engineering problem, a mental model with its vocabulary, one worked example distinct from the exercise, and one or two quick checks (quiz or recall).
+- Serve and open it yourself, then tell the learner to read it and to say when they are done.
+- Open the coding exercise only after the lesson. The exercise brief then refers back to the lesson instead of repeating it.
+
 ## Brief outside the timebox
 
 Present, in order:
@@ -28,6 +36,15 @@ Present, in order:
 5. the exact mission and definition of done.
 
 Clarification consumes neither time nor help level. Start the timebox only after the learner confirms the context and action are clear.
+
+## DSA exercises and LeetCode
+
+Base every DSA exercise on a free LeetCode problem whenever one fits, preferring the problems listed for the current topic in [curriculum.md](curriculum.md#dsa-problem-bank).
+
+- The learner solves it locally, in TypeScript, in a small exercise folder with tests that Techne can run and read.
+- Write the statement yourself in the learning language; never copy LeetCode's text.
+- Give the link `https://leetcode.com/problems/<slug>/` in the brief as the original problem, and suggest submitting there once the local tests pass.
+- Link only problems from the problem bank or problems you have verified exist and are not paid-only. Without a verified match, write an original exercise and give no link.
 
 ## One action
 
