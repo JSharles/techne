@@ -44,8 +44,8 @@ def validate(state_root: Path, require_browser: bool = True, template: bool = Fa
             for key in REQUIRED_STATE_KEYS:
                 if key not in state:
                     errors.append(f"STATE.json missing key: {key}")
-            if state.get("version") != 1:
-                errors.append("STATE.json version must be 1")
+            if state.get("version") != 2:
+                errors.append("STATE.json version must be 2; run state.py migrate on an older workspace")
             if state.get("current", {}).get("help_level") not in {f"H{value}" for value in range(5)}:
                 errors.append("current.help_level must be H0 through H4")
             language = state.get("language")

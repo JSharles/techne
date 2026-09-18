@@ -61,6 +61,10 @@ _Avoid_: score, progress percentage
 **Calibration**:
 The conversation that changes how Techne teaches. A preference — lesson length, more theory, pace — is applied at once and kept in the learner profile; a change touching evidence, the programme, or assessment goes through discussion, approval, and a recorded decision.
 
+**Weekly assessment**:
+The blunt review written every six working days, during the light day: what moved, what stalled, what is fragile, and the learner's real pace. On working days 20, 40 and 60 it also compares the mastery map to what a senior React/Node developer is expected to know.
+_Avoid_: progress report, recap
+
 **Light day**:
 The seventh day of the week: about ninety minutes of review and reading, with no new subject. Techne may impose another when results degrade.
 _Avoid_: rest day, day off

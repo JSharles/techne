@@ -4,7 +4,9 @@ Use this branch when workspace resolution fails: the learner is starting Techne,
 
 This is always a fresh start. Never read or reuse `.techne-archive-*` folders left by a `reset`, and never refer to a previous start.
 
-Keep the whole start conversational and short. The learner should never see a shell command, a file path they must act on, or internal vocabulary.
+Keep the start short: two questions — the language, then the folder — and under five minutes before the first placement exercise. Check the environment silently while asking. The learner should never see a shell command, a file path they must act on, or internal vocabulary.
+
+Everything else waits until it is useful: the learner profile fills itself from observed work, the red-thread project domain is chosen in week 1, and the AI lab is set up on the first afternoon.
 
 ## Choose the learning language
 

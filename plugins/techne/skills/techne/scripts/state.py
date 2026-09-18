@@ -17,6 +17,8 @@ from workspace_registry import default_config_path, resolve_workspace
 
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
+FORMAT_VERSION = 2
+RECENT_SESSION_HOURS = 12
 STATES = ("not_started", "discovered", "assisted", "independent", "transferred", "blocked")
 LADDER = ("not_started", "discovered", "assisted", "independent", "transferred")
 HELP_LEVELS = tuple(f"H{level}" for level in range(5))
@@ -40,11 +42,81 @@ def now_stamp() -> str:
     return datetime.now().astimezone().isoformat(timespec="seconds")
 
 
-def load(workspace: Path) -> tuple[Path, dict]:
+def load(workspace: Path, allow_old_format: bool = False) -> tuple[Path, dict]:
     path = workspace / ".techne" / "STATE.json"
     if not path.is_file():
         raise StateError(f"No Techne state at {path}")
-    return path, json.loads(path.read_text(encoding="utf-8"))
+    state = json.loads(path.read_text(encoding="utf-8"))
+    version = state.get("version")
+    if not allow_old_format and version != FORMAT_VERSION:
+        if isinstance(version, int) and version < FORMAT_VERSION:
+            raise StateError(
+                f"This workspace uses state format {version}, the skill expects {FORMAT_VERSION}. "
+                "Run 'state.py migrate' to bring it forward; the learner's evidence is preserved."
+            )
+        raise StateError(f"Unknown state format: {version!r}. Update Techne rather than editing state by hand.")
+    return path, state
+
+
+def migrate(state: dict) -> list[str]:
+    """Bring an older workspace forward without losing learner evidence."""
+    version = state.get("version")
+    if version == FORMAT_VERSION:
+        return []
+    if not isinstance(version, int) or version > FORMAT_VERSION:
+        raise StateError(f"Unknown state format: {version!r}.")
+    applied = []
+    if version < 2:
+        day = state.setdefault("day", {})
+        if "curriculum" in day:
+            day["engineering"] = day.pop("curriculum")
+        if "project" in day:
+            day["ai"] = day.pop("project")
+        if "project" in state:
+            state["ai"] = state.pop("project")
+        state.pop("reviews", None)
+        state.setdefault("reviews_due", [])
+        state.setdefault("transfers_due", [])
+        state.setdefault("progress", {"engineering_days": 0, "ai_days": 0})
+        state.setdefault("red_thread", {"domain": None, "repository": None, "milestone": None})
+        state.setdefault("ai", {"phase": "not_started", "week": None, "lab_repository": None, "provider": None, "capstone": None})
+        mastery = state.get("mastery")
+        if isinstance(mastery, dict):
+            # Old entries were per domain with a score or a level, not per subject,
+            # so they cannot become subject states. Keep them as history.
+            legacy = {
+                key: entry
+                for key, entry in mastery.items()
+                if "." not in key or not (isinstance(entry, dict) and entry.get("state") in STATES)
+            }
+            if legacy:
+                state["legacy_mastery"] = {**state.get("legacy_mastery", {}), **legacy}
+                state["mastery"] = {key: entry for key, entry in mastery.items() if key not in legacy}
+                applied.append(f"kept {len(legacy)} old per-domain entries as legacy_mastery")
+        if state.get("current", {}).get("help_level") in ("H5", "H6"):
+            state["current"]["help_level"] = "H4"
+            applied.append("clamped help level to H4")
+        applied.append("migrated state from format 1 to 2")
+    state["version"] = FORMAT_VERSION
+    return applied
+
+
+def note_session(state: dict, session: str | None) -> str | None:
+    """Record which agent session is writing, and warn when another one was active."""
+    if not session:
+        return None
+    previous = state.get("session") or {}
+    warning = None
+    if previous.get("id") and previous["id"] != session:
+        try:
+            seen = datetime.fromisoformat(previous["seen_at"])
+            hours = (datetime.now().astimezone() - seen).total_seconds() / 3600
+        except (KeyError, ValueError):
+            hours = None
+        if hours is not None and hours < RECENT_SESSION_HOURS:
+            warning = "Another Techne session wrote this workspace recently; re-read the state before continuing."
+    state["session"] = {"id": session, "seen_at": now_stamp()}
+    return warning
 
 
 def save(path: Path, state: dict) -> None:
@@ -247,6 +319,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Apply a Techne state transition.")
     parser.add_argument("--workspace", type=Path, help="Learning workspace (default: resolved like the skill does)")
     parser.add_argument("--config", type=Path, default=default_config_path(), help="Global workspace registry")
+    parser.add_argument("--session", help="Opaque identifier of the agent session, to detect concurrent sessions")
     sub = parser.add_subparsers(dest="command", required=True)
 
     mastery = sub.add_parser("mastery", help="Record a mastery state for one subject")
@@ -278,6 +351,7 @@ def build_parser() -> argparse.ArgumentParser:
     block.add_argument("name", choices=BLOCKS)
 
     sub.add_parser("ingest-events", help="Apply mechanical browser evidence")
+    sub.add_parser("migrate", help="Bring an older workspace forward to the current state format")
     sub.add_parser("show", help="Print the current state as JSON")
     return parser
 
@@ -286,8 +360,9 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv or sys.argv[1:])
     try:
         workspace = args.workspace.expanduser().resolve() if args.workspace else resolve_workspace(Path("."), args.config)
-        path, state = load(workspace)
+        path, state = load(workspace, allow_old_format=args.command == "migrate")
         known = subjects(SKILL_ROOT)
+        warning = note_session(state, args.session)
         result: object = None
 
         if args.command == "mastery":
@@ -312,10 +387,14 @@ def main(argv: list[str] | None = None) -> int:
             result = switch_block(state, args.name)
         elif args.command == "ingest-events":
             result = ingest_events(state, workspace, known)
+        elif args.command == "migrate":
+            result = {"applied": migrate(state), "version": state["version"]}
         elif args.command == "show":
             result = state
 
         save(path, state)
+        if warning:
+            print(warning, file=sys.stderr)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
     except (StateError, FileNotFoundError, OSError, ValueError) as exc:

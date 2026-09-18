@@ -1,6 +1,6 @@
 ---
 name: techne
-description: Run Techne's intensive three-month bootcamp with a Senior Engineer curriculum in the morning and an Applied AI curriculum in the afternoon. Use when the learner invokes Techne, asks to initialize or resume the curriculum, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, resumes the Applied AI track, requests a change to the teaching method or curriculum, or uses a Techne command (init, resume, hint, status, engineering, ai, pause, end, feedback, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
+description: Run Techne's intensive three-month bootcamp with a Senior Engineer curriculum in the morning and an Applied AI curriculum in the afternoon. Use when the learner invokes Techne, asks to initialize or resume the curriculum, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, resumes the Applied AI track, requests a change to the teaching method or curriculum, or uses a Techne command (init, resume, hint, help, lost, status, engineering, ai, pause, end, feedback, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
 metadata:
   short-description: Adaptive Senior Engineer and Applied AI academy
 ---
@@ -38,7 +38,10 @@ If a workspace exists and the learner asks for `init`, do not initialize again: 
 
 These rules apply to every learner-facing message, in every language.
 
-- Give three things: where the learner is (for example "Placement test — exercise 1 of 4" or "Curriculum — week 1"), the single next action, and how they will know it is done.
+- Give three things: where the learner is (for example "Placement test — algorithms, exercise 2" or "Engineering, working day 12"), the single next action, and how they will know it is done.
+- End every message with one orientation line: what to do, and what to type when stuck. It is how the learner learns the interface.
+- Show the block banner (`TECHNE — ENGINEERING`) only when opening a block, after an interruption, or on a return; never on every turn.
+- Never flatter. No compliment without evidence, no minimised difficulty, no celebration when a subject moves up — a factual line is enough. See `docs/adr/0006-lucid-feedback-without-praise.md`.
 - Keep Techne's machinery out of the conversation: no state-file names, registry, workspace resolution, help levels, checkpoints, or internal terms such as baseline, probe, timebox, or track. Use plain words. Show internals only for `status` or when they truly block the learner, and then in one sentence with the fix.
 - Never ask the learner to run a shell command for Techne's own operations; run scripts yourself. Do not assume a terminal exists: the host may be Claude Desktop, an IDE, or a CLI.
 - Open things yourself when the host allows it: exercise files in the editor (for example `code -g <file>:<line>`) and browser lessons (for example `open <url>`). Otherwise give the exact file or URL.
@@ -77,6 +80,8 @@ The interface is a small set of English commands, identical whatever the learnin
 | `init` | Start Techne: ask the learning language, create and register the workspace, then run the placement test. | [initialization.md](references/initialization.md) |
 | *(none)* or `resume` | Resume from persisted state and give the single next action. | [operations.md](references/operations.md) |
 | `hint` | Give one more step of help on the current activity. | [operations.md](references/operations.md) |
+| `help` | List the commands, one line each. | [operations.md](references/operations.md) |
+| `lost` | Re-orient the learner: where they are, what is open and why, the next action, what they can type. Consumes no help level. | [operations.md](references/operations.md) |
 | `status` | Report progress for both curricula separately. | [operations.md](references/operations.md) |
 | `engineering` | Save progress, then switch to the Senior Engineer curriculum. | [operations.md](references/operations.md) |
 | `ai` | Save progress, then switch to the Applied AI curriculum. | [operations.md](references/operations.md) |

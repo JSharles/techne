@@ -87,7 +87,9 @@ Techne then:
 - runs a short **placement test**: four to six unmarked exercises of at most fifteen minutes each, so the curriculum starts at the right level;
 - starts the curriculum, where each exercise is preceded by a short lesson in your browser.
 
-The rhythm is six full days and one light day per week. Your progress is tracked subject by subject — not started, discovered, with help, independent, transferred — and shown on the "My progress" page in your browser.
+The rhythm is six full days and one light day per week, and the programme advances in working days, so missing a day delays nothing. Your progress is tracked subject by subject — not started, discovered, with help, independent, transferred, blocked — and shown on the "My progress" page in your browser.
+
+Techne does not flatter: it names what you demonstrated and what you did not, gives a blunt assessment every six working days, and compares your map to what is expected of a senior React/Node developer on working days 20, 40 and 60.
 
 Techne refuses to start a second curriculum while one is in progress; use `reset` to start over.
 
@@ -112,14 +114,16 @@ Techne decides what comes next: the subject, due reviews, difficulty, and activi
 | --- | --- | --- |
 | `init` | Asks your learning language, sets up your learning folder, and runs the placement test. | Once, the first time you use Techne. |
 | `resume` | Picks up where you left off and gives you exactly one next action. Typing the entry point alone does the same. | To start the day or come back after a break, from any folder or a new conversation. |
-| `hint` | Gives one more step of help on the current exercise, from a guiding question up to a full solution. | When you are stuck. Each call gives a little more help; work done after heavy help counts as practice, not as proof of mastery. |
+| `hint` | Gives one more step of help on the current exercise, from a guiding question up to the solution explained. | When you are stuck on the exercise itself. Each call gives a little more help; work done with help counts as practice, not as proof of mastery. |
+| `lost` | Tells you where you are, what is open and why, what to do next, and what you can type. Costs you nothing. | When you have lost the thread — after a break, or when a message did not land. |
+| `help` | Lists the commands, one line each. | When you forget what exists. |
 | `status` | Shows the current activity, your mastery map subject by subject, due reviews, and Applied AI progress, with the two curricula kept separate. | When you want to know where you stand. |
 | `engineering` | Saves your progress and switches to the Senior Engineer curriculum. | When you want to work on the morning curriculum. |
 | `ai` | Saves your progress and switches to the Applied AI curriculum. | When the morning block is done, or you want to work on Applied AI now. |
 | `pause` | Saves your progress and keeps the day open; `resume` continues exactly where you stopped. | Before a short break. |
 | `end` | Saves your progress, closes the session, and gives a short report. | At the end of your working session. |
 | `feedback <text>` | Pauses the exercise and opens a discussion about the teaching: method, content, difficulty, or pace. Agreed changes are recorded. | When something does not work for you, e.g. `/techne:feedback the exercises are too long`. |
-| `reset` | After you confirm, puts your progress aside (archived, not deleted unless you ask) so Techne starts again from `init`. Your exercise files stay unless you ask to remove them. | To start the whole curriculum over, or to retest the first-run experience. |
+| `reset` | After you confirm, puts your progress aside (archived, not deleted unless you ask) so Techne starts again from `init`. Your exercise files stay unless you ask to remove them. | To start the whole curriculum over. Updating Techne never needs it: an older workspace is migrated, not reset. |
 | `uninstall` | After you confirm, removes Techne from your agent, optionally after a `reset`, and tells you how to reinstall. | When you no longer want Techne, or to retest installation. |
 
 ### Natural language

@@ -123,6 +123,49 @@ class StateTransitionTests(unittest.TestCase):
         self.assertEqual(self.state["mastery"]["react.forms"]["state"], "discovered")
         self.assertEqual(self.state["browser"]["last_event_line"], 2)
 
+    def test_migrates_an_old_workspace_without_losing_evidence(self):
+        old = {
+            "version": 1,
+            "status": "diagnostic_in_progress",
+            "language": "fr",
+            "mode": "curriculum",
+            "day": {"date": "2026-09-17", "curriculum": "in_progress", "project": "discovery_pending", "active_block": "morning"},
+            "current": {"id": "s01", "track": "curriculum", "status": "ready", "help_level": "H6"},
+            "mastery": {
+                "dsa": {"level": "unassessed", "evidence": [{"task": "placement"}]},
+                "typescript": {"score": None, "status": "unassessed"},
+            },
+            "reviews": {"last_opened_at": None, "due_count": 0},
+            "project": {"phase": "discovery_pending"},
+            "browser": {"last_event_line": 3},
+        }
+        path = self.workspace / ".techne" / "STATE.json"
+        path.write_text(json.dumps(old), encoding="utf-8")
+
+        with self.assertRaises(state_script.StateError):
+            state_script.load(self.workspace)
+        self.assertEqual(self.run_cli("migrate"), 0)
+
+        migrated = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(migrated["version"], state_script.FORMAT_VERSION)
+        self.assertEqual(migrated["day"]["engineering"], "in_progress")
+        self.assertEqual(migrated["ai"]["phase"], "discovery_pending")
+        self.assertEqual(migrated["current"]["help_level"], "H4")
+        self.assertEqual(migrated["mastery"], {})
+        self.assertEqual(sorted(migrated["legacy_mastery"]), ["dsa", "typescript"])
+        self.assertEqual(migrated["legacy_mastery"]["dsa"]["evidence"], [{"task": "placement"}])
+        self.assertEqual(migrated["browser"]["last_event_line"], 3)
+        self.assertEqual(migrated["reviews_due"], [])
+        self.assertEqual(self.run_cli("mastery", "dsa.hashing", "discovered"), 0)
+
+    def test_warns_when_another_session_wrote_recently(self):
+        self.assertIsNone(state_script.note_session(self.state, "session-a"))
+        self.assertIsNone(state_script.note_session(self.state, "session-a"))
+        warning = state_script.note_session(self.state, "session-b")
+
+        self.assertIsNotNone(warning)
+        self.assertEqual(self.state["session"]["id"], "session-b")
+
     def test_cli_writes_state_and_reports_errors(self):
         self.assertEqual(self.run_cli("mastery", "ts.generics", "assisted", "--evidence", "helped", "--help-level", "H3"), 0)
         written = json.loads((self.workspace / ".techne" / "STATE.json").read_text(encoding="utf-8"))
