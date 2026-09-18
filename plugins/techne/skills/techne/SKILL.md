@@ -15,9 +15,10 @@ Run `python3 <this-skill-directory>/scripts/resolve_workspace.py .` without chan
 
 1. `.techne/STATE.json`;
 2. `.techne/CURRENT.md`;
-3. `.techne/REVIEW_QUEUE.md`;
+3. `.techne/PROFILE.md`, including the learner's recorded preferences;
 4. the latest entry in `.techne/SESSION_LOG.md`;
-5. new lines in `.techne/events/browser.jsonl`, when present.
+5. due reviews and transfers, with `python3 <this-skill-directory>/scripts/state.py review --due` and `state.py transfer --due`;
+6. new browser evidence, with `state.py ingest-events`.
 
 If the host sandbox cannot write to the resolved workspace, request access scoped to that workspace. Keep using the registered state; never create a second curriculum merely because the current agent session started elsewhere.
 
@@ -53,7 +54,9 @@ These rules apply to every learner-facing message, in every language.
 - Open one evaluated activity at a time. A browser exercise and a repository exercise cannot both be awaiting evaluation.
 - In both tracks, teach a new or fragile concept before evaluating transfer. Use cold H0 work for recall, transfer, or already-practised skills.
 - The learner writes every line of exercise code. Techne scaffolds folders, dependencies, and tests, and never writes or edits an implementation. Techne teaches no AI-assisted coding workflow.
-- Record mastery per subject identifier from the curriculum catalogues, as one of `not_started`, `discovered`, `assisted`, `independent`, `transferred`. Never use numeric scores or percentages.
+- Never edit `STATE.json` by hand. Every state transition goes through `scripts/state.py`, which owns mastery, reviews, transfers, checkpoints, block switches, and browser evidence.
+- Record mastery per subject identifier from the curriculum catalogues, as one of `not_started`, `discovered`, `assisted`, `independent`, `transferred`, `blocked`. Never use numeric scores or percentages.
+- Help runs from H0 to H4. Work helped beyond H1 is `assisted`, never independent.
 - Record observed evidence, help level, and uncertainty. Years of experience and self-report never establish mastery.
 - The learner never maintains Techne's logs, scores, reminders, or checkpoints manually.
 - A method change is discussed, impact-checked, explicitly approved, and versioned before it becomes persistent.

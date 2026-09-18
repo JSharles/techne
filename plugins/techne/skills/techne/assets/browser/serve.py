@@ -36,6 +36,9 @@ MESSAGES = {
         "assisted": "With help",
         "independent": "Independent",
         "transferred": "Transferred",
+        "blocked": "Blocked",
+        "due_reviews": "Due reviews",
+        "due_on": "due",
         "domain.ts": "TypeScript", "domain.js": "JavaScript", "domain.react": "React",
         "domain.next": "Next.js", "domain.nest": "NestJS & backend", "domain.sql": "SQL & data",
         "domain.dsa": "Algorithms", "domain.test": "Tests & debugging", "domain.arch": "Architecture",
@@ -62,6 +65,9 @@ MESSAGES = {
         "assisted": "Avec aide",
         "independent": "Autonome",
         "transferred": "Transféré",
+        "blocked": "Bloqué",
+        "due_reviews": "Révisions à faire",
+        "due_on": "pour le",
         "domain.ts": "TypeScript", "domain.js": "JavaScript", "domain.react": "React",
         "domain.next": "Next.js", "domain.nest": "NestJS et backend", "domain.sql": "SQL et données",
         "domain.dsa": "Algorithmique", "domain.test": "Tests et debugging", "domain.arch": "Architecture",
@@ -81,7 +87,7 @@ DOMAIN_ORDER = (
     "ts", "js", "react", "next", "nest", "sql", "dsa", "test", "arch", "survey",
     "py", "svc", "llm", "rag", "agent", "eval",
 )
-STATE_ORDER = ("transferred", "independent", "assisted", "discovered", "not_started")
+STATE_ORDER = ("transferred", "independent", "assisted", "blocked", "discovered", "not_started")
 
 
 def read_state() -> dict:
@@ -170,7 +176,8 @@ class Handler(SimpleHTTPRequestHandler):
 
     def _progress(self):
         """Render the mastery map from STATE.json, grouped by subject domain."""
-        mastery = read_state().get("mastery")
+        state = read_state()
+        mastery = state.get("mastery")
         groups: dict[str, list[tuple[str, str, str]]] = {}
         if isinstance(mastery, dict):
             for subject, entry in sorted(mastery.items()):
@@ -194,6 +201,16 @@ class Handler(SimpleHTTPRequestHandler):
             )
             label = TEXT.get(f"domain.{domain}", domain)
             sections.append(f"<h2>{html.escape(label)}</h2><table>{rows}</table>")
+
+        reviews = state.get("reviews_due") if isinstance(state.get("reviews_due"), list) else []
+        today = datetime.now().astimezone().date().isoformat()
+        due = sorted((item for item in reviews if str(item.get("due_on", "")) <= today), key=lambda item: item["due_on"])
+        if due:
+            items = "".join(
+                f"<li>{html.escape(str(item['subject']))} <small>{html.escape(TEXT['due_on'])} {html.escape(str(item['due_on']))}</small></li>"
+                for item in due
+            )
+            sections.insert(0, f"<h2>{html.escape(TEXT['due_reviews'])}</h2><ul>{items}</ul>")
 
         content = "".join(sections) or f"<p>{html.escape(TEXT['progress_empty'])}</p>"
         document = f"""<!doctype html>

@@ -14,14 +14,17 @@ REQUIRED_FILES = (
     "STATE.json",
     "CURRENT.md",
     "PROFILE.md",
-    "REVIEW_QUEUE.md",
     "SESSION_LOG.md",
     "DECISIONS.md",
     "AI_LAB.md",
 )
-REQUIRED_STATE_KEYS = ("version", "status", "language", "mode", "day", "current", "mastery", "red_thread", "ai", "browser")
-MASTERY_STATES = ("not_started", "discovered", "assisted", "independent", "transferred")
+REQUIRED_STATE_KEYS = (
+    "version", "status", "language", "mode", "day", "progress", "current",
+    "mastery", "reviews_due", "transfers_due", "red_thread", "ai", "browser",
+)
+MASTERY_STATES = ("not_started", "discovered", "assisted", "independent", "transferred", "blocked")
 BROWSER_FILES = ("serve.py", "lesson-template.html", "assets/i18n.js", "assets/progress.js", "assets/exercise.js")
+SCRIPTS = ("state.py", "catalogue.py", "init_workspace.py", "reset_workspace.py", "resolve_workspace.py", "workspace_registry.py")
 
 
 def validate(state_root: Path, require_browser: bool = True, template: bool = False) -> list[str]:
@@ -43,8 +46,8 @@ def validate(state_root: Path, require_browser: bool = True, template: bool = Fa
                     errors.append(f"STATE.json missing key: {key}")
             if state.get("version") != 1:
                 errors.append("STATE.json version must be 1")
-            if state.get("current", {}).get("help_level") not in {f"H{value}" for value in range(7)}:
-                errors.append("current.help_level must be H0 through H6")
+            if state.get("current", {}).get("help_level") not in {f"H{value}" for value in range(5)}:
+                errors.append("current.help_level must be H0 through H4")
             language = state.get("language")
             if template and language is not None:
                 errors.append("template STATE.json language must be null until initialization")

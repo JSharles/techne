@@ -11,6 +11,10 @@
     "ai": "pending",
     "active_block": null
   },
+  "progress": {
+    "engineering_days": 0,
+    "ai_days": 0
+  },
   "current": {
     "id": null,
     "track": null,
@@ -18,10 +22,8 @@
     "help_level": "H0"
   },
   "mastery": {},
-  "reviews": {
-    "last_opened_at": null,
-    "due_count": 0
-  },
+  "reviews_due": [],
+  "transfers_due": [],
   "red_thread": {
     "domain": null,
     "repository": null,

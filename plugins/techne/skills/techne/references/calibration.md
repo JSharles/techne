@@ -2,6 +2,12 @@
 
 Enter calibration when the learner uses `feedback <text>`, or explicitly comments on or asks to change Techne's method, curriculum, schedule, assessment, exercise design, or content in natural language. `feedback` needs no further syntax: the text is the learner's description of the problem.
 
+## Two regimes
+
+A preference — lesson length, more or less theory, pace, exercise format — is applied immediately, confirmed in one sentence, and appended to the preferences section of `.techne/PROFILE.md`. No procedure, no approval.
+
+The full procedure below is for changes touching evidence rules, the programme, assessment, or the method itself. When unsure which regime applies, ask in one sentence.
+
 ## Transition
 
 1. Save the current activity checkpoint without grading the interruption.

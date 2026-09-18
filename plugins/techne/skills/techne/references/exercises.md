@@ -37,7 +37,7 @@ Present, in order:
 4. one distinct example;
 5. the exact mission and definition of done.
 
-Clarification consumes neither time nor help level. Start the timebox only after the learner confirms the context and action are clear.
+Clarification consumes neither time nor help level. Announce the bound (see [operations.md](operations.md#timeboxes)) and start it only after the learner confirms the context and action are clear.
 
 ## DSA exercises and LeetCode
 
@@ -76,4 +76,4 @@ Use the browser for lessons, short recall, mental tracing, and quizzes. Generate
 
 Use a local exercise folder or real repository for coding: the Applied AI lab, DSA, TypeScript, React, Next.js, NestJS and backend, multi-file debugging, architecture, performance, and production work. Scaffold only what removes irrelevant setup; leave the reasoning and target implementation to the learner.
 
-At the end of a timebox, checkpoint the work even when incomplete, and update the mastery state of each subject the activity evidenced.
+At the end of a timebox, checkpoint the work with `state.py checkpoint` even when incomplete, and record what it demonstrated with `state.py mastery` for each subject involved, or `state.py fail` when the attempt failed.

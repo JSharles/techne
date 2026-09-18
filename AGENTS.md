@@ -10,6 +10,8 @@ Techne commands are defined in the skill's `SKILL.md`. Each one also has a thin 
 
 Before changing the skill, read `plugins/techne/skills/techne/SKILL.md` and every reference affected by the change. Preserve the separation between the morning Senior Engineer curriculum and the independent afternoon Applied AI curriculum.
 
+`plugins/techne/skills/techne/scripts/state.py` is the only writer of `.techne/STATE.json`, and `catalogue.py` is the only reader of the subject catalogues; keep it that way, and add a test in `tests/test_state.py` for every new transition.
+
 Every change that ships to learners (anything under `plugins/techne/`) must bump `version` in both `plugins/techne/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`. Claude Code caches installed plugins by version, so a change pushed without a bump never reaches existing installations.
 
 After changes, run:

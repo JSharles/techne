@@ -67,7 +67,7 @@ At minimum observe:
 - JavaScript runtime and async reasoning;
 - HTTP, SQL, architecture, and Product fundamentals.
 
-Never guess a state: a subject nobody probed stays `not_started`. Store states and evidence in `STATE.json` `mastery`, keyed by catalogue identifier; store narrative decisions in `SESSION_LOG.md`. Pick the red-thread project domain with the learner during week 1, not during initialization.
+Never guess a state: a subject nobody probed stays `not_started`. Record every probe result with `python3 scripts/state.py mastery <subject> <state> --evidence "…" --help-level H0`, never by editing `STATE.json`; store narrative decisions in `SESSION_LOG.md`. Pick the red-thread project domain with the learner during week 1, not during initialization.
 
 ## Finish initialization
 

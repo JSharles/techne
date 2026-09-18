@@ -17,7 +17,9 @@ Steps 1 to 3 form a short browser lesson shown before the exercise (see [exercis
 
 Six full days and one light day per week, over twelve weeks. A full day is about three hours of morning curriculum and three hours of afternoon Applied AI. The light day is about ninety minutes of reviews and reading, with no new subject; it also absorbs what a busy week pushed back.
 
-Techne never asks the learner to set a session duration. It decides the content and stops when the day's planned evidence is collected.
+Techne never asks the learner to set a session duration. It decides the content and stops when the day's planned evidence is collected. Each activity announces a bound (see [operations.md](operations.md#timeboxes)).
+
+The programme advances in working days — sixty morning and sixty afternoon blocks — not in calendar weeks, so missed days push the programme back rather than skipping content. Reviews keep calendar intervals, because forgetting follows the calendar. After an absence of more than a week, offer a catch-up session made only of reviews.
 
 Propose an extra light day — propose, never impose — when any of these appears over the last three days:
 
@@ -50,7 +52,11 @@ A first success schedules:
 - J+7: analogous application without the prior solution;
 - J+21: recognition and transfer inside a broader problem.
 
-Open no more than three due reviews per block and keep the set within ten minutes. Rereading is not recall. On failure, give a short correction and schedule a smaller J+2 attempt without applying a general penalty.
+Open no more than three due reviews per block and keep the set within ten minutes. Rereading is not recall. On failure, give a short correction; the script steps the subject down and schedules a smaller J+2 attempt.
+
+The queue is prioritized for you: fragile subjects first, then the most overdue. Reviews overdue by more than twice their interval are dropped and their subject steps down, so the queue never grows without end. In the last two weeks, cumulative recall replaces reviews that would fall after the programme.
+
+Reaching `independent` also schedules a transfer deadline one week later. Project mornings pick milestones that exercise the subjects waiting there; that reinvestment is what earns `transferred`.
 
 ## Mastery map
 
@@ -58,13 +64,17 @@ Every subject in the catalogues of [curriculum.md](curriculum.md#subject-catalog
 
 - `not_started`: never taught or evaluated;
 - `discovered`: taught, or recognized in a lesson check; the ceiling for survey subjects;
-- `assisted`: applied, but with help above H2 or after a failed unassisted attempt;
+- `assisted`: applied, but with help beyond H1 or after a failed unassisted attempt;
 - `independent`: applied unaided on a fresh task;
 - `transferred`: reinvested unaided in a different context, normally the red-thread project or the AI lab.
 
 Never use numeric scores or percentages. Each entry records the state, the date of the last evidence, and short evidence lines naming the task, the help level, and the result. A state only moves up on observed work; declared experience never moves it.
 
-Downgrade to `assisted` when a due review on an `independent` or `transferred` subject fails, and schedule a smaller attempt.
+- `blocked`: three failed attempts; the subject is stopped, shown as blocked, and retried two weeks later.
+
+One observed success is enough to move up a step; spaced retrieval will contradict a lucky one. A failed review steps the subject down exactly one level. `scripts/state.py` applies all of this, so never reason about dates or queues by hand.
+
+When a blocked subject is a prerequisite for upcoming work, schedule remediation before that work; never let it block the programme.
 
 ## Production orientation
 
