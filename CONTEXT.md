@@ -30,7 +30,21 @@ The short, ungraded sequence of probes that finds a starting level, climbing fro
 _Avoid_: baseline, diagnostic, exam
 
 **Help level**:
-How much assistance a piece of work received, from none to a full solution. Work produced with heavy help is practice, never evidence of independence.
+How much assistance a piece of work received: H0 none, H1 a Socratic question, H2 a conceptual hint, H3 a precise lead, H4 the solution explained. Independence stops at H1.
+
+**Evidence**:
+One dated observation of work the learner did, naming the task, the help level, and the result. It is what moves a subject's state; declarations never do.
+_Avoid_: score, grade
+
+**Due review**:
+A scheduled retrieval attempt on a subject already demonstrated, at J+2, J+7 and J+21 in calendar days. Reviews overdue by more than twice their interval are dropped and the subject steps down.
+
+**Transfer deadline**:
+The scheduled moment when an `independent` subject is to be reinvested in the red-thread project or the AI lab, which is what earns `transferred`.
+
+**Working day**:
+The unit the programme advances in: sixty morning and sixty afternoon blocks, whatever the calendar says. Reviews follow calendar days instead, because forgetting does.
+_Avoid_: week (as a date), day off
 
 **Core**:
 The set of subjects the programme takes to demonstrated independence: TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL and data modelling, DSA up to graphs, tests and debugging, applied architecture.
@@ -41,8 +55,11 @@ A subject the programme covers for working literacy only, with no mastery requir
 _Avoid_: optional, nice-to-have
 
 **Mastery map**:
-The per-subject record of demonstrated level, its date, and the evidence behind it, including subjects not yet started. Shown in the browser and through `status`.
+The per-subject record of demonstrated level, its date, and the evidence behind it, including subjects not yet started. A subject is `not_started`, `discovered`, `assisted`, `independent`, `transferred`, or `blocked` after three failures. Shown in the browser and through `status`.
 _Avoid_: score, progress percentage
+
+**Calibration**:
+The conversation that changes how Techne teaches. A preference — lesson length, more theory, pace — is applied at once and kept in the learner profile; a change touching evidence, the programme, or assessment goes through discussion, approval, and a recorded decision.
 
 **Light day**:
 The seventh day of the week: about ninety minutes of review and reading, with no new subject. Techne may impose another when results degrade.
