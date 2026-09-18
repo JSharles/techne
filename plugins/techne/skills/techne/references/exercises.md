@@ -13,6 +13,8 @@ Before presenting an exercise, verify that:
 - every provided command terminates and yields useful output;
 - the normal browser, VS Code, test, and debugger loop works;
 - the difficulty follows the easy-first ladder and observed evidence, never years of experience;
+- the subjects it teaches or evaluates exist in the curriculum catalogue;
+- the learner can write every line themselves: scaffolding is ready, the implementation is not;
 - every evaluated formal concept serves the engineering problem.
 
 Keep the activity closed until preflight passes.
@@ -74,4 +76,4 @@ Use the browser for lessons, short recall, mental tracing, and quizzes. Generate
 
 Use a local exercise folder or real repository for coding: the Applied AI lab, DSA, TypeScript, React, Next.js, NestJS and backend, multi-file debugging, architecture, performance, and production work. Scaffold only what removes irrelevant setup; leave the reasoning and target implementation to the learner.
 
-At the end of a timebox, checkpoint the work even when incomplete.
+At the end of a timebox, checkpoint the work even when incomplete, and update the mastery state of each subject the activity evidenced.

@@ -4,8 +4,10 @@ Techne is an intensive, adaptive bootcamp delivered as one Agent Skill for Codex
 
 It runs two independent curricula over twelve weeks, about three hours each per day, with the same method (a short lesson, then hands-on practice, starting easy):
 
-- **morning — Senior Engineer:** DSA, TypeScript and JavaScript, React and Next.js, CS fundamentals, then NestJS backend, data, architecture, production, system design, and Product;
+- **morning — Engineering:** a core taken to independence (TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL, algorithms up to graphs, tests and debugging, architecture), plus a red-thread Next.js/NestJS application built two mornings a week and presentable at the end;
 - **afternoon — Applied AI:** Python, FastAPI, LLM applications, RAG with LangChain, agents with LangGraph, evaluation with LangSmith, and a final capstone.
+
+You write every line of every exercise: Techne scaffolds and reviews, but never writes your implementation, and never teaches you to delegate it to an AI.
 
 Techne stores progress outside the installed skill, records answers from browser exercises, scaffolds real coding environments, and adapts from observed evidence rather than self-assessment alone.
 
@@ -85,6 +87,8 @@ Techne then:
 - runs a short **placement test**: four to six unmarked exercises of at most fifteen minutes each, so the curriculum starts at the right level;
 - starts the curriculum, where each exercise is preceded by a short lesson in your browser.
 
+The rhythm is six full days and one light day per week. Your progress is tracked subject by subject — not started, discovered, with help, independent, transferred — and shown on the "My progress" page in your browser.
+
 Techne refuses to start a second curriculum while one is in progress; use `reset` to start over.
 
 Do not commit `.techne/`: it contains personal progress, evidence, and local exercise events.
@@ -109,7 +113,7 @@ Techne decides what comes next: the subject, due reviews, difficulty, and activi
 | `init` | Asks your learning language, sets up your learning folder, and runs the placement test. | Once, the first time you use Techne. |
 | `resume` | Picks up where you left off and gives you exactly one next action. Typing the entry point alone does the same. | To start the day or come back after a break, from any folder or a new conversation. |
 | `hint` | Gives one more step of help on the current exercise, from a guiding question up to a full solution. | When you are stuck. Each call gives a little more help; work done after heavy help counts as practice, not as proof of mastery. |
-| `status` | Shows the current activity, curriculum progress, demonstrated skills, due reviews, and Applied AI progress, with the two curricula kept separate. | When you want to know where you stand. |
+| `status` | Shows the current activity, your mastery map subject by subject, due reviews, and Applied AI progress, with the two curricula kept separate. | When you want to know where you stand. |
 | `engineering` | Saves your progress and switches to the Senior Engineer curriculum. | When you want to work on the morning curriculum. |
 | `ai` | Saves your progress and switches to the Applied AI curriculum. | When the morning block is done, or you want to work on Applied AI now. |
 | `pause` | Saves your progress and keeps the day open; `resume` continues exactly where you stopped. | Before a short break. |

@@ -26,6 +26,22 @@ MESSAGES = {
         "empty": "No browser activity is open yet.",
         "title": "Techne — activities",
         "heading": "Browser activities",
+        "progress_link": "My progress",
+        "progress_title": "Techne — my progress",
+        "progress_heading": "My progress",
+        "progress_empty": "Nothing recorded yet. Your first activities will fill this page.",
+        "progress_legend": "A subject moves up only on work you did yourself.",
+        "not_started": "Not started",
+        "discovered": "Discovered",
+        "assisted": "With help",
+        "independent": "Independent",
+        "transferred": "Transferred",
+        "domain.ts": "TypeScript", "domain.js": "JavaScript", "domain.react": "React",
+        "domain.next": "Next.js", "domain.nest": "NestJS & backend", "domain.sql": "SQL & data",
+        "domain.dsa": "Algorithms", "domain.test": "Tests & debugging", "domain.arch": "Architecture",
+        "domain.survey": "Survey", "domain.py": "Python", "domain.svc": "Services",
+        "domain.llm": "LLM applications", "domain.rag": "Retrieval", "domain.agent": "Agents",
+        "domain.eval": "Evaluation & operations",
         "recorded": "· Techne answer recorded locally",
         "url": "Techne activities: {url}",
         "events": "Local answers: {path}",
@@ -36,6 +52,22 @@ MESSAGES = {
         "empty": "Aucune activité navigateur n’est encore ouverte.",
         "title": "Techne — activités",
         "heading": "Activités navigateur",
+        "progress_link": "Ma progression",
+        "progress_title": "Techne — ma progression",
+        "progress_heading": "Ma progression",
+        "progress_empty": "Rien d’enregistré pour l’instant. Tes premières activités rempliront cette page.",
+        "progress_legend": "Un sujet ne monte que sur du travail que tu as fait toi-même.",
+        "not_started": "Pas abordé",
+        "discovered": "Découvert",
+        "assisted": "Avec aide",
+        "independent": "Autonome",
+        "transferred": "Transféré",
+        "domain.ts": "TypeScript", "domain.js": "JavaScript", "domain.react": "React",
+        "domain.next": "Next.js", "domain.nest": "NestJS et backend", "domain.sql": "SQL et données",
+        "domain.dsa": "Algorithmique", "domain.test": "Tests et debugging", "domain.arch": "Architecture",
+        "domain.survey": "Survol", "domain.py": "Python", "domain.svc": "Services",
+        "domain.llm": "Applications LLM", "domain.rag": "Recherche documentaire", "domain.agent": "Agents",
+        "domain.eval": "Évaluation et production",
         "recorded": "· réponse Techne enregistrée localement",
         "url": "Activités Techne : {url}",
         "events": "Réponses locales : {path}",
@@ -45,11 +77,23 @@ MESSAGES = {
 }
 
 
-def learner_language() -> str:
+DOMAIN_ORDER = (
+    "ts", "js", "react", "next", "nest", "sql", "dsa", "test", "arch", "survey",
+    "py", "svc", "llm", "rag", "agent", "eval",
+)
+STATE_ORDER = ("transferred", "independent", "assisted", "discovered", "not_started")
+
+
+def read_state() -> dict:
     try:
-        language = json.loads(STATE.read_text(encoding="utf-8")).get("language")
+        state = json.loads(STATE.read_text(encoding="utf-8"))
     except (OSError, ValueError):
-        language = None
+        return {}
+    return state if isinstance(state, dict) else {}
+
+
+def learner_language() -> str:
+    language = read_state().get("language")
     return language if isinstance(language, str) and language else "en"
 
 
@@ -62,8 +106,12 @@ class Handler(SimpleHTTPRequestHandler):
         super().__init__(*args, directory=str(ROOT), **kwargs)
 
     def do_GET(self):  # noqa: N802 - stdlib handler API
-        if urlparse(self.path).path == "/":
+        route = urlparse(self.path).path
+        if route == "/":
             self._lesson_index()
+            return
+        if route == "/progress":
+            self._progress()
             return
         super().do_GET()
 
@@ -111,7 +159,48 @@ class Handler(SimpleHTTPRequestHandler):
         document = f"""<!doctype html>
 <html lang="{html.escape(LANGUAGE, quote=True)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{html.escape(TEXT['title'])}</title><link rel="stylesheet" href="/assets/course.css"></head>
-<body><main><p class="eyebrow">TECHNE</p><h1>{html.escape(TEXT['heading'])}</h1><ul>{content}</ul></main></body></html>"""
+<body><main><p class="eyebrow">TECHNE</p><h1>{html.escape(TEXT['heading'])}</h1><ul>{content}</ul>
+<p><a href="/progress">{html.escape(TEXT['progress_link'])}</a></p></main></body></html>"""
+        payload = document.encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(payload)))
+        self.end_headers()
+        self.wfile.write(payload)
+
+    def _progress(self):
+        """Render the mastery map from STATE.json, grouped by subject domain."""
+        mastery = read_state().get("mastery")
+        groups: dict[str, list[tuple[str, str, str]]] = {}
+        if isinstance(mastery, dict):
+            for subject, entry in sorted(mastery.items()):
+                if not isinstance(entry, dict):
+                    continue
+                domain, _, name = subject.partition(".")
+                groups.setdefault(domain, []).append(
+                    (name or subject, entry.get("state", "not_started"), entry.get("last_evidence_at") or "")
+                )
+
+        sections = []
+        ordered = sorted(groups, key=lambda name: (DOMAIN_ORDER.index(name) if name in DOMAIN_ORDER else 99, name))
+        for domain in ordered:
+            subjects = groups[domain]
+            subjects.sort(key=lambda row: (STATE_ORDER.index(row[1]) if row[1] in STATE_ORDER else 9, row[0]))
+            rows = "".join(
+                f"<tr><td>{html.escape(name.replace('-', ' '))}</td>"
+                f'<td><span class="state {html.escape(state, quote=True)}">{html.escape(TEXT.get(state, state))}</span></td>'
+                f"<td>{html.escape(seen[:10])}</td></tr>"
+                for name, state, seen in subjects
+            )
+            label = TEXT.get(f"domain.{domain}", domain)
+            sections.append(f"<h2>{html.escape(label)}</h2><table>{rows}</table>")
+
+        content = "".join(sections) or f"<p>{html.escape(TEXT['progress_empty'])}</p>"
+        document = f"""<!doctype html>
+<html lang="{html.escape(LANGUAGE, quote=True)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{html.escape(TEXT['progress_title'])}</title><link rel="stylesheet" href="/assets/course.css"></head>
+<body><main><p class="eyebrow">TECHNE</p><h1>{html.escape(TEXT['progress_heading'])}</h1>
+<p class="lede">{html.escape(TEXT['progress_legend'])}</p>{content}</main></body></html>"""
         payload = document.encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")

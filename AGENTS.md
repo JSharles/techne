@@ -6,6 +6,8 @@ Write skill source, repository documentation, schemas, code comments, and mainte
 
 Techne commands are defined in the skill's `SKILL.md`. Each one also has a thin Claude Code slash command in `plugins/techne/commands/<name>.md` that only forwards to the skill; keep both in sync and never put behaviour in the command files.
 
+`CONTEXT.md` is the project glossary and `docs/adr/` holds the decisions behind the curriculum's shape; read both before changing the method or the programme, and add an ADR when a new hard-to-reverse decision is made.
+
 Before changing the skill, read `plugins/techne/skills/techne/SKILL.md` and every reference affected by the change. Preserve the separation between the morning Senior Engineer curriculum and the independent afternoon Applied AI curriculum.
 
 Every change that ships to learners (anything under `plugins/techne/`) must bump `version` in both `plugins/techne/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`. Claude Code caches installed plugins by version, so a change pushed without a bump never reaches existing installations.

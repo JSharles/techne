@@ -67,14 +67,14 @@ At minimum observe:
 - JavaScript runtime and async reasoning;
 - HTTP, SQL, architecture, and Product fundamentals.
 
-Use `unassessed` rather than guessing. Store evidence and the help level in `STATE.json`; store narrative decisions in `SESSION_LOG.md`.
+Never guess a state: a subject nobody probed stays `not_started`. Store states and evidence in `STATE.json` `mastery`, keyed by catalogue identifier; store narrative decisions in `SESSION_LOG.md`. Pick the red-thread project domain with the learner during week 1, not during initialization.
 
 ## Finish initialization
 
 Initialization is complete when:
 
 - the environment needed for the first morning activity works;
-- every placement area has a recorded starting level or `unassessed`, without inflating it into mastery;
+- the subjects probed carry a mastery state from the catalogue, and every other subject stays `not_started`;
 - `CURRENT.md` contains exactly one ready morning action;
 - the Applied AI track is marked `not_started`;
 - due-review scheduling can begin after the first successful evidence.

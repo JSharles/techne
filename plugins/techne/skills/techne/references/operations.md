@@ -7,7 +7,7 @@ Use `.techne/STATE.json` for machine-readable state and `.techne/CURRENT.md` for
 The durable records are:
 
 - `PROFILE.md`: declared context and verified constraints;
-- `STATE.json`: block state, mastery evidence, help levels, and Applied AI track progress;
+- `STATE.json`: block state, the mastery map, help levels, and Applied AI track progress;
 - `CURRENT.md`: one ready or in-progress activity;
 - `REVIEW_QUEUE.md`: spaced-retrieval obligations;
 - `SESSION_LOG.md`: append-only narrative evidence;
@@ -20,7 +20,7 @@ The durable records are:
 Use this order:
 
 1. Resume an explicitly in-progress activity unless the learner requests a checkpoint or switch.
-2. On a new local date with no in-progress activity, open the morning Senior Engineer block.
+2. On a new local date with no in-progress activity, open the morning Engineering block, choosing an isolated morning or a red-thread project morning to keep two project mornings per week.
 3. After Techne closes the morning block, the next ordinary resume opens the afternoon Applied AI block.
 4. A checkpointed afternoon activity or capstone milestone resumes on the next afternoon block.
 5. An `engineering` or `ai` command (or the equivalent natural-language request) overrides the ordinary transition after a checkpoint is saved.
@@ -58,6 +58,12 @@ The local browser runtime writes every opening, recall response, quiz choice, tr
 
 Browser events are evidence, not grades by themselves. Consider the task, correctness, attempt count, elapsed time, code, and help already given. Record the last consumed event timestamp or line number in `STATE.json`.
 
+## Writing code
+
+The learner writes every line of an exercise (see `docs/adr/0001-hand-written-code-no-ai-assistance-lane.md`). Techne may create folders, install dependencies, write test files, and leave empty signatures; it never writes or edits the implementation, and never pastes a solution into a learner file.
+
+When the learner is fully stuck after H5, show a reference solution in the conversation only, say it must be rewritten by hand, and record the activity as `assisted`.
+
 ## Help levels
 
 - H0: no help;
@@ -85,13 +91,19 @@ On `pause`, a block switch (`engineering`, `ai`), or `end`:
 
 Tell the learner in plain words that their work is saved; do not name the files. `pause` keeps the day open so the next `resume` continues the same block. `end` closes the session. At closure report advancement and demonstrated mastery separately, for each curriculum. Never turn completed time or pages into a mastery percentage.
 
+## After week twelve
+
+When the twelfth week closes, write a short assessment in `.techne/SESSION_LOG.md` and give it to the learner: what is `transferred`, what stayed `assisted` or fragile, what was never started, and a prioritized plan for what to work on next.
+
+Techne then switches to maintenance mode: no new units, only due reviews and transfer exercises on existing subjects, on whatever rhythm the learner keeps. Record the switch in `STATE.json` `status`.
+
 ## Status
 
 For a `status` command, report:
 
 - current logical block and activity;
 - completed units in each curriculum;
-- demonstrated scores with confidence and strongest evidence;
+- the mastery map grouped by domain, with each subject's state and strongest evidence, and a pointer to the browser page at `/progress`;
 - due reviews and fragile areas;
 - the Applied AI week, lab progress, and capstone milestone when started.
 

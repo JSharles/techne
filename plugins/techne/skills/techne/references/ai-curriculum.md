@@ -44,51 +44,55 @@ On the first afternoon:
 
 Exit evidence: idiomatic, typed Python written without translating TypeScript line by line; async code explained; tests written unaided.
 
-### Weeks 3–4 — LLM fundamentals and FastAPI
+### Week 3 — A service that calls a model
 
-- LLM model: tokens, context window, sampling and temperature, system and user messages, non-determinism, cost and latency.
-- Provider SDK: calls, streaming, retries and rate limits, error handling.
-- Prompting: clear instructions, examples, delimiting untrusted input, prompt templates kept in code.
-- Structured outputs: JSON schema and Pydantic, validation and repair, when to reject.
-- Tool calling: tool schemas, the call-execute-respond loop, validating tool arguments.
+One week only: HTTP APIs are already the learner's daily work, so this week ports that knowledge to Python and adds the first model calls.
+
 - FastAPI: routes, Pydantic request and response models, dependency injection, async endpoints, error handling, streaming responses, OpenAPI, tests with `TestClient`.
 - Persistence: SQLModel or SQLAlchemy with SQLite, then PostgreSQL.
-- Lab: an API that extracts structured data from documents with an LLM, validates it, stores it, and exposes it.
+- Model calls: provider SDK, messages, streaming, retries and rate limits, failure handling.
+- Structured outputs: JSON schema and Pydantic, validation and repair, when to reject a response.
+- Cost and latency: tokens, context window, model choice, measuring a request.
+- Lab: an API endpoint that turns a document into validated structured data and stores it.
 
-Exit evidence: a typed FastAPI service with an LLM call that fails safely on invalid model output; cost and latency of a request explained.
+Exit evidence: a typed FastAPI service whose LLM call fails safely on invalid model output; the cost and latency of one request explained.
 
-### Weeks 5–6 — Retrieval and LangChain
+### Weeks 4–5 — Retrieval and RAG with LangChain
 
+- Prompting: clear instructions, examples, delimiting untrusted input, prompt templates kept in code and versioned.
+- Tool calling: tool schemas, the call-execute-respond loop, validating tool arguments.
 - Embeddings: what they capture, similarity measures, model choice, cost.
 - Retrieval pipeline: loading, chunking strategies, metadata, vector stores (pgvector), similarity and hybrid search, reranking.
 - RAG: grounding, citations, handling "not found", context-window budgeting.
 - LangChain: chat models, prompt templates, runnables and composition, retrievers, output parsers, tool integrations; when a direct SDK call is simpler.
-- Lab: a question-answering service over a real document set, with citations and a "no answer" path.
+- Lab: a question-answering endpoint over a real document set, with citations and a "no answer" path.
 
 Exit evidence: retrieval quality diagnosed from retrieved chunks rather than guessed; a chunking or retrieval change justified by observed results.
 
-### Weeks 7–8 — Agents and workflows with LangGraph
+### Weeks 6–8 — Agents and workflows with LangGraph
 
-- Agent loop: model, tools, observations, stopping conditions, when not to use an agent.
+Three weeks, the densest part of the track.
+
+- Agent loop: model, tools, observations, stopping conditions, and when not to use an agent.
 - LangGraph: state, nodes, edges, conditional routing, reducers, subgraphs.
-- Durability: checkpointers, persistence, resuming after failure, thread and memory handling.
+- Durability: checkpointers, persistence, resuming after failure, threads and memory.
 - Human in the loop: interrupts, approval steps, editing state.
-- Reliability: tool errors, retries, loops and budgets, timeouts.
+- Reliability: tool errors, retries, loop and cost budgets, timeouts.
 - Multi-agent patterns only where a single graph is demonstrably insufficient.
 - Lab: a multi-step workflow over the lab's documents and tools, with an approval step and resumable state, exposed through FastAPI.
 
-Exit evidence: a graph whose state and branches the learner can draw and defend; a failure mid-run recovered from a checkpoint.
+Exit evidence: a graph whose state and branches the learner can draw and defend; a run recovered from a checkpoint after a failure.
 
 ### Weeks 9–10 — Evaluation, observability, and production
 
 - LangSmith: tracing, inspecting runs, datasets, evaluators (exact checks, heuristics, LLM-as-judge and its limits), experiments and comparison, prompt versioning.
-- Regression control: an evaluation suite run before merging changes.
+- Regression control: an evaluation suite run before accepting a change.
 - Security: prompt injection, data exfiltration through tools, secrets, least privilege for tools, output handling.
 - Cost and latency: model choice, caching, batching, streaming, token budgets.
 - Operations: Docker, configuration, health checks, structured logs, rate limiting, deployment to a simple cloud target, monitoring.
 - Lab: tracing and an evaluation dataset for the RAG and agent features; a measured improvement; a deployable container.
 
-Exit evidence: a change accepted or rejected from evaluation results; a prompt-injection risk demonstrated and mitigated; cost per request measured.
+Exit evidence: a change accepted or rejected on evaluation results; a prompt-injection risk demonstrated and mitigated; cost per request measured.
 
 ### Weeks 11–12 — Capstone
 
@@ -96,9 +100,37 @@ A small but real LLM application, built autonomously in the lab from the previou
 
 - Choose the problem in one or two afternoons: a recurring problem the learner has or can observe directly, with real or naturally available data. Reject ideas where AI would be decorative.
 - Scope it to ship within the two weeks: FastAPI backend, at least one LangChain or LangGraph workflow justified by the problem, LangSmith evaluation, and a React or Next.js interface.
-- Run it through milestones (see below), not daily instructions.
+- Run it through milestones, not daily instructions.
 
 Exit evidence: a working application, an evaluation report, and a short case study.
+
+## Subject catalogue
+
+Stable identifiers for the mastery map, used exactly like the morning catalogue in [curriculum.md](curriculum.md#subject-catalogue).
+
+### Python — `py.*`
+
+`syntax`, `collections`, `comprehensions`, `functions-closures`, `modules-packages`, `exceptions`, `context-managers`, `iterators-generators`, `decorators`, `type-hints`, `protocols-generics`, `dataclasses`, `pydantic`, `static-checking`, `async`, `uv-packaging`, `pytest`
+
+### Services — `svc.*`
+
+`fastapi-routing`, `request-models`, `dependency-injection`, `async-endpoints`, `error-handling`, `streaming`, `openapi`, `api-tests`, `persistence`, `migrations`
+
+### LLM applications — `llm.*`
+
+`tokens-context`, `model-calls`, `streaming-calls`, `retries-rate-limits`, `prompting`, `prompt-versioning`, `structured-outputs`, `output-validation`, `tool-calling`, `cost-latency`
+
+### Retrieval — `rag.*`
+
+`embeddings`, `chunking`, `metadata`, `vector-stores`, `similarity-search`, `hybrid-search`, `reranking`, `grounding-citations`, `no-answer-path`, `context-budgeting`, `langchain-runnables`, `langchain-retrievers`, `when-not-langchain`
+
+### Agents — `agent.*`
+
+`agent-loop`, `when-not-agent`, `graph-state`, `nodes-edges`, `conditional-routing`, `reducers`, `subgraphs`, `checkpointers`, `resumability`, `memory`, `human-in-the-loop`, `tool-errors`, `loop-budgets`, `multi-agent`
+
+### Evaluation and operations — `eval.*`
+
+`tracing`, `datasets`, `heuristic-evaluators`, `llm-as-judge`, `experiments`, `regression-suite`, `prompt-injection`, `tool-least-privilege`, `output-handling`, `caching`, `token-budgets`, `containerization`, `deployment`, `monitoring`
 
 ## Milestones and assistance in the capstone
 

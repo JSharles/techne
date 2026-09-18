@@ -1,89 +1,149 @@
-# Morning Senior Engineer curriculum
+# Morning Engineering curriculum
 
 ## Outcome and boundary
 
-This is an intensive twelve-week ceiling for an experienced developer with a frontend/TypeScript background and uneven fundamentals. Techne controls the order from observed evidence. It may accelerate demonstrated material, repeat fragile material, or substitute an equivalent exercise, but it preserves the domain coverage and prerequisite order.
+Twelve weeks for one learner profile: a self-taught React/Node developer, bootcamp-trained rather than engineering-school-trained, who wants to stay employable as generative AI reshapes the job market. Goals, in order: be better on a React/Node job, then pass senior interviews, then be able to move roles.
 
-The morning does not teach Python, FastAPI, LangChain, LangGraph, or LangSmith. Those belong to the independent afternoon Applied AI curriculum in [ai-curriculum.md](ai-curriculum.md).
+Depth beats coverage (see `docs/adr/0002-depth-over-breadth-core-and-survey.md`). Subjects are split in two:
 
-Priority lanes:
+- **Core**, taken to demonstrated independence: TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL and data modelling, DSA up to graphs, tests and debugging, applied architecture.
+- **Survey**, covered for working literacy only and grafted onto core exercises: security, performance, observability, delivery. Distributed systems and large-scale system design get a lesson and a quiz, nothing more.
 
-1. DSA and problem solving;
-2. TypeScript and JavaScript depth;
-3. React and Next.js depth;
-4. CS and mathematics for engineering;
-5. backend with Node.js and NestJS, data, architecture, production, system design, and Product foundations.
+Out of the programme: maths for engineering, dynamic programming and advanced DSA patterns, Product and communication as separate lanes, Git and code review (already practised daily at work). Python and the Applied AI frameworks belong to the afternoon curriculum in [ai-curriculum.md](ai-curriculum.md).
+
+Techne controls the order from observed evidence. It may compress demonstrated material or repeat fragile material, but it preserves core coverage and prerequisite order.
+
+## Shape of a week
+
+Six full mornings and one light day (see [pedagogy.md](pedagogy.md#rhythm)):
+
+- **four mornings** of isolated work: one web activity (TypeScript, JavaScript, React, Next.js, or NestJS), one DSA activity, and due reviews;
+- **two mornings** on the red-thread project;
+- **the light day**: reviews and reading only.
+
+A subject is first learned on an isolated exercise, then reinvested in the red-thread project one or two weeks later. That reinvestment is what earns `transferred` in the mastery map.
+
+## The red-thread project
+
+One Next.js + NestJS + database application, built across the twelve weeks and presentable at the end (see `docs/adr/0003-red-thread-project-as-the-place-of-transfer.md`).
+
+- In week 1, offer two or three simple, concrete domains and let the learner pick one. Keep the domain small enough that no week is spent on business rules.
+- Techne sets the milestone for each project morning: the user-visible outcome, the constraints, and what evidence it will inspect. The learner designs and writes the implementation.
+- Survey subjects are grafted here: structured logs, a latency budget, an authorization boundary, a deployment step, on code the learner wrote.
+- From week 9 the project also carries production concerns; in weeks 11–12 it is finished and presented.
 
 ## Sequence
 
-### Weeks 1–2 — Observe the foundations
+### Weeks 1–2 — Foundations and the first slice
 
-- DSA: iteration gestures, hand tracing, neutral values, arrays, strings, `Map`, `Set`, frequency counting, Big-O intuition.
+- DSA: iteration gestures, hand tracing, arrays, strings, `Map`, `Set`, frequency counting, Big-O intuition.
 - TypeScript: inference, widening, narrowing, `unknown`, `never`, discriminated unions, runtime validation, strict configuration.
 - JavaScript: values and references, closures, call stack, event loop, promises, errors, modules.
 - React: render model, component identity, local and derived state, controlled inputs, effects and their alternatives.
-- CS/math: representations, linear/quadratic/exponential growth, logarithm intuition, stack/heap as useful models.
-- Product: problem, user, current alternative, outcome, risky assumption.
+- Tests: what to test, arrange-act-assert, testing behaviour rather than implementation.
+- Red thread: pick the domain, scaffold the app, ship one vertical slice with a typed contract.
 
-Exit evidence: unfamiliar Easy-level iteration and hash problems completed independently; runtime boundary explained and secured; React state/effect bugs diagnosed from behaviour.
+Exit evidence: unfamiliar Easy iteration and hash problems solved independently; a runtime boundary secured with validation; a React state bug diagnosed from behaviour.
 
-### Weeks 3–4 — Patterns and frontend depth
+### Weeks 3–4 — Data, APIs, and frontend depth
 
-- DSA: two pointers, sliding window, stack, queue, binary search, recursion introduction.
+- DSA: two pointers, sliding window, stack, queue, binary search, recursion.
+- SQL and data modelling: relational modelling, keys, constraints, joins, indexes, query plans, transactions and isolation intuition.
+- NestJS: modules, controllers, providers and dependency injection, DTO validation pipes, exception filters, configuration.
 - TypeScript: generics with constraints, `keyof`, indexed access, type predicates, domain modelling, public API design.
-- React: reconciliation, keys, composition, async UI states, forms, accessibility, behaviour tests, rendering performance.
-- Next.js: App Router, layouts, routing, Server and Client Components, request boundaries, error and loading states.
-- Backend with NestJS: modules, controllers, providers and dependency injection, DTOs with validation pipes, exception filters, configuration.
-- Browser/network: DOM events, critical rendering path, HTTP request lifecycle, DNS/TCP/TLS at an engineering level.
-- Mathematics: invariants, sets, simple combinatorics and probability only where they improve reasoning.
+- React: reconciliation, keys, composition, async UI states, forms, accessibility.
+- Red thread: real persistence behind the API, with a data model the learner defends.
 
-Exit evidence: pattern choice explained rather than guessed; a React/Next behaviour task debugged with tests; a generic or domain model defended for readability and safety.
+Exit evidence: a data model defended under constraints; a query investigated with a query plan; a NestJS endpoint that validates and fails correctly.
 
-### Weeks 5–6 — Data structures, Next.js, backend, and data
+### Weeks 5–6 — Next.js, deeper backend, and structures
 
-- DSA: linked structures where useful, trees, BSTs, heaps, BFS, DFS, graph representation.
-- Next.js: data fetching, caching and invalidation, rendering strategies, metadata, middleware when justified, profiling.
-- Backend with NestJS: HTTP API contracts, validation, error taxonomy, authentication vs authorization with guards, interceptors, persistence integration, unit and e2e tests with the Nest testing module.
-- SQL/data: relational modelling, keys, constraints, joins, indexes, query plans, transactions and isolation intuition.
+- DSA: linked structures where useful, trees, BSTs, heaps.
+- Next.js: App Router, layouts, Server and Client Components, request boundaries, error and loading states, data fetching, caching and invalidation, rendering strategies.
+- NestJS: authentication vs authorization with guards, interceptors, error taxonomy, unit and e2e tests with the Nest testing module.
 - Testing: unit, integration, contract and end-to-end boundaries; test doubles and failure-focused cases.
-- CS: processes, threads, concurrency, memory, file systems and I/O models.
+- Debugging: reproducing, bisecting, reading stack traces, the VS Code debugger, logs as evidence.
+- Red thread: authentication, authorization boundaries, and a test suite that catches regressions.
 
-Exit evidence: a data model and API defended under constraints; a query investigated with evidence; a tree or graph problem solved without pattern announcement.
+Exit evidence: a caching or rendering choice justified with measurements; a multi-file bug diagnosed with the debugger; a tree problem solved without pattern announcement.
 
-### Weeks 7–8 — Reliability and software architecture
+### Weeks 7–8 — Graphs, architecture, and concurrency
 
-- DSA: topological reasoning, greedy patterns, backtracking, dynamic programming only after prerequisites are demonstrated.
-- Concurrency: races, idempotency, retries, cancellation, backpressure and partial failure.
-- Architecture: NestJS modules as boundaries, deep modules, cohesion, coupling, boundaries, dependency direction, ports/adapters, domain modelling, evolutionary design.
-- Distributed systems: consistency, availability, delivery semantics, clocks, queues, caches and failure modes without empty formalism.
-- System design: requirements, estimates, API, data model, data flow, bottlenecks, trade-offs and failure handling.
-- Product: discovery evidence, prioritization, instrumentation, adoption and outcome metrics.
+- DSA: graph representation, BFS, DFS, topological reasoning.
+- Architecture: deep modules, cohesion, coupling, dependency direction, ports and adapters, NestJS modules as boundaries, evolutionary design.
+- Concurrency: races, idempotency, retries, cancellation, backpressure, partial failure.
+- JavaScript and Node runtime: async reasoning under load, streams where relevant, memory.
+- Survey: distributed systems (consistency, delivery semantics, queues, caches) as a lesson and a quiz.
+- Red thread: a refactor that moves a boundary, defended with tests; one asynchronous or failure-prone path made safe.
 
-Exit evidence: race or partial failure reproduced and protected; architecture choice documented with alternatives and consequences; bounded system design defended orally.
+Exit evidence: a race or partial failure reproduced and protected; an architecture change explained with its alternatives and consequences.
 
-### Weeks 9–10 — Production engineering
+### Weeks 9–10 — Production behaviour
 
-- Security: hostile input, authorization boundaries, OWASP-relevant risks, secrets, dependency and supply-chain awareness.
-- Performance: profiling before optimization, latency budgets, memory, network, database and frontend bottlenecks.
-- NestJS in production: health checks, structured logging, graceful shutdown, configuration per environment.
-- Observability: structured logs, metrics, traces, correlation, actionable alerts, SLI/SLO fundamentals.
-- Delivery: Linux essentials, processes, containers, CI/CD, deployment strategies, rollback, configuration and cloud fundamentals.
-- TypeScript/tooling: ESM/CJS, module resolution, declaration files, monorepos, builds, type tests and compiler diagnosis.
-- Next.js production: caching correctness, hydration, bundle and runtime analysis, accessibility and resilience.
+- Survey grafted onto the project: security (hostile input, authorization boundaries, OWASP-relevant risks, secrets), performance (profiling before optimizing, latency budgets, database and frontend bottlenecks), observability (structured logs, metrics, traces, actionable alerts), delivery (containers, CI, deployment, rollback, configuration).
+- TypeScript and tooling: ESM/CJS, module resolution, declaration files, builds, compiler diagnosis.
+- Next.js production: caching correctness, hydration, bundle and runtime analysis, resilience.
+- DSA: mixed retrieval across every pattern learned, under time constraints.
+- Red thread: the application is deployed, observable, and measured before and after one optimization.
 
-Exit evidence: bottleneck measured before/after; threat model produces verified controls; deployment or rollback path is reproducible at available scale.
+Exit evidence: a bottleneck measured before and after; a threat modelled and mitigated; a reproducible deployment and rollback.
 
-### Weeks 11–12 — Integration and transfer
+### Weeks 11–12 — Consolidation and employability
 
-- cumulative cold recall and reassessment;
-- mixed DSA under interview-like constraints, progressing toward Medium only when Easy patterns are independent;
-- cross-layer debugging across browser, frontend, API, SQL, concurrency, and network;
-- frontend and backend system-design exercises;
-- architecture review of an unfamiliar system;
-- Product reasoning under technical and business constraints;
-- communication: explain a bug, design, trade-off, incident, and decision to technical and non-technical audiences.
+- Cumulative cold recall and reassessment across the core.
+- Mixed DSA under interview-like time constraints.
+- Cross-layer debugging across browser, frontend, API, and database.
+- Survey: bounded system design exercises, defended orally.
+- About half of these mornings: mock interviews (timed DSA, technical questions, explaining an architecture decision) and portfolio work on both projects, with a written account of choices and trade-offs.
+- Red thread: finished, deployed, documented, and presented.
 
-Exit evidence: independent problem-solving loop, defended system design, cross-layer diagnosis, honest mastery matrix, and a prioritized post-Techne plan.
+Exit evidence: an independent problem-solving loop; a design defended orally; an honest mastery map and a prioritized plan for what comes next.
+
+## Subject catalogue
+
+Stable identifiers for the mastery map. Every lesson and exercise declares the subjects it teaches or evaluates; Techne never invents an identifier outside this list. Detail (objectives, misconceptions, reference exercises) is written week by week, not upfront.
+
+### TypeScript — `ts.*`
+
+`inference`, `widening`, `narrowing`, `unknown-never`, `discriminated-unions`, `runtime-validation`, `strict-config`, `generics`, `keyof-indexed`, `type-predicates`, `domain-modelling`, `api-design`, `modules-resolution`, `declaration-files`, `compiler-diagnosis`
+
+### JavaScript and the runtime — `js.*`
+
+`values-references`, `closures`, `call-stack`, `event-loop`, `promises`, `errors`, `modules`, `async-under-load`, `streams`, `memory`
+
+### React — `react.*`
+
+`render-model`, `component-identity`, `state-local-derived`, `controlled-inputs`, `effects-and-alternatives`, `reconciliation-keys`, `composition`, `async-ui-states`, `forms`, `accessibility`, `behaviour-tests`, `render-performance`
+
+### Next.js — `next.*`
+
+`app-router`, `layouts`, `server-client-components`, `request-boundaries`, `error-loading-states`, `data-fetching`, `caching-invalidation`, `rendering-strategies`, `metadata`, `middleware`, `hydration`, `bundle-analysis`, `production-resilience`
+
+### NestJS and backend — `nest.*`
+
+`modules`, `controllers`, `providers-di`, `dto-validation`, `exception-filters`, `configuration`, `guards-authz`, `interceptors`, `error-taxonomy`, `persistence`, `unit-tests`, `e2e-tests`, `module-boundaries`, `health-and-shutdown`
+
+### SQL and data — `sql.*`
+
+`relational-modelling`, `keys-constraints`, `joins`, `indexes`, `query-plans`, `transactions`, `isolation`, `migrations`
+
+### DSA — `dsa.*`
+
+`iteration`, `hand-tracing`, `arrays`, `strings`, `hashing`, `frequency-counting`, `big-o`, `two-pointers`, `sliding-window`, `stack`, `queue`, `binary-search`, `recursion`, `linked-structures`, `trees`, `bst`, `heaps`, `graph-representation`, `bfs`, `dfs`, `topological-order`
+
+### Tests and debugging — `test.*`
+
+`what-to-test`, `behaviour-vs-implementation`, `unit`, `integration`, `contract`, `end-to-end`, `test-doubles`, `failure-cases`, `reproduce`, `bisect`, `stack-traces`, `debugger`, `logs-as-evidence`
+
+### Architecture and concurrency — `arch.*`
+
+`deep-modules`, `cohesion-coupling`, `dependency-direction`, `ports-adapters`, `evolutionary-design`, `races`, `idempotency`, `retries`, `cancellation`, `backpressure`, `partial-failure`
+
+### Survey — `survey.*`
+
+`security-input`, `security-authz`, `secrets`, `profiling`, `latency-budgets`, `db-bottlenecks`, `frontend-bottlenecks`, `structured-logs`, `metrics`, `traces`, `alerts`, `containers`, `ci`, `deployment-rollback`, `configuration`, `distributed-systems`, `system-design`
+
+Survey subjects never reach `independent` or `transferred` in the mastery map; `discovered` is their ceiling.
 
 ## DSA problem bank
 
@@ -98,24 +158,19 @@ Free LeetCode problems to base DSA exercises on, at `https://leetcode.com/proble
 | Sliding window | `maximum-average-subarray-i` | `minimum-size-subarray-sum`, `longest-substring-without-repeating-characters` |
 | Stack, queue | `valid-parentheses`, `implement-queue-using-stacks` | `min-stack`, `daily-temperatures` |
 | Binary search | `binary-search`, `sqrtx` | `search-in-rotated-sorted-array` |
-| Recursion | `fibonacci-number`, `climbing-stairs` | `subsets` |
+| Recursion | `fibonacci-number`, `climbing-stairs` | — |
 | Linked lists | `reverse-linked-list`, `merge-two-sorted-lists` | — |
 | Trees, BST | `maximum-depth-of-binary-tree`, `invert-binary-tree` | `validate-binary-search-tree`, `lowest-common-ancestor-of-a-binary-search-tree`, `binary-tree-level-order-traversal` |
 | Heaps | `kth-largest-element-in-a-stream`, `last-stone-weight` | `kth-largest-element-in-an-array` |
 | Graphs, BFS/DFS | — | `number-of-islands`, `clone-graph` |
 | Topological order | — | `course-schedule`, `course-schedule-ii` |
-| Greedy | `best-time-to-buy-and-sell-stock` | `jump-game` |
-| Backtracking | — | `subsets`, `permutations`, `combination-sum` |
-| Dynamic programming | `climbing-stairs` | `house-robber`, `coin-change` |
 
 ## Adaptation rules
 
-Every new topic starts easy. Raise the difficulty one step after an unassisted success; lower it one step after a failure, with a short explanation first. Never start a topic at Medium because of job tenure or declared experience.
+Every new subject starts easy. Raise the difficulty one step after an unassisted success; lower it one step after a failure, with a short explanation first. Never start a subject at Medium because of job tenure or declared experience.
 
-- Score 0–1 or failed recall: reduce novelty and schedule a smaller attempt within two mornings.
-- Score 2: provide an analogous attempt without reusing the previous solution.
-- Score 3: schedule transfer or debugging.
-- Score 4–5: compress explanation and increase design, constraints, and teaching-back.
+- Failed recall or repeated assisted work: reduce novelty and schedule a smaller attempt within two mornings.
+- Independent success: schedule transfer into the red-thread project.
+- Transferred subject: compress explanation and increase constraints, design, and teaching-back.
 - Two activities without usable evidence: reduce scope and improve instrumentation.
-- Progress toward Medium DSA follows independent Easy evidence, never job tenure.
-- Advanced math, framework trivia, and exotic patterns remain outside the core unless a demonstrated prerequisite or target requires them.
+- Survey subjects are grafted onto core exercises whenever possible, and never expand into their own week.

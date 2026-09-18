@@ -13,25 +13,34 @@ For a new or fragile concept, use:
 
 Steps 1 to 3 form a short browser lesson shown before the exercise (see [exercises.md](exercises.md#lesson-before-practice)). Teach before demanding autonomous transfer. Difficulty climbs from easy, one step at a time, following [curriculum.md](curriculum.md#adaptation-rules). A first difficulty adjusts instruction; it does not establish a general level.
 
-## Intensive morning shape
+## Rhythm
 
-The morning is a focused Senior Engineer curriculum, normally around three to three-and-a-half hours of cognitive work. Techne decides the content and stops when the day's planned evidence is collected; it does not ask the learner to set a session duration.
+Six full days and one light day per week, over twelve weeks. A full day is about three hours of morning curriculum and three hours of afternoon Applied AI. The light day is about ninety minutes of reviews and reading, with no new subject; it also absorbs what a busy week pushed back.
 
-A normal block contains:
+Techne never asks the learner to set a session duration. It decides the content and stops when the day's planned evidence is collected.
+
+Propose an extra light day — propose, never impose — when any of these appears over the last three days:
+
+- two consecutive failures on work that matched the learner's level;
+- time spent repeatedly and substantially over the announced bound;
+- a failed review on a subject already demonstrated `independent`.
+
+Say which signal appeared, in one sentence, and let the learner decide.
+
+## Morning shape
+
+Four mornings of isolated work and two mornings on the red-thread project, as described in [curriculum.md](curriculum.md#shape-of-a-week).
+
+An isolated morning contains:
 
 - up to ten minutes of due recall;
-- one senior web activity centred on TypeScript, JavaScript, React, or Next.js;
+- one web activity centred on TypeScript, JavaScript, React, Next.js, or NestJS;
 - one DSA activity;
-- one rotating CS, mathematics, backend (NestJS), architecture, system-design, production, or Product activity;
 - a short evidence and checkpoint close.
 
-## Afternoon shape
-
-The afternoon follows [ai-curriculum.md](ai-curriculum.md), normally around three hours: up to ten minutes of due recall, one lesson followed by one lab step, and a short evidence and checkpoint close. From week 5 a lab step is a feature defined by its outcome and acceptance tests; in weeks 11–12 the afternoon is the capstone.
+A project morning contains one milestone on the red-thread application, the due recall, and the same close.
 
 Breaks are human needs, not curriculum state. Techne does not schedule rest days or semesters.
-
-Each curriculum adapts from its own evidence. A difficulty in the afternoon does not force a morning lesson, and the reverse.
 
 ## Spaced retrieval
 
@@ -43,20 +52,19 @@ A first success schedules:
 
 Open no more than three due reviews per block and keep the set within ten minutes. Rereading is not recall. On failure, give a short correction and schedule a smaller J+2 attempt without applying a general penalty.
 
-## Mastery
+## Mastery map
 
-Use this scale:
+Every subject in the catalogues of [curriculum.md](curriculum.md#subject-catalogue) and [ai-curriculum.md](ai-curriculum.md#subject-catalogue) carries exactly one state in `STATE.json` `mastery`, keyed by its identifier:
 
-- 0 — Unknown;
-- 1 — Recognition;
-- 2 — Assisted;
-- 3 — Independent;
-- 4 — Transfer;
-- 5 — Robust mastery.
+- `not_started`: never taught or evaluated;
+- `discovered`: taught, or recognized in a lesson check; the ceiling for survey subjects;
+- `assisted`: applied, but with help above H2 or after a failed unassisted attempt;
+- `independent`: applied unaided on a fresh task;
+- `transferred`: reinvested unaided in a different context, normally the red-thread project or the AI lab.
 
-A stable score normally needs multiple observations or one representative transfer. Evidence records the task, constraints, help, result, and date. Maintain `unassessed` when evidence is absent.
+Never use numeric scores or percentages. Each entry records the state, the date of the last evidence, and short evidence lines naming the task, the help level, and the result. A state only moves up on observed work; declared experience never moves it.
 
-The progression is: recognize, explain, apply, debug, adapt, design. Tests, debugging, explanation, trade-offs, and communication are complementary evidence.
+Downgrade to `assisted` when a due review on an `independent` or `transferred` subject fails, and schedule a smaller attempt.
 
 ## Production orientation
 

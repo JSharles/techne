@@ -19,7 +19,8 @@ REQUIRED_FILES = (
     "DECISIONS.md",
     "AI_LAB.md",
 )
-REQUIRED_STATE_KEYS = ("version", "status", "language", "mode", "day", "current", "mastery", "ai", "browser")
+REQUIRED_STATE_KEYS = ("version", "status", "language", "mode", "day", "current", "mastery", "red_thread", "ai", "browser")
+MASTERY_STATES = ("not_started", "discovered", "assisted", "independent", "transferred")
 BROWSER_FILES = ("serve.py", "lesson-template.html", "assets/i18n.js", "assets/progress.js", "assets/exercise.js")
 
 
@@ -49,6 +50,15 @@ def validate(state_root: Path, require_browser: bool = True, template: bool = Fa
                 errors.append("template STATE.json language must be null until initialization")
             if not template and not (isinstance(language, str) and language):
                 errors.append("STATE.json language must record the learner's chosen language")
+
+            mastery = state.get("mastery")
+            if not isinstance(mastery, dict):
+                errors.append("STATE.json mastery must be an object keyed by subject id")
+            else:
+                for subject, entry in mastery.items():
+                    entry_state = entry.get("state") if isinstance(entry, dict) else None
+                    if entry_state not in MASTERY_STATES:
+                        errors.append(f"mastery.{subject}.state must be one of {', '.join(MASTERY_STATES)}")
 
     if require_browser:
         browser = state_root / "browser"

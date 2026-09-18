@@ -38,3 +38,10 @@ th { background: #f0f4ef; }
 td input { min-width: 84px; }
 code { border-radius: 5px; background: #eef1ed; padding: .15em .35em; }
 @media (max-width: 600px) { main { padding-top: 32px; } .activity { padding: 16px; } }
+
+.state { border-radius: 999px; font-size: .78rem; font-weight: 750; padding: .2em .7em; white-space: nowrap; }
+.state.not_started { background: #eef1ed; color: var(--muted); }
+.state.discovered { background: #eef1ed; color: var(--ink); }
+.state.assisted { background: #fdf0d9; color: #7a4e07; }
+.state.independent { background: var(--accent-soft); color: var(--accent); }
+.state.transferred { background: var(--accent); color: #fff; }

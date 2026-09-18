@@ -22,6 +22,11 @@
     "last_opened_at": null,
     "due_count": 0
   },
+  "red_thread": {
+    "domain": null,
+    "repository": null,
+    "milestone": null
+  },
   "ai": {
     "phase": "not_started",
     "week": null,
