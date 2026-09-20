@@ -118,14 +118,14 @@ Techne decides what comes next: the subject, due reviews, difficulty, and activi
 | `resume` | Picks up where you left off and gives you exactly one next action. Typing the entry point alone does the same. | To start the day or come back after a break, from any folder or a new conversation. |
 | `hint` | Gives one more step of help on the current exercise, from a guiding question up to the solution explained. | When you are stuck on the exercise itself. Each call gives a little more help; work done with help counts as practice, not as proof of mastery. |
 | `ask <question>` | Answers any question: where you are, why this subject, what a word means, how a tool works. Costs you nothing and leaves no trace. | Whenever you wonder anything. It declines only the answer to the exercise you have open — that is what `hint` is for. |
-| `help` | Lists the commands, one line each. | When you forget what exists. |
 | `status` | Shows the current activity, your mastery map subject by subject, due reviews, and Applied AI progress, with the two curricula kept separate. | When you want to know where you stand. |
 | `engineering` | Saves your progress and switches to the Senior Engineer curriculum. | When you want to work on the morning curriculum. |
 | `ai` | Saves your progress and switches to the Applied AI curriculum. | When the morning block is done, or you want to work on Applied AI now. |
 | `pause` | Saves your progress and keeps the day open; `resume` continues exactly where you stopped. | Before a short break. |
 | `end` | Saves your progress, closes the session, and gives you four closing lines. | At the end of your working session. |
-| `feedback <text>` | Records what annoyed you — a bug, a friction, an idea — with the activity it came from, and opens a discussion when it is really a method change. | The moment something does not work, without losing your thread. |
-| `report` | Exports everything you recorded, grouped and dated, ready to paste into the Techne repository. | When you sit down to improve Techne itself. |
+| `feedback <text>` | Talks about the teaching: a preference is applied at once, a bigger change is discussed and recorded. | When the method or the content does not suit you. |
+| `issue <text>` | Records a defect or an idea about Techne itself, with the activity it came from. | The moment the tool misbehaves, without losing your thread. |
+| `extract-issues` | Exports everything you reported, grouped and dated, ready to paste into the Techne repository. | When you sit down to improve Techne itself. |
 | `reset` | After you confirm, puts your progress aside (archived, not deleted unless you ask) so Techne starts again from `init`. Your exercise files stay unless you ask to remove them. | To start the whole curriculum over. Updating Techne never needs it: an older workspace is migrated, not reset. |
 | `uninstall` | After you confirm, removes Techne from your agent, optionally after a `reset`, and tells you how to reinstall. | When you no longer want Techne, or to retest installation. |
 

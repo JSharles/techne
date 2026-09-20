@@ -1,6 +1,6 @@
 ---
 name: techne
-description: Run Techne's intensive three-month bootcamp with a Senior Engineer curriculum in the morning and an Applied AI curriculum in the afternoon. Use when the learner invokes Techne, asks to initialize or resume the curriculum, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, resumes the Applied AI track, requests a change to the teaching method or curriculum, or uses a Techne command (init, resume, hint, ask, help, report, status, engineering, ai, pause, end, feedback, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
+description: Run Techne's intensive three-month bootcamp with a Senior Engineer curriculum in the morning and an Applied AI curriculum in the afternoon. Use when the learner invokes Techne, asks to initialize or resume the curriculum, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, resumes the Applied AI track, requests a change to the teaching method or curriculum, or uses a Techne command (init, resume, hint, ask, status, engineering, ai, pause, end, feedback, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
 metadata:
   short-description: Adaptive Senior Engineer and Applied AI academy
 ---
@@ -80,15 +80,15 @@ The interface is a small set of English commands, identical whatever the learnin
 | `init` | Start Techne: ask the learning language, create and register the workspace, then run the placement test. | [initialization.md](references/initialization.md) |
 | *(none)* or `resume` | Resume from persisted state and give the single next action. | [operations.md](references/operations.md) |
 | `hint` | Give one more step of help on the current activity. | [operations.md](references/operations.md) |
-| `help` | List the commands, one line each. | [operations.md](references/operations.md) |
 | `ask <question>` | Answer any learner question — orientation, vocabulary, tooling, the programme itself. Consumes no help level and records nothing. | [operations.md](references/operations.md) |
 | `status` | Report progress for both curricula separately. | [operations.md](references/operations.md) |
 | `engineering` | Save progress, then switch to the Senior Engineer curriculum. | [operations.md](references/operations.md) |
 | `ai` | Save progress, then switch to the Applied AI curriculum. | [operations.md](references/operations.md) |
 | `pause` | Save progress without closing the day. | [operations.md](references/operations.md) |
 | `end` | Save progress and close the session with a short report. | [operations.md](references/operations.md) |
-| `feedback <text>` | Record a problem with the method, the content, or the tooling, and discuss it when it is a method change. | [operations.md](references/operations.md), [calibration.md](references/calibration.md) |
-| `report` | Export the recorded feedback as Markdown for the Techne repository. | [operations.md](references/operations.md) |
+| `feedback <text>` | Discuss the programme in progress: a preference is applied at once, a method change goes through calibration. | [calibration.md](references/calibration.md) |
+| `issue <text>` | Record a defect or an improvement in Techne itself, with the activity it came from. | [operations.md](references/operations.md) |
+| `extract-issues` | Export the recorded issues as Markdown for the Techne repository. | [operations.md](references/operations.md) |
 | `reset` | After explicit confirmation, archive the learner's progress so Techne can start again from `init`. | [operations.md](references/operations.md) |
 | `uninstall` | After explicit confirmation, remove Techne from the host agent, optionally after `reset`. | [operations.md](references/operations.md) |
 

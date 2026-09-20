@@ -10,7 +10,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import feedback as journal
+import issues as journal
 import store
 
 
@@ -29,7 +29,7 @@ REQUIRED_STATE_KEYS = (
 )
 MASTERY_STATES = ("not_started", "discovered", "assisted", "independent", "transferred", "blocked")
 BROWSER_FILES = ("serve.py", "lesson-template.html", "assets/i18n.js", "assets/progress.js", "assets/exercise.js")
-SCRIPTS = ("state.py", "programs.py", "store.py", "feedback.py", "init_workspace.py", "reset_workspace.py", "resolve_workspace.py", "workspace_registry.py")
+SCRIPTS = ("state.py", "programs.py", "store.py", "issues.py", "init_workspace.py", "reset_workspace.py", "resolve_workspace.py", "workspace_registry.py")
 
 
 def validate(state_root: Path, require_browser: bool = True, template: bool = False) -> list[str]:

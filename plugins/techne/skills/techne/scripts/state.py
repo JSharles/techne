@@ -12,7 +12,7 @@ import sys
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-import feedback as journal
+import issues as journal
 import programs
 import store
 from workspace_registry import default_config_path, resolve_workspace
@@ -348,10 +348,10 @@ def build_parser() -> argparse.ArgumentParser:
     block = sub.add_parser("block", help="Switch the active block")
     block.add_argument("name", choices=BLOCKS)
 
-    feedback = sub.add_parser("feedback", help="Record, list, resolve or export learner feedback")
-    actions = feedback.add_subparsers(dest="action", required=True)
+    issues = sub.add_parser("issue", help="Record, list, resolve or export reported issues")
+    actions = issues.add_subparsers(dest="action", required=True)
 
-    record = actions.add_parser("add", help="Record a new entry")
+    record = actions.add_parser("add", help="Record a new issue")
     record.add_argument("--type", choices=journal.TYPES, required=True)
     record.add_argument("--text", required=True)
     record.add_argument("--activity", help="Activity the entry came from (default: the current activity)")
@@ -405,7 +405,7 @@ def main(argv: list[str] | None = None) -> int:
             result = checkpoint(state, args.note, None, "closed")
         elif args.command == "block":
             result = switch_block(state, args.name)
-        elif args.command == "feedback":
+        elif args.command == "issue":
             if args.action == "add":
                 current = state.get("current", {})
                 origin = {
@@ -449,7 +449,7 @@ def main(argv: list[str] | None = None) -> int:
             print(warning, file=sys.stderr)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
-    except (StateError, journal.FeedbackError, programs.ProgramError, FileNotFoundError, OSError, ValueError) as exc:
+    except (StateError, journal.IssueError, programs.ProgramError, FileNotFoundError, OSError, ValueError) as exc:
         print(f"Techne state transition failed: {exc}", file=sys.stderr)
         return 1
 

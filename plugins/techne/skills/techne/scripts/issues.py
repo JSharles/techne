@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The learner's feedback journal: an append-only record in the workspace.
+"""The issues journal: an append-only record of Techne's own defects.
 
 See docs/adr/0009-feedback-journal-is-an-append-only-workspace-file.md.
 """
@@ -18,12 +18,18 @@ SCHEMA_VERSION = 1
 REQUIRED_KEYS = ("id", "at", "type", "text", "status")
 
 
-class FeedbackError(Exception):
+class IssueError(Exception):
     """The requested journal operation is not allowed."""
 
 
 def journal_path(workspace: Path) -> Path:
-    return workspace / ".techne" / "feedback.jsonl"
+    path = workspace / ".techne" / "issues.jsonl"
+    if not path.is_file():
+        # Workspaces created before the split kept the same journal here.
+        legacy = workspace / ".techne" / "feedback.jsonl"
+        if legacy.is_file():
+            return legacy
+    return path
 
 
 def read(workspace: Path) -> list[dict]:
@@ -60,9 +66,9 @@ def next_id(entries: list[dict]) -> str:
 
 def add(workspace: Path, kind: str, text: str, origin: dict) -> dict:
     if kind not in TYPES:
-        raise FeedbackError(f"Unknown feedback type: {kind}. Use one of {', '.join(TYPES)}.")
+        raise IssueError(f"Unknown issue type: {kind}. Use one of {', '.join(TYPES)}.")
     if not text.strip():
-        raise FeedbackError("Feedback text is empty.")
+        raise IssueError("The issue text is empty.")
     entries = read(workspace)
     entry = {
         "version": SCHEMA_VERSION,
@@ -80,7 +86,7 @@ def add(workspace: Path, kind: str, text: str, origin: dict) -> dict:
 
 def resolve(workspace: Path, entry_id: str, status: str) -> dict:
     if status not in STATUSES:
-        raise FeedbackError(f"Unknown feedback status: {status}. Use one of {', '.join(STATUSES)}.")
+        raise IssueError(f"Unknown issue status: {status}. Use one of {', '.join(STATUSES)}.")
     entries = read(workspace)
     for entry in entries:
         if entry.get("id") == entry_id:
@@ -88,17 +94,17 @@ def resolve(workspace: Path, entry_id: str, status: str) -> dict:
             entry["resolved_at"] = datetime.now().astimezone().isoformat(timespec="seconds")
             write(workspace, entries)
             return entry
-    raise FeedbackError(f"No feedback entry with id {entry_id}.")
+    raise IssueError(f"No issue with id {entry_id}.")
 
 
 def select(workspace: Path, status: str | None, since: str | None) -> list[dict]:
     if status is not None and status not in STATUSES:
-        raise FeedbackError(f"Unknown feedback status: {status}. Use one of {', '.join(STATUSES)}.")
+        raise IssueError(f"Unknown issue status: {status}. Use one of {', '.join(STATUSES)}.")
     if since is not None:
         try:
             date.fromisoformat(since)
         except ValueError as exc:
-            raise FeedbackError(f"--since expects a date like 2026-09-19: {exc}") from exc
+            raise IssueError(f"--since expects a date like 2026-09-19: {exc}") from exc
     selected = []
     for entry in read(workspace):
         if status is not None and entry.get("status", "open") != status:
@@ -112,9 +118,9 @@ def select(workspace: Path, status: str | None, since: str | None) -> list[dict]
 def export(entries: list[dict], exported_on: date | None = None) -> str:
     """Render the journal as Markdown, grouped by type, newest first."""
     stamp = (exported_on or datetime.now().astimezone().date()).isoformat()
-    lines = [f"# Techne feedback — exported {stamp}", ""]
+    lines = [f"# Techne issues — exported {stamp}", ""]
     if not entries:
-        lines.append("No feedback recorded for this selection.")
+        lines.append("No issue recorded for this selection.")
         return "\n".join(lines) + "\n"
     for kind in TYPES:
         group = sorted(
@@ -147,16 +153,16 @@ def problems(workspace: Path) -> list[str]:
         try:
             entry = json.loads(line)
         except ValueError:
-            errors.append(f"feedback.jsonl line {number} is not valid JSON")
+            errors.append(f"issues.jsonl line {number} is not valid JSON")
             continue
         if not isinstance(entry, dict) or any(key not in entry for key in REQUIRED_KEYS):
-            errors.append(f"feedback.jsonl line {number} is missing required keys")
+            errors.append(f"issues.jsonl line {number} is missing required keys")
             continue
         if entry["type"] not in TYPES:
-            errors.append(f"feedback.jsonl line {number} has unknown type {entry['type']!r}")
+            errors.append(f"issues.jsonl line {number} has unknown type {entry['type']!r}")
         if entry["status"] not in STATUSES:
-            errors.append(f"feedback.jsonl line {number} has unknown status {entry['status']!r}")
+            errors.append(f"issues.jsonl line {number} has unknown status {entry['status']!r}")
         if entry["id"] in seen:
-            errors.append(f"feedback.jsonl has a duplicate id: {entry['id']}")
+            errors.append(f"issues.jsonl has a duplicate id: {entry['id']}")
         seen.add(entry["id"])
     return errors

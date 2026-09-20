@@ -29,10 +29,10 @@ The durable records are:
 | `state.py close --note "…"` | Close the block and count one working day. |
 | `state.py block <engineering\|ai>` | Switch the active block. |
 | `state.py ingest-events` | Apply mechanical browser evidence and return the rest for interpretation. |
-| `state.py feedback add --type bug\|friction\|idea --text "…"` | Record a learner report with its activity and track. |
-| `state.py feedback list [--status …] [--since DATE]` | List entries as JSON. |
-| `state.py feedback export [--status …] [--since DATE]` | Print the journal as Markdown, grouped by type. Reads only. |
-| `state.py feedback resolve <id> --status applied\|dismissed` | Mark an entry handled so it leaves the default export. |
+| `state.py issue add --type bug\|friction\|idea --text "…"` | Record a reported issue with its activity and track. |
+| `state.py issue list [--status …] [--since DATE]` | List issues as JSON. |
+| `state.py issue export [--status …] [--since DATE]` | Print the journal as Markdown, grouped by type. Reads only. |
+| `state.py issue resolve <id> --status applied\|dismissed` | Mark an issue handled so it leaves the default export. |
 | `state.py migrate` | Bring a workspace created by an older Techne forward to the current state format. |
 
 Pass `--session <id>` on every call so concurrent sessions are detected; when the script warns that another session wrote recently, re-read the state and tell the learner in one line before continuing.
@@ -85,9 +85,7 @@ The local browser runtime writes every opening, recall response, quiz choice, tr
 
 Browser events are evidence, not grades by themselves. Consider the task, correctness, attempt count, elapsed time, code, and help already given. Record the last consumed event timestamp or line number in `STATE.json`.
 
-## Orientation commands
-
-`help` lists the commands, one line each, in the learning language.
+## Orientation
 
 `ask` answers any question the learner has: where they are in the programme, why this subject today, what a word means, how a tool works, what a command does. It consumes no help level, records no evidence, and never moves the mastery map — asking must never feel expensive.
 
@@ -95,13 +93,15 @@ When no specific question is attached, answer the implicit one in four short poi
 
 The one thing `ask` declines is the answer to the open exercise. Say it in one sentence — that this would be help on the exercise itself, and that `hint` is the command for it — then wait. A first `hint` is a question and leaves the work independent; only help beyond that makes it `assisted`. Explaining a concept the exercise uses is still `ask`; writing or naming the solution is `hint`.
 
-## Feedback and reports
+## Issues and feedback
 
-`feedback <text>` records the learner's report with `state.py feedback add --type bug|friction|idea --text "<text>"`, which stores it with the current activity and track. Classify the type yourself from what they said; ask only when it is genuinely ambiguous. Confirm in one line and return to the activity: recording must cost the learner nothing mid-exercise.
+They go to different people (see `docs/adr/0012-issues-and-feedback-are-two-channels.md`).
 
-Recording does not replace discussing. When the report asks for a change to the method, the programme, or assessment, continue into [calibration.md](calibration.md) as before. When it is a defect or an annoyance, recording is the whole answer.
+`issue <text>` is for Techne itself: a broken exercise, noisy output, a confusing wording, an idea for the tool. Record it with `state.py issue add --type bug|friction|idea --text "<text>"`, which stores it with the current activity and track. Classify the type yourself from what they said; ask only when it is genuinely ambiguous. Confirm in one line and return to the activity: reporting must cost the learner nothing mid-exercise.
 
-`report` prints `state.py feedback export`, optionally narrowed with `--since` or `--status`, as Markdown grouped by type and ready to paste into the Techne repository. It reads only; it never writes state. Mark an entry handled with `state.py feedback resolve <id> --status applied|dismissed`; resolved entries leave the default export.
+`extract-issues` prints `state.py issue export`, optionally narrowed with `--since` or `--status`, as Markdown grouped by type and ready to paste into the Techne repository. It reads only; it never writes state. Mark an entry handled with `state.py issue resolve <id> --status applied|dismissed`; resolved entries leave the default export.
+
+`feedback <text>` is for the teaching: it is a conversation, not a ticket. Follow [calibration.md](calibration.md) — a preference is applied at once and kept in the profile, a change touching evidence, the programme or assessment goes through discussion and is recorded as a decision. Nothing about it enters the issues journal.
 
 ## Running the learner's tests
 
@@ -119,7 +119,7 @@ The chat is home. The browser shows lessons and the progress page; the editor is
 
 When the material is at fault — a wrong expected format, a statement that contradicts itself, a check that rejects correct answers, a lesson that taught something else — the activity is void.
 
-Say so plainly, in one sentence, without apologising at length. Then: no help level consumed, no evidence recorded, no mastery state moved, no conclusion drawn about the learner. Fix the material, record it with `state.py feedback --add "…" --type bug`, and reopen the activity or replace it.
+Say so plainly, in one sentence, without apologising at length. Then: no help level consumed, no evidence recorded, no mastery state moved, no conclusion drawn about the learner. Fix the material, record it with `state.py issue add --type bug --text "…"`, and reopen the activity or replace it.
 
 This applies to any question Techne asked, graded or not. When the same defect appears twice, look for the systemic cause before writing the next exercise.
 
