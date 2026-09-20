@@ -192,11 +192,64 @@ class StateTransitionTests(unittest.TestCase):
         )
 
     def test_closing_a_block_counts_one_working_day(self):
+        state_script.enroll(self.state, self.workspace, "engineering")
         state_script.switch_block(self.state, "engineering")
         state_script.checkpoint(self.state, "done", None, "closed")
 
-        self.assertEqual(self.state["progress"]["engineering_days"], 1)
-        self.assertEqual(self.state["day"]["engineering"], "closed")
+        self.assertEqual(self.state["progress"]["days"]["engineering"], 1)
+        self.assertEqual(self.state["day"]["blocks"]["engineering"], "closed")
+
+    def test_enrolment_gates_switching_and_keeps_evidence_on_leaving(self):
+        with self.assertRaises(state_script.StateError):
+            state_script.switch_block(self.state, "engineering")
+
+        state_script.enroll(self.state, self.workspace, "engineering")
+        state_script.set_mastery(self.state, "dsa.hashing", "independent", "two-sum", "H0", self.known)
+        state_script.leave(self.state, "engineering")
+
+        self.assertEqual(state_script.enrolled(self.state), [])
+        self.assertEqual(self.state["mastery"]["dsa.hashing"]["state"], "independent")
+        state_script.enroll(self.state, self.workspace, "engineering")
+        self.assertEqual(state_script.enrolled(self.state), ["engineering"])
+
+    def test_enrolment_refuses_what_it_cannot_use(self):
+        with self.assertRaises(state_script.StateError) as unknown:
+            state_script.enroll(self.state, self.workspace, "gardening")
+        self.assertIn("No program called gardening", str(unknown.exception))
+
+        folder = programs.workspace_dir(self.workspace)
+        write_program(folder, "broken", replace=[("activity_kinds: code", "pace: fast")])
+        with self.assertRaises(state_script.StateError) as broken:
+            state_script.enroll(self.state, self.workspace, "broken")
+        self.assertIn("unknown setting(s): pace", str(broken.exception))
+
+    def test_enrolment_refuses_a_program_that_disagrees_about_a_domain(self):
+        state_script.enroll(self.state, self.workspace, "engineering")
+        write_program(programs.workspace_dir(self.workspace), "gardening", domain_title="Digging", prefix="dsa")
+
+        with self.assertRaises(state_script.StateError) as clash:
+            state_script.enroll(self.state, self.workspace, "gardening")
+
+        self.assertIn("disagrees with a program you follow", str(clash.exception))
+
+    def test_measurable_subjects_follow_the_learners_enrolments(self):
+        state_script.enroll(self.state, self.workspace, "applied-ai")
+
+        known = state_script.known_subjects(self.state, self.workspace)
+
+        self.assertIn("py.async", known)
+        self.assertNotIn("dsa.bfs", known)
+
+    def test_coverage_counts_started_subjects(self):
+        found, _ = programs.discover(SKILL_ROOT, self.workspace)
+        state_script.enroll(self.state, self.workspace, "engineering")
+        state_script.set_mastery(self.state, "dsa.hashing", "independent", "two-sum", "H0", self.known)
+
+        measured = state_script.coverage(self.state, found["engineering"])
+
+        self.assertEqual(measured["started"], 1)
+        self.assertEqual(measured["states"]["independent"], 1)
+        self.assertLess(measured["share"], 0.05)
 
     def test_ingesting_events_applies_only_mechanical_evidence(self):
         events = self.workspace / ".techne" / "events" / "browser.jsonl"
@@ -219,7 +272,7 @@ class StateTransitionTests(unittest.TestCase):
             "status": "diagnostic_in_progress",
             "language": "fr",
             "mode": "curriculum",
-            "day": {"date": "2026-09-17", "curriculum": "in_progress", "project": "discovery_pending", "active_block": "morning"},
+            "day": {"date": "2026-09-17", "engineering": "in_progress", "ai": "discovery_pending", "active_block": "morning"},
             "current": {"id": "s01", "track": "curriculum", "status": "ready", "help_level": "H6"},
             "mastery": {
                 "dsa": {"level": "unassessed", "evidence": [{"task": "placement"}]},
@@ -238,7 +291,9 @@ class StateTransitionTests(unittest.TestCase):
 
         migrated = store.load(self.workspace)
         self.assertEqual(migrated["version"], state_script.FORMAT_VERSION)
-        self.assertEqual(migrated["day"]["engineering"], "in_progress")
+        self.assertEqual(migrated["day"]["blocks"]["engineering"], "in_progress")
+        self.assertEqual(migrated["day"]["active_block"], "engineering")
+        self.assertEqual(sorted(state_script.enrolled(migrated)), ["applied-ai", "engineering"])
         self.assertEqual(migrated["ai"]["phase"], "discovery_pending")
         self.assertEqual(migrated["current"]["help_level"], "H4")
         self.assertEqual(migrated["mastery"], {})

@@ -29,7 +29,7 @@ TRANSFER_DELAY_DAYS = 7
 BLOCKED_RETRY_DAYS = 14
 FAILURES_BEFORE_BLOCKED = 3
 EVIDENCE_KEPT = 5
-BLOCKS = ("engineering", "ai")
+SHIPPED_AT_MIGRATION = ("engineering", "applied-ai")
 
 
 class StateError(Exception):
@@ -102,8 +102,30 @@ def migrate(state: dict) -> list[str]:
             applied.append("clamped help level to H4")
         applied.append("migrated state from format 1 to 2")
     if version < 3:
-        state.setdefault("enrolments", [])
         state.setdefault("issues", [])
+        day = state.setdefault("day", {})
+        blocks = {}
+        for old_key, program in (("engineering", "engineering"), ("ai", "applied-ai")):
+            if old_key in day:
+                blocks[program] = day.pop(old_key)
+        if blocks:
+            day["blocks"] = {**day.get("blocks", {}), **blocks}
+        if day.get("active_block") in ("engineering", "ai", "morning", "afternoon"):
+            day["active_block"] = "applied-ai" if day["active_block"] in ("ai", "afternoon") else "engineering"
+        progress = state.get("progress", {})
+        if "engineering_days" in progress or "ai_days" in progress:
+            state["progress"] = {
+                "days": {
+                    "engineering": int(progress.get("engineering_days", 0)),
+                    "applied-ai": int(progress.get("ai_days", 0)),
+                }
+            }
+        if not state.get("enrolments"):
+            stamp = now_stamp()
+            state["enrolments"] = [
+                {"program": program, "enrolled_at": stamp, "status": "active"} for program in SHIPPED_AT_MIGRATION
+            ]
+            applied.append("enrolled in the shipped programs")
         applied.append("migrated state from format 2 to 3")
     state["version"] = FORMAT_VERSION
     return applied
@@ -276,23 +298,78 @@ def checkpoint(state: dict, note: str | None, help_level: str | None, status: st
         current["checkpoint_note"] = note
     if status == "closed":
         block = state.get("day", {}).get("active_block")
-        if block in BLOCKS:
-            progress = state.setdefault("progress", {"engineering_days": 0, "ai_days": 0})
-            key = f"{block}_days"
-            progress[key] = int(progress.get(key, 0)) + 1
-            state.setdefault("day", {})[block] = "closed"
+        if block:
+            days = state.setdefault("progress", {}).setdefault("days", {})
+            days[block] = int(days.get(block, 0)) + 1
+            state.setdefault("day", {}).setdefault("blocks", {})[block] = "closed"
     return current
 
 
-def switch_block(state: dict, block: str) -> dict:
-    if block not in BLOCKS:
-        raise StateError(f"Unknown block: {block}. Use one of {', '.join(BLOCKS)}.")
+def switch_block(state: dict, program: str) -> dict:
+    if program not in enrolled(state):
+        following = ", ".join(enrolled(state)) or "none"
+        raise StateError(f"You are not enrolled in {program}. You follow: {following}.")
     day = state.setdefault("day", {})
-    day["active_block"] = block
-    day.setdefault(block, "in_progress")
-    if day.get(block) == "pending":
-        day[block] = "in_progress"
+    day["active_block"] = program
+    blocks = day.setdefault("blocks", {})
+    if blocks.get(program) in (None, "pending", "closed"):
+        blocks[program] = "in_progress"
     return day
+
+
+def enrolled(state: dict) -> list[str]:
+    return [item["program"] for item in state.get("enrolments", []) if item.get("status") == "active"]
+
+
+def known_subjects(state: dict, workspace: Path) -> set[str]:
+    """Subjects the learner can be measured on: those of the programs they follow."""
+    active = enrolled(state)
+    return programs.subjects(SKILL_ROOT, workspace, active or None)
+
+
+def coverage(state: dict, program: programs.Program) -> dict:
+    """How much of a program has been taught and demonstrated."""
+    mastery = state.get("mastery", {})
+    counted = {"not_started": 0, "discovered": 0, "assisted": 0, "independent": 0, "transferred": 0, "blocked": 0}
+    for subject in program.subjects:
+        entry = mastery.get(subject, {})
+        counted[entry.get("state", "not_started")] = counted.get(entry.get("state", "not_started"), 0) + 1
+    total = len(program.subjects)
+    started = total - counted["not_started"]
+    return {"subjects": total, "started": started, "states": counted, "share": round(started / total, 3) if total else 0.0}
+
+
+def enroll(state: dict, workspace: Path, identifier: str) -> dict:
+    found, rejected = programs.discover(SKILL_ROOT, workspace)
+    if identifier in rejected:
+        raise StateError(f"{identifier} cannot be used: {rejected[identifier]}")
+    if identifier not in found:
+        available = ", ".join(sorted(found)) or "none"
+        raise StateError(f"No program called {identifier}. Available: {available}.")
+
+    program = found[identifier]
+    others = [found[other] for other in enrolled(state) if other in found and other != identifier]
+    disagreements = programs.contradictions(program, others)
+    if disagreements:
+        raise StateError(f"{identifier} disagrees with a program you follow: {'; '.join(disagreements)}")
+
+    enrolments = state.setdefault("enrolments", [])
+    for item in enrolments:
+        if item["program"] == identifier:
+            item["status"] = "active"
+            return item
+    entry = {"program": identifier, "enrolled_at": now_stamp(), "status": "active"}
+    enrolments.append(entry)
+    return entry
+
+
+def leave(state: dict, identifier: str) -> dict:
+    for item in state.get("enrolments", []):
+        if item["program"] == identifier:
+            item["status"] = "left"
+            item["left_at"] = now_stamp()
+            return item
+    raise StateError(f"You are not enrolled in {identifier}.")
 
 
 def ingest_events(state: dict, workspace: Path, known: set[str]) -> dict:
@@ -351,8 +428,14 @@ def build_parser() -> argparse.ArgumentParser:
     close = sub.add_parser("close", help="Close the current block and count a working day")
     close.add_argument("--note")
 
-    block = sub.add_parser("block", help="Switch the active block")
-    block.add_argument("name", choices=BLOCKS)
+    switch = sub.add_parser("switch", help="Open an enrolled program")
+    switch.add_argument("program")
+
+    enrolling = sub.add_parser("enroll", help="Enrol in a program")
+    enrolling.add_argument("program")
+
+    leaving = sub.add_parser("leave", help="Leave a program without losing its evidence")
+    leaving.add_argument("program")
 
     issues = sub.add_parser("issue", help="Record, list, resolve or export reported issues")
     actions = issues.add_subparsers(dest="action", required=True)
@@ -390,7 +473,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         workspace = args.workspace.expanduser().resolve() if args.workspace else resolve_workspace(Path("."), args.config)
         state = load(workspace, allow_old_format=args.command == "migrate")
-        known = programs.subjects(SKILL_ROOT, workspace)
+        known = known_subjects(state, workspace)
         warning = note_session(state, args.session)
         result: object = None
 
@@ -412,8 +495,13 @@ def main(argv: list[str] | None = None) -> int:
             result = checkpoint(state, args.note, args.help_level, "checkpointed")
         elif args.command == "close":
             result = checkpoint(state, args.note, None, "closed")
-        elif args.command == "block":
-            result = switch_block(state, args.name)
+        elif args.command == "switch":
+            checkpoint(state, f"switching to {args.program}", None, "checkpointed")
+            result = switch_block(state, args.program)
+        elif args.command == "enroll":
+            result = enroll(state, workspace, args.program)
+        elif args.command == "leave":
+            result = leave(state, args.program)
         elif args.command == "issue":
             if args.action == "add":
                 current = state.get("current", {})
@@ -434,14 +522,17 @@ def main(argv: list[str] | None = None) -> int:
             result = ingest_events(state, workspace, known)
         elif args.command == "programs":
             found, rejected = programs.discover(SKILL_ROOT, workspace)
+            following = enrolled(state)
             result = {
                 "available": [
                     {
                         "id": program.identifier,
                         "title": program.title,
                         "source": program.source,
+                        "enrolled": program.identifier in following,
+                        "open": state.get("day", {}).get("active_block") == program.identifier,
                         "units": len(program.units),
-                        "subjects": len(program.subjects),
+                        "coverage": coverage(state, program),
                         "settings": program.settings,
                     }
                     for program in sorted(found.values(), key=lambda item: item.identifier)

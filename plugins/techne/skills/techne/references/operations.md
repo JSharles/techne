@@ -44,17 +44,24 @@ When the script reports an older state format, offer the migration and run it. N
 
 Narrative files stay hand-written: `CURRENT.md` restates the current activity for the learner, and `SESSION_LOG.md` tells the story. Neither is ever used to recompute a state.
 
-## Select the logical block
+## Programs and blocks
 
-Use this order:
+The learner follows one or more programs, each a file Techne reads (see `docs/adr/0010-a-program-is-data-not-skill-source.md`). A block is one stretch of work on one of them.
+
+| Command | Use |
+| --- | --- |
+| `state.py programs` | What is available, what the learner follows, their coverage in each, and why any program was rejected. |
+| `state.py enroll <id>` | Follow a program. Refuses an unusable one, and one that disagrees with a program already followed, with the reason. |
+| `state.py leave <id>` | Stop following it. Evidence is untouched, and re-enrolling resumes where they stopped. |
+| `state.py switch <id>` | Checkpoint what is open and open that program. |
+
+Choosing what to open:
 
 1. Resume an explicitly in-progress activity unless the learner requests a checkpoint or switch.
-2. On a new local date with no in-progress activity, open the morning Engineering block, choosing an isolated morning or a red-thread project morning to keep two project mornings per week.
-3. After Techne closes the morning block, the next ordinary resume opens the afternoon Applied AI block.
-4. A checkpointed afternoon activity or capstone milestone resumes on the next afternoon block.
-5. An `engineering` or `ai` command (or the equivalent natural-language request) overrides the ordinary transition after a checkpoint is saved.
+2. Otherwise open what the schedule expects for now.
+3. A `switch` (or the equivalent natural-language request) overrides it, without comment.
 
-Never switch because the clock crosses noon. Never let unfinished afternoon work consume the next morning block automatically.
+Subjects are measured against the catalogues of the programs the learner follows; a subject outside them cannot be recorded.
 
 ## Resume
 
@@ -175,7 +182,7 @@ Independence stops at H1: work helped at H2 or beyond is `assisted`. At H4, expl
 
 ## Checkpoint and close
 
-On `pause`, a block switch (`engineering`, `ai`), or `end`, run `state.py checkpoint` or `state.py close`, then:
+On `pause`, a `switch`, or `end`, run `state.py checkpoint` or `state.py close`, then:
 
 - record what was attempted and observed;
 - store the highest help level used;

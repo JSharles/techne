@@ -7,13 +7,11 @@
   "mode": "initialization",
   "day": {
     "date": null,
-    "engineering": "pending",
-    "ai": "pending",
-    "active_block": null
+    "active_block": null,
+    "blocks": {}
   },
   "progress": {
-    "engineering_days": 0,
-    "ai_days": 0
+    "days": {}
   },
   "current": {
     "id": null,
