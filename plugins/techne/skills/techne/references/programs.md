@@ -60,7 +60,19 @@ Who it is for, what it takes them to, and what it deliberately leaves out.
 How difficulty moves, and what compresses when a subject is already demonstrated.
 ```
 
-Subjects are global: `dsa.bfs` is the same subject wherever it is taught, and carries one mastery entry. Reuse an existing identifier when you mean the same thing — that is how a new program credits what the learner already proved. Two programs that give the same prefix different meanings are refused at enrolment.
+## A program is complete on its own
+
+Write every program as if a stranger were about to follow it, one who has never taken any other program. Its catalogue lists everything it teaches, including subjects another program already covers, and its sequence stands without reading anywhere else.
+
+This is not negotiable, and it overrides any wish to avoid repetition:
+
+- never drop a subject because the learner demonstrated it elsewhere;
+- never fold a new program into an existing one, or present it as an extension of it;
+- never let another program's content decide what this one contains.
+
+Subjects are still global: `dsa.bfs` is the same subject wherever it is taught, and carries one mastery entry. Reuse an identifier when it is genuinely the same skill demonstrated the same way — the learner then starts this program with real coverage instead of zero. When a program trains the same theme in a different mode — under time, out loud, at interview pace — that is not the same subject: mint an identifier under this program's own prefix.
+
+Shared evidence is a consequence, never a reason to cut content. Two programs that give the same prefix different meanings are refused at enrolment.
 
 ## The wizard
 
@@ -70,12 +82,14 @@ Run it as rounds of numbered questions, each with your recommended answer, and w
 
 **Mode one — the learner brings the subjects.** They already know what they want to study.
 
-1. Collect their list as given, without adding to it.
+1. Collect their list as given, without adding to it and without removing anything that exists elsewhere.
 2. Group it into units and propose the grouping.
-3. Mint the identifiers, one domain prefix for the program's own material, reusing existing identifiers wherever a subject is genuinely the same.
-4. Name the prerequisites their list implies but does not contain, and ask whether to add them or treat them as already known. Never add one silently.
-5. Propose an order, from what depends on what.
+3. Mint the identifiers: this program's own prefix for what it trains its own way, an existing identifier only where the skill and the way it is demonstrated are genuinely the same.
+4. Name the prerequisites their list implies but does not contain, and ask whether to add them to this program or leave them out. Never add one silently, and never leave one out merely because another program teaches it — a stranger following this program would then hit a hole.
+5. Propose an order, from what depends on what, inside this program alone.
 6. Propose the five settings from how they described working.
+
+Creating a program is not scheduling it. Write and validate the file first; where it fits in the week is a separate conversation, after the learner has approved the program.
 
 **Mode two — the learner brings an objective.** "Hold a meeting in Spanish", "understand our Kubernetes setup".
 

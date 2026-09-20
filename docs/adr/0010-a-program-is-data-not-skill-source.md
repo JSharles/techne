@@ -6,6 +6,8 @@ A program declares its identity, its units, its subject catalogue, and exactly f
 
 Subjects are shared by identifier across programs, so `dsa.bfs` is one subject with one mastery entry whatever taught it. A program ends when its catalogue is covered, never after a fixed number of weeks.
 
+A program is also self-contained: its catalogue and sequence describe everything it teaches, including what another program covers, so a stranger can follow it alone. Shared identifiers let evidence count across programs, but they never justify removing content from one because another has it.
+
 ## Consequences
 
 - Any number of programs can run at once, driven by a weekly schedule the learner owns; the fixed morning/afternoon blocks and their `engineering` and `ai` commands disappear.
