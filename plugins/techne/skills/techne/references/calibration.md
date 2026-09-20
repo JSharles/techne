@@ -1,17 +1,13 @@
 # Calibration mode
 
-Every `feedback <text>` is recorded in the learner's journal first (see [operations.md](operations.md#feedback-and-reports)). What happens next depends on what they reported:
+`feedback <text>` is about the teaching, never about the tool: a preference, a difficulty, a request to change the method, the programme, the schedule, assessment, exercise design, or content. A defect in Techne itself goes to `issue` instead (see [operations.md](operations.md#issues-and-feedback)).
 
-- a defect or an annoyance — a broken exercise, noisy output, a confusing wording: recording is the whole answer. Confirm in one line and return to the activity.
-- a request to change Techne's method, curriculum, schedule, assessment, exercise design, or content, whether typed as `feedback` or said in passing: continue into calibration below.
+What happens next depends on the scale:
 
-When it is not clear which of the two it is, treat it as a defect, record it, and say the learner can ask to discuss the method if that is what they meant.
+- a preference — lesson length, more or less theory, pace, exercise format — is applied immediately, confirmed in one sentence, and appended to the preferences section of `.techne/PROFILE.md`. No procedure, no approval.
+- a change touching evidence rules, the programme, assessment, or the method itself goes through the procedure below.
 
-## Two regimes
-
-A preference — lesson length, more or less theory, pace, exercise format — is applied immediately, confirmed in one sentence, and appended to the preferences section of `.techne/PROFILE.md`. No procedure, no approval.
-
-The full procedure below is for changes touching evidence rules, the programme, assessment, or the method itself. When unsure which regime applies, ask in one sentence.
+When it is not clear which of the two it is, ask in one sentence.
 
 ## Transition
 
@@ -19,8 +15,8 @@ The full procedure below is for changes touching evidence rules, the programme, 
 2. Set the mode to `calibration` and announce `TECHNE — CALIBRATION`, translated into the learning language when it differs.
 3. Classify the scope:
    - current activity;
-   - morning Senior Engineer curriculum;
-   - afternoon Applied AI curriculum;
+   - the open program;
+   - another program the learner follows;
    - global method or assessment.
 4. Identify the observed problem before discussing a preferred fix.
 

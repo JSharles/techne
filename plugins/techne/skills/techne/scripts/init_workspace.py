@@ -11,6 +11,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+import store
 from workspace_registry import default_config_path, is_workspace, load_active_workspace, register_workspace
 
 
@@ -82,13 +83,12 @@ def initialize(
     template = template_path.read_text(encoding="utf-8")
     template_path.write_text(template.replace("__LANG__", language), encoding="utf-8")
 
-    state_path = state_root / "STATE.json"
-    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state = store.load(workspace)
     now = datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
     state["initialized_at"] = now
     state["workspace"] = str(workspace)
     state["language"] = language
-    state_path.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    store.save(workspace, state)
 
     with (state_root / "SESSION_LOG.md").open("a", encoding="utf-8") as stream:
         stream.write(f"\n## {now} — Workspace initialized\n\n")

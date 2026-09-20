@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply every Techne state transition, so the agent never edits STATE.json.
+"""Apply every Techne state transition, so the agent never edits the state store.
 
 See docs/adr/0004-state-transitions-belong-to-a-script.md.
 """
@@ -12,13 +12,16 @@ import sys
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-import feedback as journal
-from catalogue import subjects
+import issues as journal
+import programs
+import schedule as weekly
+import store
 from workspace_registry import default_config_path, resolve_workspace
 
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
-FORMAT_VERSION = 2
+FORMAT_VERSION = 3
+DRIFT_KEPT = 60
 RECENT_SESSION_HOURS = 12
 STATES = ("not_started", "discovered", "assisted", "independent", "transferred", "blocked")
 LADDER = ("not_started", "discovered", "assisted", "independent", "transferred")
@@ -28,7 +31,7 @@ TRANSFER_DELAY_DAYS = 7
 BLOCKED_RETRY_DAYS = 14
 FAILURES_BEFORE_BLOCKED = 3
 EVIDENCE_KEPT = 5
-BLOCKS = ("engineering", "ai")
+SHIPPED_AT_MIGRATION = ("engineering", "applied-ai")
 
 
 class StateError(Exception):
@@ -43,11 +46,11 @@ def now_stamp() -> str:
     return datetime.now().astimezone().isoformat(timespec="seconds")
 
 
-def load(workspace: Path, allow_old_format: bool = False) -> tuple[Path, dict]:
-    path = workspace / ".techne" / "STATE.json"
-    if not path.is_file():
-        raise StateError(f"No Techne state at {path}")
-    state = json.loads(path.read_text(encoding="utf-8"))
+def load(workspace: Path, allow_old_format: bool = False) -> dict:
+    try:
+        state = store.load(workspace)
+    except store.StoreError as exc:
+        raise StateError(str(exc)) from exc
     version = state.get("version")
     if not allow_old_format and version != FORMAT_VERSION:
         if isinstance(version, int) and version < FORMAT_VERSION:
@@ -56,7 +59,7 @@ def load(workspace: Path, allow_old_format: bool = False) -> tuple[Path, dict]:
                 "Run 'state.py migrate' to bring it forward; the learner's evidence is preserved."
             )
         raise StateError(f"Unknown state format: {version!r}. Update Techne rather than editing state by hand.")
-    return path, state
+    return state
 
 
 def migrate(state: dict) -> list[str]:
@@ -64,6 +67,9 @@ def migrate(state: dict) -> list[str]:
     version = state.get("version")
     if version == FORMAT_VERSION:
         return []
+    if version is None:
+        # A document written before the format was numbered.
+        version = 1
     if not isinstance(version, int) or version > FORMAT_VERSION:
         raise StateError(f"Unknown state format: {version!r}.")
     applied = []
@@ -98,6 +104,32 @@ def migrate(state: dict) -> list[str]:
             state["current"]["help_level"] = "H4"
             applied.append("clamped help level to H4")
         applied.append("migrated state from format 1 to 2")
+    if version < 3:
+        state.setdefault("issues", [])
+        day = state.setdefault("day", {})
+        blocks = {}
+        for old_key, program in (("engineering", "engineering"), ("ai", "applied-ai")):
+            if old_key in day:
+                blocks[program] = day.pop(old_key)
+        if blocks:
+            day["blocks"] = {**day.get("blocks", {}), **blocks}
+        if day.get("active_block") in ("engineering", "ai", "morning", "afternoon"):
+            day["active_block"] = "applied-ai" if day["active_block"] in ("ai", "afternoon") else "engineering"
+        progress = state.get("progress", {})
+        if "engineering_days" in progress or "ai_days" in progress:
+            state["progress"] = {
+                "days": {
+                    "engineering": int(progress.get("engineering_days", 0)),
+                    "applied-ai": int(progress.get("ai_days", 0)),
+                }
+            }
+        if not state.get("enrolments"):
+            stamp = now_stamp()
+            state["enrolments"] = [
+                {"program": program, "enrolled_at": stamp, "status": "active"} for program in SHIPPED_AT_MIGRATION
+            ]
+            applied.append("enrolled in the shipped programs")
+        applied.append("migrated state from format 2 to 3")
     state["version"] = FORMAT_VERSION
     return applied
 
@@ -118,10 +150,6 @@ def note_session(state: dict, session: str | None) -> str | None:
             warning = "Another Techne session wrote this workspace recently; re-read the state before continuing."
     state["session"] = {"id": session, "seen_at": now_stamp()}
     return warning
-
-
-def save(path: Path, state: dict) -> None:
-    path.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def entry_for(state: dict, subject: str) -> dict:
@@ -273,23 +301,133 @@ def checkpoint(state: dict, note: str | None, help_level: str | None, status: st
         current["checkpoint_note"] = note
     if status == "closed":
         block = state.get("day", {}).get("active_block")
-        if block in BLOCKS:
-            progress = state.setdefault("progress", {"engineering_days": 0, "ai_days": 0})
-            key = f"{block}_days"
-            progress[key] = int(progress.get(key, 0)) + 1
-            state.setdefault("day", {})[block] = "closed"
+        if block:
+            days = state.setdefault("progress", {}).setdefault("days", {})
+            days[block] = int(days.get(block, 0)) + 1
+            state.setdefault("day", {}).setdefault("blocks", {})[block] = "closed"
     return current
 
 
-def switch_block(state: dict, block: str) -> dict:
-    if block not in BLOCKS:
-        raise StateError(f"Unknown block: {block}. Use one of {', '.join(BLOCKS)}.")
+def switch_block(state: dict, program: str) -> dict:
+    if program not in enrolled(state):
+        following = ", ".join(enrolled(state)) or "none"
+        raise StateError(f"You are not enrolled in {program}. You follow: {following}.")
     day = state.setdefault("day", {})
-    day["active_block"] = block
-    day.setdefault(block, "in_progress")
-    if day.get(block) == "pending":
-        day[block] = "in_progress"
+    day["active_block"] = program
+    blocks = day.setdefault("blocks", {})
+    if blocks.get(program) in (None, "pending", "closed"):
+        blocks[program] = "in_progress"
     return day
+
+
+def enrolled(state: dict) -> list[str]:
+    return [item["program"] for item in state.get("enrolments", []) if item.get("status") == "active"]
+
+
+def known_subjects(state: dict, workspace: Path) -> set[str]:
+    """Subjects the learner can be measured on: those of the programs they follow."""
+    active = enrolled(state)
+    return programs.subjects(SKILL_ROOT, workspace, active or None)
+
+
+DEMONSTRATED = ("independent", "transferred")
+
+
+def off_programme(state: dict, workspace: Path) -> list[str]:
+    """Subjects with evidence that no enrolled program teaches any more.
+
+    Their evidence is kept — it was earned — and named, so a dropped subject is
+    visible rather than silently gone.
+    """
+    known = known_subjects(state, workspace)
+    return sorted(
+        subject
+        for subject, entry in state.get("mastery", {}).items()
+        if subject not in known and entry.get("state", "not_started") != "not_started"
+    )
+
+
+def coverage(state: dict, program: programs.Program) -> dict:
+    """How much of a program has been taught, and how much is demonstrated.
+
+    A program is covered when its subjects are demonstrated, not merely seen:
+    `discovered` means taught, `blocked` means stuck, and neither finishes a
+    program. `share` is what completion is measured against.
+    """
+    mastery = state.get("mastery", {})
+    counted = {"not_started": 0, "discovered": 0, "assisted": 0, "independent": 0, "transferred": 0, "blocked": 0}
+    for subject in program.subjects:
+        name = mastery.get(subject, {}).get("state", "not_started")
+        counted[name] = counted.get(name, 0) + 1
+    total = len(program.subjects)
+    started = total - counted["not_started"]
+    demonstrated = sum(counted[name] for name in DEMONSTRATED)
+    ceiling = program.settings.get("survey_ceiling", "discovered")
+    return {
+        "subjects": total,
+        "started": started,
+        "demonstrated": demonstrated,
+        "states": counted,
+        "share": round(demonstrated / total, 3) if total else 0.0,
+        "survey_ceiling": ceiling,
+    }
+
+
+def settle_completions(state: dict, workspace: Path) -> list[str]:
+    """Move a program to maintenance once its catalogue is covered.
+
+    Coverage ends a program, never elapsed time (ADR 0010). The others carry on.
+    """
+    found, _ = programs.discover(SKILL_ROOT, workspace)
+    completed = []
+    for item in state.get("enrolments", []):
+        program = found.get(item["program"])
+        if item.get("status") != "active" or program is None:
+            continue
+        if coverage(state, program)["share"] >= 1.0:
+            item["status"] = "maintenance"
+            item["completed_at"] = now_stamp()
+            completed.append(item["program"])
+    return completed
+
+
+def enroll(state: dict, workspace: Path, identifier: str) -> dict:
+    found, rejected = programs.discover(SKILL_ROOT, workspace)
+    if identifier not in found:
+        # A broken file never hides a program that works: only say a file is
+        # unusable when nothing usable answers to that name.
+        reason = rejected.get(identifier)
+        if reason:
+            raise StateError(f"{identifier} cannot be used: {reason}")
+        available = ", ".join(sorted(found)) or "none"
+        raise StateError(f"No program called {identifier}. Available: {available}.")
+
+    program = found[identifier]
+    # Check against every program they have followed, not only the active ones:
+    # a subject demonstrated under a program they left still means something.
+    ever = [item["program"] for item in state.get("enrolments", [])]
+    others = [found[other] for other in ever if other in found and other != identifier]
+    disagreements = programs.contradictions(program, others)
+    if disagreements:
+        raise StateError(f"{identifier} disagrees with a program you follow: {'; '.join(disagreements)}")
+
+    enrolments = state.setdefault("enrolments", [])
+    for item in enrolments:
+        if item["program"] == identifier:
+            item["status"] = "active"
+            return item
+    entry = {"program": identifier, "enrolled_at": now_stamp(), "status": "active"}
+    enrolments.append(entry)
+    return entry
+
+
+def leave(state: dict, identifier: str) -> dict:
+    for item in state.get("enrolments", []):
+        if item["program"] == identifier:
+            item["status"] = "left"
+            item["left_at"] = now_stamp()
+            return item
+    raise StateError(f"You are not enrolled in {identifier}.")
 
 
 def ingest_events(state: dict, workspace: Path, known: set[str]) -> dict:
@@ -348,13 +486,24 @@ def build_parser() -> argparse.ArgumentParser:
     close = sub.add_parser("close", help="Close the current block and count a working day")
     close.add_argument("--note")
 
-    block = sub.add_parser("block", help="Switch the active block")
-    block.add_argument("name", choices=BLOCKS)
+    switch = sub.add_parser("switch", help="Open an enrolled program")
+    switch.add_argument("program")
 
-    feedback = sub.add_parser("feedback", help="Record, list, resolve or export learner feedback")
-    actions = feedback.add_subparsers(dest="action", required=True)
+    planning = sub.add_parser("schedule", help="Show the weekly schedule, or propose one")
+    planning.add_argument("--propose", action="store_true", help="Write a schedule from the learner's enrolments")
+    planning.add_argument("--replace", action="store_true", help="Overwrite a schedule the learner already has")
+    planning.add_argument("--light-day", default="sunday", help="Day kept light in a proposal")
 
-    record = actions.add_parser("add", help="Record a new entry")
+    enrolling = sub.add_parser("enroll", help="Enrol in a program")
+    enrolling.add_argument("program")
+
+    leaving = sub.add_parser("leave", help="Leave a program without losing its evidence")
+    leaving.add_argument("program")
+
+    issues = sub.add_parser("issue", help="Record, list, resolve or export reported issues")
+    actions = issues.add_subparsers(dest="action", required=True)
+
+    record = actions.add_parser("add", help="Record a new issue")
     record.add_argument("--type", choices=journal.TYPES, required=True)
     record.add_argument("--text", required=True)
     record.add_argument("--activity", help="Activity the entry came from (default: the current activity)")
@@ -374,16 +523,63 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("ingest-events", help="Apply mechanical browser evidence")
     sub.add_parser("migrate", help="Bring an older workspace forward to the current state format")
+    sub.add_parser("programs", help="List the programs available to this learner")
+    sub.add_parser("brief", help="Print the short state an agent needs to start a turn")
+    export_state = sub.add_parser("export", help="Print the whole state as JSON, for backup")
+    export_state.add_argument("--out", type=Path, help="Write to this file instead of standard output")
     sub.add_parser("show", help="Print the current state as JSON")
     return parser
+
+
+def proposal(workspace: Path, program_ids: list[str], light_day: str = "sunday") -> str:
+    """A schedule proposal that respects each program's declared cadence."""
+    found, _ = programs.discover(SKILL_ROOT, workspace)
+    cadences = {identifier: found[identifier].cadence for identifier in program_ids if identifier in found}
+    return weekly.propose(program_ids, light_day, cadences)
+
+
+def read_only(args: argparse.Namespace) -> bool:
+    """Commands that only look at the state, and so must leave it alone."""
+    if args.command in ("programs", "show"):
+        return True
+    return args.command == "schedule" and not args.propose
+
+
+def days_line(summary: dict) -> str:
+    days = (summary.get("progress") or {}).get("days") or {}
+    return " · ".join(f"{program} {count}" for program, count in days.items()) or "none yet"
+
+
+def readable(state: dict) -> str:
+    """The state as a person would want to read it, since it now lives in a database."""
+    summary = store.brief(state)
+    lines = [
+        f"Status        {summary['status']} · mode {summary['mode']}",
+        f"Language      {summary['language']}",
+        f"Open          {(summary.get('current') or {}).get('id') or 'nothing'}"
+        f" ({(summary.get('current') or {}).get('status', 'none')})",
+        f"Programs      {', '.join(summary['enrolments']) or 'none'}",
+        f"Working days  {days_line(summary)}",
+        f"Due           {summary['reviews_due']} reviews · {summary['transfers_due']} transfers",
+        f"Open issues   {summary['open_issues']}",
+        "",
+        "Mastery",
+    ]
+    counts = summary["mastery_counts"]
+    for name in ("transferred", "independent", "assisted", "discovered", "blocked"):
+        if counts.get(name):
+            lines.append(f"  {name:<13} {counts[name]}")
+    if not counts:
+        lines.append("  nothing recorded yet")
+    return "\n".join(lines) + "\n"
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv or sys.argv[1:])
     try:
         workspace = args.workspace.expanduser().resolve() if args.workspace else resolve_workspace(Path("."), args.config)
-        path, state = load(workspace, allow_old_format=args.command == "migrate")
-        known = subjects(SKILL_ROOT)
+        state = load(workspace, allow_old_format=args.command == "migrate")
+        known = known_subjects(state, workspace)
         warning = note_session(state, args.session)
         result: object = None
 
@@ -405,37 +601,119 @@ def main(argv: list[str] | None = None) -> int:
             result = checkpoint(state, args.note, args.help_level, "checkpointed")
         elif args.command == "close":
             result = checkpoint(state, args.note, None, "closed")
-        elif args.command == "block":
-            result = switch_block(state, args.name)
-        elif args.command == "feedback":
+        elif args.command == "switch":
+            entries, _ = weekly.read(workspace)
+            planned = weekly.expected(entries, datetime.now().astimezone())
+            checkpoint(state, f"switching to {args.program}", None, "checkpointed")
+            result = switch_block(state, args.program)
+            deviation = weekly.deviation(planned, args.program, datetime.now().astimezone())
+            if deviation:
+                drift = state.setdefault("schedule_drift", [])
+                drift.append(deviation)
+                del drift[:-DRIFT_KEPT]  # a fortnight of deviations is all drifting() looks at
+        elif args.command == "schedule":
+            now = datetime.now().astimezone()
+            if args.propose:
+                if weekly.schedule_path(workspace).is_file() and not args.replace:
+                    raise StateError(
+                        "There is already a schedule. Show it to the learner and pass --replace only once they agree."
+                    )
+                weekly.write(workspace, proposal(workspace, enrolled(state), args.light_day))
+            entries, problems = weekly.read(workspace)
+            planned = weekly.expected(entries, now)
+            result = {
+                "path": str(weekly.schedule_path(workspace)),
+                "entries": entries,
+                "problems": problems,
+                "expected_now": planned,
+                "drifting": weekly.drifting(state, now),
+            }
+        elif args.command == "enroll":
+            result = enroll(state, workspace, args.program)
+        elif args.command == "leave":
+            result = leave(state, args.program)
+        elif args.command == "issue":
             if args.action == "add":
                 current = state.get("current", {})
                 origin = {
                     "activity": args.activity or current.get("id"),
                     "track": args.track or current.get("track"),
                 }
-                result = journal.add(workspace, args.type, args.text, origin)
+                result = journal.add(state, args.type, args.text, origin)
             elif args.action == "resolve":
-                result = journal.resolve(workspace, args.id, args.status)
+                result = journal.resolve(state, args.id, args.status)
             elif args.action == "export":
-                # A report reads; it never writes state.
-                print(journal.export(journal.select(workspace, args.status, args.since)), end="")
+                # An export reads; it never writes state.
+                print(journal.export(journal.select(state, args.status, args.since)), end="")
                 return 0
             else:
-                result = {"entries": journal.select(workspace, args.status, args.since)}
+                result = {"entries": journal.select(state, args.status, args.since)}
         elif args.command == "ingest-events":
             result = ingest_events(state, workspace, known)
+        elif args.command == "programs":
+            found, rejected = programs.discover(SKILL_ROOT, workspace)
+            following = enrolled(state)
+            result = {
+                "available": [
+                    {
+                        "id": program.identifier,
+                        "title": program.title,
+                        "source": program.source,
+                        "enrolled": program.identifier in following,
+                        "open": state.get("day", {}).get("active_block") == program.identifier,
+                        "units": len(program.units),
+                        "coverage": coverage(state, program),
+                        "settings": program.settings,
+                    }
+                    for program in sorted(found.values(), key=lambda item: item.identifier)
+                ],
+                "rejected": rejected,
+                "off_programme": off_programme(state, workspace),
+            }
         elif args.command == "migrate":
-            result = {"applied": migrate(state), "version": state["version"]}
+            applied = migrate(state)
+            if not weekly.schedule_path(workspace).is_file() and enrolled(state):
+                weekly.write(workspace, proposal(workspace, enrolled(state)))
+                applied.append("wrote a weekly schedule from your enrolments")
+            legacy, unreadable = journal.read_legacy_journal(workspace / ".techne")
+            if legacy:
+                state["issues"] = [*journal.entries(state), *legacy]
+                applied.append(f"moved {len(legacy)} journal entries into the store")
+            for problem in unreadable:
+                print(problem, file=sys.stderr)
+            result = {"applied": applied, "version": state["version"]}
+        elif args.command == "brief":
+            print(json.dumps(store.brief(state), ensure_ascii=False, indent=2))
+            return 0
+        elif args.command == "export":
+            document = json.dumps(state, ensure_ascii=False, indent=2) + "\n"
+            if args.out:
+                args.out.write_text(document, encoding="utf-8")
+                result = {"written": str(args.out)}
+            else:
+                print(document, end="")
+                return 0
         elif args.command == "show":
-            result = state
+            print(readable(state), end="")
+            return 0
 
-        save(path, state)
+        if read_only(args):
+            # Listing or reading must not end a program, nor touch the store.
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return 0
+
+        completed = settle_completions(state, workspace)
+        store.save(workspace, state)
+        if completed:
+            print(
+                "Covered, and now in maintenance: " + ", ".join(completed) + ". Write the closing assessment.",
+                file=sys.stderr,
+            )
         if warning:
             print(warning, file=sys.stderr)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
-    except (StateError, journal.FeedbackError, FileNotFoundError, OSError, ValueError) as exc:
+    except (StateError, journal.IssueError, programs.ProgramError, FileNotFoundError, OSError, ValueError) as exc:
         print(f"Techne state transition failed: {exc}", file=sys.stderr)
         return 1
 

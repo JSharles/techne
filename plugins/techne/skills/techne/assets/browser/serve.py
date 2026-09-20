@@ -16,7 +16,7 @@ from urllib.parse import urlparse
 ROOT = Path(__file__).resolve().parent
 LESSONS = ROOT / "lessons"
 EVENTS = ROOT.parent / "events" / "browser.jsonl"
-STATE = ROOT.parent / "STATE.json"
+PROGRESS_VIEW = ROOT / "progress.json"
 PORT = int(os.environ.get("TECHNE_PORT", "8787"))
 MAX_BODY = 256 * 1024
 
@@ -90,16 +90,17 @@ DOMAIN_ORDER = (
 STATE_ORDER = ("transferred", "independent", "assisted", "blocked", "discovered", "not_started")
 
 
-def read_state() -> dict:
+def read_progress() -> dict:
+    """Read the view state.py renders; the server never opens the store."""
     try:
-        state = json.loads(STATE.read_text(encoding="utf-8"))
+        view = json.loads(PROGRESS_VIEW.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return {}
-    return state if isinstance(state, dict) else {}
+    return view if isinstance(view, dict) else {}
 
 
 def learner_language() -> str:
-    language = read_state().get("language")
+    language = read_progress().get("language")
     return language if isinstance(language, str) and language else "en"
 
 
@@ -176,8 +177,8 @@ class Handler(SimpleHTTPRequestHandler):
 
     def _progress(self):
         """Render the mastery map from STATE.json, grouped by subject domain."""
-        state = read_state()
-        mastery = state.get("mastery")
+        progress = read_progress()
+        mastery = progress.get("mastery")
         groups: dict[str, list[tuple[str, str, str]]] = {}
         if isinstance(mastery, dict):
             for subject, entry in sorted(mastery.items()):
@@ -202,7 +203,7 @@ class Handler(SimpleHTTPRequestHandler):
             label = TEXT.get(f"domain.{domain}", domain)
             sections.append(f"<h2>{html.escape(label)}</h2><table>{rows}</table>")
 
-        reviews = state.get("reviews_due") if isinstance(state.get("reviews_due"), list) else []
+        reviews = progress.get("reviews_due") if isinstance(progress.get("reviews_due"), list) else []
         today = datetime.now().astimezone().date().isoformat()
         due = sorted((item for item in reviews if str(item.get("due_on", "")) <= today), key=lambda item: item["due_on"])
         if due:

@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "status": "diagnostic_pending",
   "initialized_at": null,
   "workspace": null,
@@ -7,13 +7,11 @@
   "mode": "initialization",
   "day": {
     "date": null,
-    "engineering": "pending",
-    "ai": "pending",
-    "active_block": null
+    "active_block": null,
+    "blocks": {}
   },
   "progress": {
-    "engineering_days": 0,
-    "ai_days": 0
+    "days": {}
   },
   "current": {
     "id": null,
@@ -24,6 +22,8 @@
   "mastery": {},
   "reviews_due": [],
   "transfers_due": [],
+  "enrolments": [],
+  "issues": [],
   "red_thread": {
     "domain": null,
     "repository": null,

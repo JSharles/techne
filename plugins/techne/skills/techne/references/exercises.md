@@ -55,7 +55,7 @@ Clarification consumes neither time nor help level. Announce the bound (see [ope
 
 ## DSA exercises and LeetCode
 
-Base every DSA exercise on a free LeetCode problem whenever one fits, preferring the problems listed for the current topic in [curriculum.md](curriculum.md#dsa-problem-bank).
+Base every DSA exercise on a free LeetCode problem whenever one fits, preferring the problems listed for the current topic in the Engineering program's problem bank.
 
 - The learner solves it locally, in TypeScript, in a small exercise folder with tests that Techne can run and read.
 - Write the statement yourself in the learning language; never copy LeetCode's text.

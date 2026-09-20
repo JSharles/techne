@@ -2,14 +2,16 @@
 
 Techne is an intensive, adaptive bootcamp delivered as one Agent Skill for Codex, Claude Code, and compatible coding agents. It is designed for developers with a TypeScript/frontend background who want to reach a senior level and build LLM applications.
 
-It runs two independent curricula over twelve weeks, about three hours each per day, with the same method (a short lesson, then hands-on practice, starting easy):
+Techne teaches **programs**: Markdown files describing what to learn. Two ship with it, and you can write or generate your own — a program never changes the method, only the content.
 
-- **morning — Engineering:** a core taken to independence (TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL, algorithms up to graphs, tests and debugging, architecture), plus a red-thread Next.js/NestJS application built two mornings a week and presentable at the end;
-- **afternoon — Applied AI:** Python, FastAPI, LLM applications, RAG with LangChain, agents with LangGraph, evaluation with LangSmith, and a final capstone.
+- **Engineering:** a core taken to independence (TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL, algorithms up to graphs, tests and debugging, architecture), plus a red-thread Next.js/NestJS application built two mornings a week and presentable at the end;
+- **Applied AI:** Python, FastAPI, LLM applications, RAG with LangChain, agents with LangGraph, evaluation with LangSmith, and a final capstone.
+
+You follow as many programs as you like, and a weekly schedule you own says which one each slot of your week belongs to.
 
 You write every line of every exercise: Techne scaffolds and reviews, but never writes your implementation, and never teaches you to delegate it to an AI.
 
-Techne stores progress outside the installed skill, records answers from browser exercises, scaffolds real coding environments, and adapts from observed evidence rather than self-assessment alone.
+Techne stores progress outside the installed skill — a small database beside your Markdown files — records answers from browser exercises, scaffolds real coding environments, and adapts from observed evidence rather than self-assessment alone.
 
 ## Installation (30-second setup)
 
@@ -80,8 +82,9 @@ Techne then:
 - asks which language you want to learn in (English, French, or any other language); commands and technical terms stay in English;
 - proposes a dedicated folder for your work and progress (`~/techne` by default), creates `.techne/` there, and remembers it so you can resume from anywhere;
 - checks your tools (and asks before installing anything missing);
-- runs a short **placement test**, about an hour: each area starts with an easy exercise and gets harder only while you succeed, so the curriculum starts at the right level;
-- starts the curriculum, where each exercise is preceded by a short lesson in your browser.
+- enrols you in the two shipped programs and writes a first weekly schedule you can edit;
+- runs a short **placement test**, about an hour: each area starts with an easy exercise and gets harder only while you succeed, so teaching starts at the right level;
+- starts teaching, where each exercise is preceded by a short lesson in your browser.
 
 The whole start takes two questions and under five minutes before the first exercise.
 
@@ -89,7 +92,7 @@ The whole start takes two questions and under five minutes before the first exer
 
 Anywhere Claude Code runs, but a terminal inside your editor (VS Code, or iTerm next to it) is the smoothest: the code, the tests, and Techne share one window, and Techne resolves your workspace from the current folder. Run one Techne session at a time; concurrent sessions are detected and warned about, not merged.
 
-The rhythm is six full days and one light day per week, and the programme advances in working days, so missing a day delays nothing. Your progress is tracked subject by subject — not started, discovered, with help, independent, transferred, blocked — and shown on the "My progress" page in your browser.
+The rhythm is six full days and one light day per week, and progress counts in working days, so missing a day delays nothing. A program ends when its subjects are covered, never after a fixed number of weeks. Your progress is tracked subject by subject — not started, discovered, with help, independent, transferred, blocked — and shown on the "My progress" page in your browser.
 
 Techne does not flatter: it names what you demonstrated and what you did not, gives a blunt assessment every six working days, and compares your map to what is expected of a senior React/Node developer on working days 20, 40 and 60.
 
@@ -118,14 +121,17 @@ Techne decides what comes next: the subject, due reviews, difficulty, and activi
 | `resume` | Picks up where you left off and gives you exactly one next action. Typing the entry point alone does the same. | To start the day or come back after a break, from any folder or a new conversation. |
 | `hint` | Gives one more step of help on the current exercise, from a guiding question up to the solution explained. | When you are stuck on the exercise itself. Each call gives a little more help; work done with help counts as practice, not as proof of mastery. |
 | `ask <question>` | Answers any question: where you are, why this subject, what a word means, how a tool works. Costs you nothing and leaves no trace. | Whenever you wonder anything. It declines only the answer to the exercise you have open — that is what `hint` is for. |
-| `help` | Lists the commands, one line each. | When you forget what exists. |
 | `status` | Shows the current activity, your mastery map subject by subject, due reviews, and Applied AI progress, with the two curricula kept separate. | When you want to know where you stand. |
-| `engineering` | Saves your progress and switches to the Senior Engineer curriculum. | When you want to work on the morning curriculum. |
-| `ai` | Saves your progress and switches to the Applied AI curriculum. | When the morning block is done, or you want to work on Applied AI now. |
+| `programs` | Lists the programs you can follow, the ones you are enrolled in, and your coverage in each. | To see what you are carrying. |
+| `switch <id>` | Saves your progress and opens another program you follow. | Whenever you want to change course. |
+| `schedule` | Shows your weekly schedule and offers to change it, or writes a first one from your enrolments. | When your week changes shape. |
+| `enroll <id>` / `leave <id>` | Follow a program, or stop following it without losing what you proved. | When your goals change. |
+| `new` | Creates a program with you, by interview: you bring the subjects and Techne structures them, or you give an objective and Techne designs the course. | When you want to learn something Techne does not ship. |
 | `pause` | Saves your progress and keeps the day open; `resume` continues exactly where you stopped. | Before a short break. |
 | `end` | Saves your progress, closes the session, and gives you four closing lines. | At the end of your working session. |
-| `feedback <text>` | Records what annoyed you — a bug, a friction, an idea — with the activity it came from, and opens a discussion when it is really a method change. | The moment something does not work, without losing your thread. |
-| `report` | Exports everything you recorded, grouped and dated, ready to paste into the Techne repository. | When you sit down to improve Techne itself. |
+| `feedback <text>` | Talks about the teaching: a preference is applied at once, a bigger change is discussed and recorded. | When the method or the content does not suit you. |
+| `issue <text>` | Records a defect or an idea about Techne itself, with the activity it came from. | The moment the tool misbehaves, without losing your thread. |
+| `extract-issues` | Exports everything you reported, grouped and dated, ready to paste into the Techne repository. | When you sit down to improve Techne itself. |
 | `reset` | After you confirm, puts your progress aside (archived, not deleted unless you ask) so Techne starts again from `init`. Your exercise files stay unless you ask to remove them. | To start the whole curriculum over. Updating Techne never needs it: an older workspace is migrated, not reset. |
 | `uninstall` | After you confirm, removes Techne from your agent, optionally after a `reset`, and tells you how to reinstall. | When you no longer want Techne, or to retest installation. |
 
@@ -139,7 +145,7 @@ The conversation transcript is not the source of truth. Techne reconstructs the 
 
 It resolves the workspace in this order:
 
-1. `.techne/STATE.json` in the current directory or one of its parents;
+1. a Techne workspace in the current directory or one of its parents;
 2. the active workspace recorded in `~/.techne/config.json`.
 
 This allows a new agent conversation to locate the current curriculum from another directory. The host agent may still request filesystem permission before writing outside its current project sandbox.
@@ -203,7 +209,7 @@ Uninstallation removes the teaching package, not `.techne/` or `~/.techne/config
 
 Techne's source, agent instructions, repository documentation, schemas, code comments, and commands are written in English.
 
-The learning experience is delivered in the language you choose during `init`: lessons, exercise prompts, feedback, progress reports, and browser UI. The choice is stored in `.techne/STATE.json`; ask Techne to switch language at any time. Established technical terms remain in English when that is clearer.
+The learning experience is delivered in the language you choose during `init`: lessons, exercise prompts, feedback, progress reports, and browser UI. Ask Techne to switch language at any time. Established technical terms remain in English when that is clearer.
 
 The browser UI ships with English and French strings (`assets/browser/assets/i18n.js`); other languages fall back to English in the browser while the lessons themselves are written in your language.
 
@@ -216,6 +222,7 @@ The repository contains one canonical skill and two distribution adapters:
 plugins/techne/.claude-plugin/plugin.json    Claude Code plugin manifest
 plugins/techne/commands/                     Claude Code slash commands (thin wrappers)
 plugins/techne/skills/techne/                Canonical Agent Skill
+plugins/techne/skills/techne/programs/       Programs Techne ships
 tests/                                       Workspace, state and catalogue tests
 CONTEXT.md                                   Project glossary
 docs/adr/                                    Decisions behind the programme's shape

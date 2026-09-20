@@ -5,8 +5,13 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import tempfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import store
 
 
 def default_config_path() -> Path:
@@ -16,7 +21,7 @@ def default_config_path() -> Path:
 
 
 def is_workspace(path: Path) -> bool:
-    return (path / ".techne" / "STATE.json").is_file()
+    return store.exists(path)
 
 
 def find_local_workspace(start: Path) -> Path | None:

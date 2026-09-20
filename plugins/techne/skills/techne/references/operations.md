@@ -2,12 +2,12 @@
 
 ## Source of truth
 
-Use `.techne/STATE.json` for machine-readable state and `.techne/CURRENT.md` for the one user-facing action. Keep these files consistent after every transition.
+Use the state store through `scripts/state.py` for machine-readable state, and `.techne/CURRENT.md` for the one user-facing action. Keep them consistent after every transition.
 
 The durable records are:
 
 - `PROFILE.md`: declared context and verified constraints;
-- `STATE.json`: block state, the mastery map, review and transfer queues, working days, and Applied AI track progress. Written only by `scripts/state.py`;
+- the state store, a database in the workspace: block state, the mastery map, review and transfer queues, working days, enrolments, and the issues journal. Read and written only through `scripts/state.py`;
 - `CURRENT.md`: one ready or in-progress activity;
 - `SESSION_LOG.md`: append-only narrative evidence;
 - `DECISIONS.md`: approved calibration decisions;
@@ -27,12 +27,14 @@ The durable records are:
 | `state.py transfer --due` | Get the subjects waiting to be reinvested in the red-thread project or the AI lab. |
 | `state.py checkpoint --note "…" [--help-level H2]` | Save the current activity. |
 | `state.py close --note "…"` | Close the block and count one working day. |
-| `state.py block <engineering\|ai>` | Switch the active block. |
+| `state.py brief` | The short state to read at the start of a turn. |
+| `state.py show` | The whole state, when the brief is not enough. |
+| `state.py export [--out FILE]` | A JSON backup of everything. |
 | `state.py ingest-events` | Apply mechanical browser evidence and return the rest for interpretation. |
-| `state.py feedback add --type bug\|friction\|idea --text "…"` | Record a learner report with its activity and track. |
-| `state.py feedback list [--status …] [--since DATE]` | List entries as JSON. |
-| `state.py feedback export [--status …] [--since DATE]` | Print the journal as Markdown, grouped by type. Reads only. |
-| `state.py feedback resolve <id> --status applied\|dismissed` | Mark an entry handled so it leaves the default export. |
+| `state.py issue add --type bug\|friction\|idea --text "…"` | Record a reported issue with its activity and program. |
+| `state.py issue list [--status …] [--since DATE]` | List issues as JSON. |
+| `state.py issue export [--status …] [--since DATE]` | Print the journal as Markdown, grouped by type. Reads only. |
+| `state.py issue resolve <id> --status applied\|dismissed` | Mark an issue handled so it leaves the default export. |
 | `state.py migrate` | Bring a workspace created by an older Techne forward to the current state format. |
 
 Pass `--session <id>` on every call so concurrent sessions are detected; when the script warns that another session wrote recently, re-read the state and tell the learner in one line before continuing.
@@ -41,17 +43,38 @@ When the script reports an older state format, offer the migration and run it. N
 
 Narrative files stay hand-written: `CURRENT.md` restates the current activity for the learner, and `SESSION_LOG.md` tells the story. Neither is ever used to recompute a state.
 
-## Select the logical block
+## Programs and blocks
 
-Use this order:
+The learner follows one or more programs, each a file Techne reads (see `docs/adr/0010-a-program-is-data-not-skill-source.md`). A block is one stretch of work on one of them.
+
+| Command | Use |
+| --- | --- |
+| `state.py programs` | What is available, what the learner follows, their coverage in each, and why any program was rejected. |
+| `state.py enroll <id>` | Follow a program. Refuses an unusable one, and one that disagrees with a program already followed, with the reason. |
+| `state.py leave <id>` | Stop following it. Evidence is untouched, and re-enrolling resumes where they stopped. |
+| `state.py switch <id>` | Checkpoint what is open and open that program. |
+
+Choosing what to open:
 
 1. Resume an explicitly in-progress activity unless the learner requests a checkpoint or switch.
-2. On a new local date with no in-progress activity, open the morning Engineering block, choosing an isolated morning or a red-thread project morning to keep two project mornings per week.
-3. After Techne closes the morning block, the next ordinary resume opens the afternoon Applied AI block.
-4. A checkpointed afternoon activity or capstone milestone resumes on the next afternoon block.
-5. An `engineering` or `ai` command (or the equivalent natural-language request) overrides the ordinary transition after a checkpoint is saved.
+2. Otherwise open what the schedule expects for now.
+3. A `switch` (or the equivalent natural-language request) overrides it, without comment.
 
-Never switch because the clock crosses noon. Never let unfinished afternoon work consume the next morning block automatically.
+## The weekly schedule
+
+`SCHEDULE.md` in the workspace says which program each slot of the week belongs to. It is the learner's file: they can dictate it in one sentence, edit it by hand, or ask for a proposal with `state.py schedule --propose`, which gives each enrolled program a slot, follows the cadence each program declares, and keeps one day light. `state.py schedule` shows it, what it expects now, and anything it could not read.
+
+The script writes the table only — the column names are what the parser reads, and days and slots are understood in English or French. Any sentence around it is yours to write, in the learner's language. A schedule already exists? `--propose` refuses; show them the current one and pass `--replace` only once they agree.
+
+It is an intention, never a rule:
+
+- open what it expects, and say so in one line when the learner arrives;
+- if they want another program, obey without comment; the script records the deviation;
+- never call a missed slot lateness. Progress counts in working days, so nothing is late.
+
+When `state.py schedule` reports drifting — the schedule has been wrong for a fortnight — offer once to rewrite it around what actually happens, and write the new table only if the learner agrees.
+
+Subjects are measured against the catalogues of the programs the learner follows; a subject outside them cannot be recorded.
 
 ## Resume
 
@@ -83,11 +106,9 @@ Do not expose internal file maintenance unless it blocks learning.
 
 The local browser runtime writes every opening, recall response, quiz choice, trace attempt, and code attempt to `.techne/events/browser.jsonl`. Read new events before declaring success, diagnosing a block, or changing a score.
 
-Browser events are evidence, not grades by themselves. Consider the task, correctness, attempt count, elapsed time, code, and help already given. Record the last consumed event timestamp or line number in `STATE.json`.
+Browser events are evidence, not grades by themselves. Consider the task, correctness, attempt count, elapsed time, code, and help already given. `state.py ingest-events` records how far the log has been consumed.
 
-## Orientation commands
-
-`help` lists the commands, one line each, in the learning language.
+## Orientation
 
 `ask` answers any question the learner has: where they are in the programme, why this subject today, what a word means, how a tool works, what a command does. It consumes no help level, records no evidence, and never moves the mastery map — asking must never feel expensive.
 
@@ -95,13 +116,15 @@ When no specific question is attached, answer the implicit one in four short poi
 
 The one thing `ask` declines is the answer to the open exercise. Say it in one sentence — that this would be help on the exercise itself, and that `hint` is the command for it — then wait. A first `hint` is a question and leaves the work independent; only help beyond that makes it `assisted`. Explaining a concept the exercise uses is still `ask`; writing or naming the solution is `hint`.
 
-## Feedback and reports
+## Issues and feedback
 
-`feedback <text>` records the learner's report with `state.py feedback add --type bug|friction|idea --text "<text>"`, which stores it with the current activity and track. Classify the type yourself from what they said; ask only when it is genuinely ambiguous. Confirm in one line and return to the activity: recording must cost the learner nothing mid-exercise.
+They go to different people (see `docs/adr/0012-issues-and-feedback-are-two-channels.md`).
 
-Recording does not replace discussing. When the report asks for a change to the method, the programme, or assessment, continue into [calibration.md](calibration.md) as before. When it is a defect or an annoyance, recording is the whole answer.
+`issue <text>` is for Techne itself: a broken exercise, noisy output, a confusing wording, an idea for the tool. Record it with `state.py issue add --type bug|friction|idea --text "<text>"`, which stores it with the current activity and program. Classify the type yourself from what they said; ask only when it is genuinely ambiguous. Confirm in one line and return to the activity: reporting must cost the learner nothing mid-exercise.
 
-`report` prints `state.py feedback export`, optionally narrowed with `--since` or `--status`, as Markdown grouped by type and ready to paste into the Techne repository. It reads only; it never writes state. Mark an entry handled with `state.py feedback resolve <id> --status applied|dismissed`; resolved entries leave the default export.
+`extract-issues` prints `state.py issue export`, optionally narrowed with `--since` or `--status`, as Markdown grouped by type and ready to paste into the Techne repository. It reads only; it never writes state. Mark an entry handled with `state.py issue resolve <id> --status applied|dismissed`; resolved entries leave the default export.
+
+`feedback <text>` is for the teaching: it is a conversation, not a ticket. Follow [calibration.md](calibration.md) — a preference is applied at once and kept in the profile, a change touching evidence, the programme or assessment goes through discussion and is recorded as a decision. Nothing about it enters the issues journal.
 
 ## Running the learner's tests
 
@@ -119,7 +142,7 @@ The chat is home. The browser shows lessons and the progress page; the editor is
 
 When the material is at fault — a wrong expected format, a statement that contradicts itself, a check that rejects correct answers, a lesson that taught something else — the activity is void.
 
-Say so plainly, in one sentence, without apologising at length. Then: no help level consumed, no evidence recorded, no mastery state moved, no conclusion drawn about the learner. Fix the material, record it with `state.py feedback --add "…" --type bug`, and reopen the activity or replace it.
+Say so plainly, in one sentence, without apologising at length. Then: no help level consumed, no evidence recorded, no mastery state moved, no conclusion drawn about the learner. Fix the material, record it with `state.py issue add --type bug --text "…"`, and reopen the activity or replace it.
 
 This applies to any question Techne asked, graded or not. When the same defect appears twice, look for the systemic cause before writing the next exercise.
 
@@ -172,7 +195,7 @@ Independence stops at H1: work helped at H2 or beyond is `assisted`. At H4, expl
 
 ## Checkpoint and close
 
-On `pause`, a block switch (`engineering`, `ai`), or `end`, run `state.py checkpoint` or `state.py close`, then:
+On `pause`, a `switch`, or `end`, run `state.py checkpoint` or `state.py close`, then:
 
 - record what was attempted and observed;
 - store the highest help level used;
@@ -199,11 +222,13 @@ When the learner says they cannot do it, or the signals degrade, stop the activi
 
 After two days or more without a session, open with four lines: how long the gap was, where the learner stands in working days, what is due for review, and today's action. Never mention lateness: the programme advances in working days, so an absence delays nothing.
 
-## After week twelve
+## When a program is covered
 
-When the twelfth week closes, write a short assessment in `.techne/SESSION_LOG.md` and give it to the learner: what is `transferred`, what stayed `assisted` or fragile, what was never started, and a prioritized plan for what to work on next.
+A program ends when its catalogue is covered — every subject started — and never because time has passed. The state script notices and moves that enrolment to maintenance on its own, saying so.
 
-Techne then switches to maintenance mode: no new units, only due reviews and transfer exercises on existing subjects, on whatever rhythm the learner keeps. Record the switch in `STATE.json` `status`.
+When it does, write a short assessment in `.techne/SESSION_LOG.md` and give it to the learner: what is `transferred`, what stayed `assisted`, fragile or `blocked`, and a prioritized plan for what to work on next.
+
+That program then runs in maintenance: no new units, only due reviews and transfer exercises on its subjects. Every other program the learner follows carries on untouched.
 
 ## Status
 
@@ -212,10 +237,11 @@ For a `status` command, report:
 - current logical block and activity;
 - completed units in each curriculum;
 - the mastery map grouped by domain, with each subject's state and strongest evidence, and a pointer to the browser page at `/progress`;
+- any subject with evidence that no enrolled program teaches any more;
 - due reviews and fragile areas;
-- the Applied AI week, lab progress, and capstone milestone when started.
+- for each enrolled program: its coverage, what is open in it, and its milestone when it has one.
 
-Do not merge the two curricula into one progress percentage.
+Do not merge programs into one progress percentage.
 
 ## Reset
 
