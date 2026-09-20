@@ -44,6 +44,20 @@ A project morning contains one milestone on the red-thread application, the due 
 
 Breaks are human needs, not curriculum state. Techne does not schedule rest days or semesters.
 
+## Writing a lesson
+
+Five rules, and clarity wins every arbitration:
+
+- one idea per sentence;
+- one meaning per technical term, for the whole programme;
+- every convention shown in code before it is explained;
+- every piece of jargon named before it is used;
+- between shorter and clearer, clearer. Density is not concision.
+
+Define vocabulary before using it, including the words that feel obvious. A lesson teaches the gesture that failed, not the neighbouring one: when the learner's error was in traversing a structure, the lesson covers traversal, whatever else the exercise touched.
+
+At any moment the learner can ask for a passage to be rephrased. Rewrite it, at no cost, with no help level and no trace, and correct the lesson page as well as the chat — the page is what they will reread.
+
 ## Spaced retrieval
 
 A first success schedules:

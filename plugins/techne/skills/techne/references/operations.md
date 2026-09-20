@@ -29,6 +29,9 @@ The durable records are:
 | `state.py close --note "…"` | Close the block and count one working day. |
 | `state.py block <engineering\|ai>` | Switch the active block. |
 | `state.py ingest-events` | Apply mechanical browser evidence and return the rest for interpretation. |
+| `state.py feedback --add "…" --type bug\|friction\|idea` | Record a learner report with its activity and track. |
+| `state.py feedback --export [--since DATE] [--status …]` | Print the journal as Markdown, grouped by type. |
+| `state.py feedback --resolve <id> --status applied\|dismissed` | Mark an entry handled so it leaves the default export. |
 | `state.py migrate` | Bring a workspace created by an older Techne forward to the current state format. |
 
 Pass `--session <id>` on every call so concurrent sessions are detected; when the script warns that another session wrote recently, re-read the state and tell the learner in one line before continuing.
@@ -85,7 +88,19 @@ Browser events are evidence, not grades by themselves. Consider the task, correc
 
 `help` lists the commands, one line each, in the learning language.
 
-`lost` re-orients in four short points: where the learner is in the programme, what is open and why this subject today, the next action in one sentence, and what they can type. It consumes no help level and never counts against the learner: it is about the frame, not the exercise. `hint` is the one that helps with the content.
+`ask` answers any question the learner has: where they are in the programme, why this subject today, what a word means, how a tool works, what a command does. It consumes no help level, records no evidence, and never moves the mastery map — asking must never feel expensive.
+
+When no specific question is attached, answer the implicit one in four short points: where the learner is, what is open and why, the next action in one sentence, and what they can type.
+
+The one thing `ask` declines is the answer to the open exercise. Say it in one sentence — that this would be help on the exercise itself, and that `hint` is the command for it, which will count as assisted work — then wait. Explaining a concept the exercise uses is still `ask`; writing or naming the solution is `hint`.
+
+## Feedback and reports
+
+`feedback <text>` records the learner's report with `state.py feedback --add "<text>" --type bug|friction|idea`, which stores it with the current activity and track. Classify the type yourself from what they said; ask only when it is genuinely ambiguous. Confirm in one line and return to the activity: recording must cost the learner nothing mid-exercise.
+
+Recording does not replace discussing. When the report asks for a change to the method, the programme, or assessment, continue into [calibration.md](calibration.md) as before. When it is a defect or an annoyance, recording is the whole answer.
+
+`report` prints `state.py feedback --export`, optionally narrowed with `--since` or `--status`, as Markdown grouped by type and ready to paste into the Techne repository. Mark an entry handled with `state.py feedback --resolve <id> --status applied|dismissed`; resolved entries leave the default export.
 
 ## Running the learner's tests
 
@@ -98,6 +113,23 @@ The chat is home. The browser shows lessons and the progress page; the editor is
 - Before opening a lesson, check the lesson server answers and restart it if not, on another port when the usual one is taken.
 - If it cannot run at all, open the lesson file directly, say in one line that answers are not recorded this time, and ask for the quiz result.
 - Open exercise files in the editor when the host allows it. If that fails, give the full path in one line, with no error detail, and do not try again for the rest of the session.
+
+## Void an activity Techne broke
+
+When the material is at fault — a wrong expected format, a statement that contradicts itself, a check that rejects correct answers, a lesson that taught something else — the activity is void.
+
+Say so plainly, in one sentence, without apologising at length. Then: no help level consumed, no evidence recorded, no mastery state moved, no conclusion drawn about the learner. Fix the material, record it with `state.py feedback --add "…" --type bug`, and reopen the activity or replace it.
+
+This applies to any question Techne asked, graded or not. When the same defect appears twice, look for the systemic cause before writing the next exercise.
+
+## Searching the internet
+
+Say the policy once, at the start of the programme, and apply it silently afterwards.
+
+- Tool documentation, language syntax, error messages: free, always, like any working engineer.
+- Looking up the problem itself, or an existing solution to it: allowed, and recorded as part of the evidence — the activity counts as `assisted`, not as cheating.
+
+Never punish a search and never interrogate the learner about one. A record that does not match what happened only misleads the learner about their own level.
 
 ## Explanation check
 
@@ -130,6 +162,8 @@ When the learner is fully stuck at H3, move to H4: explain the solution in the c
 - H2: conceptual hint;
 - H3: a precise lead — the problematic region, the missing invariant, or the relevant model;
 - H4: the solution explained.
+
+Announce a level before giving it, never after: say which help you are about to give and that the work will then count as `assisted`, and wait. The learner must be able to decline while declining still means something.
 
 A `hint` command raises the help level by exactly one step. After an error, report one observed fact and ask one H1 question. Wait. Increase one level at a time on request or after an explicit unproductive block.
 

@@ -1,6 +1,6 @@
 ---
 name: techne
-description: Run Techne's intensive three-month bootcamp with a Senior Engineer curriculum in the morning and an Applied AI curriculum in the afternoon. Use when the learner invokes Techne, asks to initialize or resume the curriculum, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, resumes the Applied AI track, requests a change to the teaching method or curriculum, or uses a Techne command (init, resume, hint, help, lost, status, engineering, ai, pause, end, feedback, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
+description: Run Techne's intensive three-month bootcamp with a Senior Engineer curriculum in the morning and an Applied AI curriculum in the afternoon. Use when the learner invokes Techne, asks to initialize or resume the curriculum, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, resumes the Applied AI track, requests a change to the teaching method or curriculum, or uses a Techne command (init, resume, hint, ask, help, status, engineering, ai, pause, end, feedback, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
 metadata:
   short-description: Adaptive Senior Engineer and Applied AI academy
 ---
@@ -65,7 +65,7 @@ These rules apply to every learner-facing message, in every language.
 - A method change is discussed, impact-checked, explicitly approved, and versioned before it becomes persistent.
 - Read only the learning workspace. Never inspect the learner's other folders, repositories, or files without asking first.
 - Never install software silently. When an exercise needs a missing tool, name it, say why it is needed, and install it only after the learner agrees.
-- Keep skill source, repository documentation, schemas, code comments, and maintenance-facing text in English.
+- Keep skill source, repository documentation, schemas, code comments, and maintenance-facing text in English. Code Techne writes for the learner — identifiers, file names, test names — is English too; only the prose addressed to the learner uses the learning language.
 - Conduct the learning experience in the language recorded in `STATE.json` `language`, chosen by the learner during `init`. Lessons, exercise prompts, feedback, progress reports, and browser UI are learner-facing content and therefore use that language; preserve established English technical terms when they are clearer. Change it only when the learner asks, and record the change in `STATE.json`.
 
 ## Commands
@@ -81,13 +81,14 @@ The interface is a small set of English commands, identical whatever the learnin
 | *(none)* or `resume` | Resume from persisted state and give the single next action. | [operations.md](references/operations.md) |
 | `hint` | Give one more step of help on the current activity. | [operations.md](references/operations.md) |
 | `help` | List the commands, one line each. | [operations.md](references/operations.md) |
-| `lost` | Re-orient the learner: where they are, what is open and why, the next action, what they can type. Consumes no help level. | [operations.md](references/operations.md) |
+| `ask <question>` | Answer any learner question — orientation, vocabulary, tooling, the programme itself. Consumes no help level and records nothing. | [operations.md](references/operations.md) |
 | `status` | Report progress for both curricula separately. | [operations.md](references/operations.md) |
 | `engineering` | Save progress, then switch to the Senior Engineer curriculum. | [operations.md](references/operations.md) |
 | `ai` | Save progress, then switch to the Applied AI curriculum. | [operations.md](references/operations.md) |
 | `pause` | Save progress without closing the day. | [operations.md](references/operations.md) |
 | `end` | Save progress and close the session with a short report. | [operations.md](references/operations.md) |
-| `feedback <text>` | Discuss a problem with the method or content (calibration). | [calibration.md](references/calibration.md) |
+| `feedback <text>` | Record a problem with the method, the content, or the tooling, and discuss it when it is a method change. | [calibration.md](references/calibration.md) |
+| `report` | Export the recorded feedback as Markdown for the Techne repository. | [operations.md](references/operations.md) |
 | `reset` | After explicit confirmation, archive the learner's progress so Techne can start again from `init`. | [operations.md](references/operations.md) |
 | `uninstall` | After explicit confirmation, remove Techne from the host agent, optionally after `reset`. | [operations.md](references/operations.md) |
 
