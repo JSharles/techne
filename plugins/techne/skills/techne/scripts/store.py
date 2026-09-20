@@ -25,12 +25,9 @@ SEED_FILE = "STATE.json"
 LEGACY_JOURNAL = "feedback.jsonl"
 PROGRESS_VIEW = ("browser", "progress.json")
 
-# Everything that is not a table of its own is a document under a key.
-DOCUMENT_KEYS = (
-    "version", "status", "initialized_at", "workspace", "language", "mode",
-    "day", "progress", "current", "red_thread", "ai", "browser", "session",
-    "legacy_mastery",
-)
+# These have tables of their own; every other key is kept as a document, so a
+# new field never goes missing just because the store had not heard of it.
+TABLE_KEYS = ("mastery", "reviews_due", "transfers_due", "enrolments", "issues")
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS documents (key TEXT PRIMARY KEY, value TEXT NOT NULL);
@@ -52,7 +49,8 @@ CREATE TABLE IF NOT EXISTS transfers_due (subject TEXT PRIMARY KEY, due_on TEXT 
 CREATE TABLE IF NOT EXISTS enrolments (
     program TEXT PRIMARY KEY,
     enrolled_at TEXT NOT NULL,
-    status TEXT NOT NULL DEFAULT 'active'
+    status TEXT NOT NULL DEFAULT 'active',
+    data TEXT NOT NULL DEFAULT '{}'
 );
 CREATE TABLE IF NOT EXISTS issues (
     id TEXT PRIMARY KEY,
@@ -66,9 +64,6 @@ CREATE TABLE IF NOT EXISTS issues (
     version INTEGER NOT NULL DEFAULT 1
 );
 """
-
-LIST_KEYS = ("reviews_due", "transfers_due", "enrolments", "issues")
-
 
 class StoreError(Exception):
     """The store is missing or unreadable."""
@@ -148,7 +143,12 @@ def load_at(root: Path) -> dict:
             for row in connection.execute("SELECT * FROM transfers_due ORDER BY due_on, subject")
         ]
         state["enrolments"] = [
-            {"program": row["program"], "enrolled_at": row["enrolled_at"], "status": row["status"]}
+            {
+                **json.loads(row["data"]),
+                "program": row["program"],
+                "enrolled_at": row["enrolled_at"],
+                "status": row["status"],
+            }
             for row in connection.execute("SELECT * FROM enrolments ORDER BY enrolled_at, program")
         ]
         state["issues"] = [
@@ -169,7 +169,11 @@ def save_at(root: Path, state: dict) -> None:
             connection.execute("DELETE FROM documents")
             connection.executemany(
                 "INSERT INTO documents (key, value) VALUES (?, ?)",
-                [(key, json.dumps(state[key], ensure_ascii=False)) for key in DOCUMENT_KEYS if key in state],
+                [
+                    (key, json.dumps(value, ensure_ascii=False))
+                    for key, value in state.items()
+                    if key not in TABLE_KEYS
+                ],
             )
 
             connection.execute("DELETE FROM mastery")
@@ -204,9 +208,17 @@ def save_at(root: Path, state: dict) -> None:
 
             connection.execute("DELETE FROM enrolments")
             connection.executemany(
-                "INSERT INTO enrolments (program, enrolled_at, status) VALUES (?, ?, ?)",
+                "INSERT INTO enrolments (program, enrolled_at, status, data) VALUES (?, ?, ?, ?)",
                 [
-                    (item["program"], item.get("enrolled_at", ""), item.get("status", "active"))
+                    (
+                        item["program"],
+                        item.get("enrolled_at", ""),
+                        item.get("status", "active"),
+                        json.dumps(
+                            {key: value for key, value in item.items() if key not in ("program", "enrolled_at", "status")},
+                            ensure_ascii=False,
+                        ),
+                    )
                     for item in state.get("enrolments", [])
                 ],
             )

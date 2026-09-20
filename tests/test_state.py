@@ -6,13 +6,14 @@ import sys
 import tempfile
 import unittest
 from contextlib import redirect_stdout
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from test_workspace import SKILL_ROOT, initializer, load_module, validator
 
 
 programs = load_module("programs", SKILL_ROOT / "scripts" / "programs.py")
+weekly = load_module("schedule", SKILL_ROOT / "scripts" / "schedule.py")
 journal = load_module("issues", SKILL_ROOT / "scripts" / "issues.py")
 store = load_module("store", SKILL_ROOT / "scripts" / "store.py")
 state_script = load_module("techne_state", SKILL_ROOT / "scripts" / "state.py")
@@ -240,6 +241,71 @@ class StateTransitionTests(unittest.TestCase):
         self.assertIn("py.async", known)
         self.assertNotIn("dsa.bfs", known)
 
+    def test_the_schedule_reads_both_languages_and_says_what_is_expected(self):
+        weekly.write(
+            self.workspace,
+            "| Jour | Créneau | Programme |\n| --- | --- | --- |\n"
+            "| lundi | matin | engineering |\n| monday | afternoon | applied-ai |\n| dimanche | léger | — |\n",
+        )
+
+        entries, problems = weekly.read(self.workspace)
+
+        self.assertEqual(problems, [])
+        self.assertEqual(len(entries), 3)
+        monday_morning = weekly.expected(entries, datetime(2026, 9, 21, 9, 30))
+        monday_afternoon = weekly.expected(entries, datetime(2026, 9, 21, 15, 0))
+        sunday = weekly.expected(entries, datetime(2026, 9, 20, 10, 0))
+        self.assertEqual(monday_morning["program"], "engineering")
+        self.assertEqual(monday_afternoon["program"], "applied-ai")
+        self.assertEqual((sunday["slot"], sunday["program"]), ("light", None))
+
+    def test_an_unreadable_schedule_row_is_reported(self):
+        weekly.write(self.workspace, "| Day | Slot | Program |\n| --- | --- | --- |\n| someday | morning | engineering |\n")
+
+        entries, problems = weekly.read(self.workspace)
+
+        self.assertEqual(entries, [])
+        self.assertTrue(any("someday" in problem for problem in problems))
+        self.assertTrue(any("SCHEDULE.md" in error for error in validator.validate(self.workspace / ".techne")))
+
+    def test_working_elsewhere_is_obeyed_and_recorded_as_drift(self):
+        state_script.enroll(self.state, self.workspace, "engineering")
+        state_script.enroll(self.state, self.workspace, "applied-ai")
+        store.save(self.workspace, self.state)
+        weekly.write(self.workspace, weekly.propose(["engineering", "applied-ai"]))
+
+        self.assertEqual(self.run_cli("switch", "applied-ai"), 0)
+
+        after = self.reload()
+        self.assertEqual(after["day"]["active_block"], "applied-ai")
+        drift = after.get("schedule_drift", [])
+        expected_now = weekly.expected(weekly.read(self.workspace)[0], datetime.now().astimezone())
+        if expected_now and (expected_now["program"] or "light") != "applied-ai":
+            self.assertEqual(drift[-1]["opened"], "applied-ai")
+            self.assertEqual(drift[-1]["expected"], expected_now["program"] or "light")
+        else:
+            self.assertEqual(drift, [])
+
+    def test_a_proposed_schedule_gives_each_program_a_slot_and_keeps_a_light_day(self):
+        text = weekly.propose(["engineering", "applied-ai"], light_day="sunday")
+        entries, problems = weekly.parse(text)
+
+        self.assertEqual(problems, [])
+        self.assertEqual(sum(1 for entry in entries if entry["slot"] == "light"), 1)
+        self.assertEqual(sum(1 for entry in entries if entry["program"] == "engineering"), 6)
+        self.assertEqual(sum(1 for entry in entries if entry["program"] == "applied-ai"), 6)
+
+    def test_drifting_needs_a_fortnight_of_deviations(self):
+        now = datetime(2026, 9, 20, 10, 0)
+        state = {}
+        planned = {"day": "monday", "slot": "morning", "program": "engineering"}
+        for index in range(5):
+            weekly.record_deviation(state, planned, "applied-ai", datetime(2026, 9, 15 + index % 5, 9, 0))
+        self.assertFalse(weekly.drifting(state, now))
+
+        weekly.record_deviation(state, planned, "applied-ai", datetime(2026, 9, 19, 9, 0))
+        self.assertTrue(weekly.drifting(state, now))
+
     def test_a_covered_program_moves_to_maintenance_alone(self):
         write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
         state_script.enroll(self.state, self.workspace, "sprint")
@@ -253,6 +319,9 @@ class StateTransitionTests(unittest.TestCase):
         completed = state_script.settle_completions(self.state, self.workspace)
 
         self.assertEqual(completed, ["sprint"])
+        store.save(self.workspace, self.state)
+        kept = {item["program"]: item for item in self.reload()["enrolments"]}
+        self.assertIn("completed_at", kept["sprint"], "a stored enrolment keeps its own fields")
         statuses = {item["program"]: item["status"] for item in self.state["enrolments"]}
         self.assertEqual(statuses["sprint"], "maintenance")
         self.assertEqual(statuses["engineering"], "active")

@@ -1,6 +1,6 @@
 ---
 name: techne
-description: Run Techne's intensive three-month bootcamp with a Senior Engineer curriculum in the morning and an Applied AI curriculum in the afternoon. Use when the learner invokes Techne, asks to initialize or resume the curriculum, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, resumes the Applied AI track, requests a change to the teaching method or curriculum, or uses a Techne command (init, resume, hint, ask, status, programs, switch, enroll, leave, engineering, ai, pause, end, feedback, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
+description: Run Techne's intensive three-month bootcamp with a Senior Engineer curriculum in the morning and an Applied AI curriculum in the afternoon. Use when the learner invokes Techne, asks to initialize or resume the curriculum, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, resumes the Applied AI track, requests a change to the teaching method or curriculum, or uses a Techne command (init, resume, hint, ask, status, programs, switch, enroll, leave, schedule, engineering, ai, pause, end, feedback, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
 metadata:
   short-description: Adaptive Senior Engineer and Applied AI academy
 ---
@@ -85,6 +85,7 @@ The interface is a small set of English commands, identical whatever the learnin
 | `programs` | List the available programs, the learner's enrolments, and their coverage in each. | [operations.md](references/operations.md) |
 | `switch <id>` | Save progress, then open another enrolled program. | [operations.md](references/operations.md) |
 | `enroll <id>` / `leave <id>` | Follow a program, or stop following it without losing its evidence. | [operations.md](references/operations.md) |
+| `schedule` | Show the weekly schedule, or propose one from the learner's enrolments. | [operations.md](references/operations.md) |
 | `pause` | Save progress without closing the day. | [operations.md](references/operations.md) |
 | `end` | Save progress and close the session with a short report. | [operations.md](references/operations.md) |
 | `feedback <text>` | Discuss the programme in progress: a preference is applied at once, a method change goes through calibration. | [calibration.md](references/calibration.md) |

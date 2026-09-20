@@ -14,6 +14,7 @@ from pathlib import Path
 
 import issues as journal
 import programs
+import schedule as weekly
 import store
 from workspace_registry import default_config_path, resolve_workspace
 
@@ -449,6 +450,10 @@ def build_parser() -> argparse.ArgumentParser:
     switch = sub.add_parser("switch", help="Open an enrolled program")
     switch.add_argument("program")
 
+    planning = sub.add_parser("schedule", help="Show the weekly schedule, or propose one")
+    planning.add_argument("--propose", action="store_true", help="Write a schedule from the learner's enrolments")
+    planning.add_argument("--light-day", default="sunday", help="Day kept light in a proposal")
+
     enrolling = sub.add_parser("enroll", help="Enrol in a program")
     enrolling.add_argument("program")
 
@@ -514,8 +519,25 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "close":
             result = checkpoint(state, args.note, None, "closed")
         elif args.command == "switch":
+            entries, _ = weekly.read(workspace)
+            planned = weekly.expected(entries, datetime.now().astimezone())
             checkpoint(state, f"switching to {args.program}", None, "checkpointed")
             result = switch_block(state, args.program)
+            weekly.record_deviation(state, planned, args.program, datetime.now().astimezone())
+        elif args.command == "schedule":
+            now = datetime.now().astimezone()
+            if args.propose:
+                text = weekly.propose(enrolled(state), args.light_day)
+                weekly.write(workspace, text)
+            entries, problems = weekly.read(workspace)
+            planned = weekly.expected(entries, now)
+            result = {
+                "path": str(weekly.schedule_path(workspace)),
+                "entries": entries,
+                "problems": problems,
+                "expected_now": planned,
+                "drifting": weekly.drifting(state, now),
+            }
         elif args.command == "enroll":
             result = enroll(state, workspace, args.program)
         elif args.command == "leave":
@@ -559,6 +581,9 @@ def main(argv: list[str] | None = None) -> int:
             }
         elif args.command == "migrate":
             applied = migrate(state)
+            if not weekly.schedule_path(workspace).is_file() and enrolled(state):
+                weekly.write(workspace, weekly.propose(enrolled(state)))
+                applied.append("wrote a weekly schedule from your enrolments")
             legacy = journal.read_legacy_journal(workspace / ".techne")
             if legacy:
                 state["issues"] = [*journal.entries(state), *legacy]

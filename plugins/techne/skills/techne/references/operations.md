@@ -61,6 +61,18 @@ Choosing what to open:
 2. Otherwise open what the schedule expects for now.
 3. A `switch` (or the equivalent natural-language request) overrides it, without comment.
 
+## The weekly schedule
+
+`SCHEDULE.md` in the workspace says which program each slot of the week belongs to. It is the learner's file: they can dictate it in one sentence, edit it by hand, or ask for a proposal with `state.py schedule --propose`, which gives each enrolled program a slot and keeps one day light. `state.py schedule` shows it, what it expects now, and anything it could not read.
+
+It is an intention, never a rule:
+
+- open what it expects, and say so in one line when the learner arrives;
+- if they want another program, obey without comment; the script records the deviation;
+- never call a missed slot lateness. Progress counts in working days, so nothing is late.
+
+When `state.py schedule` reports drifting — the schedule has been wrong for a fortnight — offer once to rewrite it around what actually happens, and write the new table only if the learner agrees.
+
 Subjects are measured against the catalogues of the programs the learner follows; a subject outside them cannot be recorded.
 
 ## Resume

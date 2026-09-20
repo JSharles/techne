@@ -121,6 +121,7 @@ Techne decides what comes next: the subject, due reviews, difficulty, and activi
 | `status` | Shows the current activity, your mastery map subject by subject, due reviews, and Applied AI progress, with the two curricula kept separate. | When you want to know where you stand. |
 | `programs` | Lists the programs you can follow, the ones you are enrolled in, and your coverage in each. | To see what you are carrying. |
 | `switch <id>` | Saves your progress and opens another program you follow. | Whenever you want to change course. |
+| `schedule` | Shows your weekly schedule and offers to change it, or writes a first one from your enrolments. | When your week changes shape. |
 | `enroll <id>` / `leave <id>` | Follow a program, or stop following it without losing what you proved. | When your goals change. |
 | `pause` | Saves your progress and keeps the day open; `resume` continues exactly where you stopped. | Before a short break. |
 | `end` | Saves your progress, closes the session, and gives you four closing lines. | At the end of your working session. |
