@@ -12,6 +12,7 @@ import sys
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
+import feedback as journal
 from catalogue import subjects
 from workspace_registry import default_config_path, resolve_workspace
 
@@ -350,6 +351,27 @@ def build_parser() -> argparse.ArgumentParser:
     block = sub.add_parser("block", help="Switch the active block")
     block.add_argument("name", choices=BLOCKS)
 
+    feedback = sub.add_parser("feedback", help="Record, list, resolve or export learner feedback")
+    actions = feedback.add_subparsers(dest="action", required=True)
+
+    record = actions.add_parser("add", help="Record a new entry")
+    record.add_argument("--type", choices=journal.TYPES, required=True)
+    record.add_argument("--text", required=True)
+    record.add_argument("--activity", help="Activity the entry came from (default: the current activity)")
+    record.add_argument("--track", help="Track the entry came from (default: the current track)")
+
+    listing = actions.add_parser("list", help="List entries as JSON")
+    listing.add_argument("--status", choices=journal.STATUSES)
+    listing.add_argument("--since", metavar="DATE")
+
+    exporting = actions.add_parser("export", help="Print the entries as Markdown grouped by type")
+    exporting.add_argument("--status", choices=journal.STATUSES, default="open")
+    exporting.add_argument("--since", metavar="DATE")
+
+    resolving = actions.add_parser("resolve", help="Mark an entry applied or dismissed")
+    resolving.add_argument("id")
+    resolving.add_argument("--status", choices=journal.STATUSES, default="applied")
+
     sub.add_parser("ingest-events", help="Apply mechanical browser evidence")
     sub.add_parser("migrate", help="Bring an older workspace forward to the current state format")
     sub.add_parser("show", help="Print the current state as JSON")
@@ -385,6 +407,22 @@ def main(argv: list[str] | None = None) -> int:
             result = checkpoint(state, args.note, None, "closed")
         elif args.command == "block":
             result = switch_block(state, args.name)
+        elif args.command == "feedback":
+            if args.action == "add":
+                current = state.get("current", {})
+                origin = {
+                    "activity": args.activity or current.get("id"),
+                    "track": args.track or current.get("track"),
+                }
+                result = journal.add(workspace, args.type, args.text, origin)
+            elif args.action == "resolve":
+                result = journal.resolve(workspace, args.id, args.status)
+            elif args.action == "export":
+                # A report reads; it never writes state.
+                print(journal.export(journal.select(workspace, args.status, args.since)), end="")
+                return 0
+            else:
+                result = {"entries": journal.select(workspace, args.status, args.since)}
         elif args.command == "ingest-events":
             result = ingest_events(state, workspace, known)
         elif args.command == "migrate":
@@ -397,7 +435,7 @@ def main(argv: list[str] | None = None) -> int:
             print(warning, file=sys.stderr)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
-    except (StateError, FileNotFoundError, OSError, ValueError) as exc:
+    except (StateError, journal.FeedbackError, FileNotFoundError, OSError, ValueError) as exc:
         print(f"Techne state transition failed: {exc}", file=sys.stderr)
         return 1
 

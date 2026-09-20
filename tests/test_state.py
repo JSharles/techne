@@ -1,16 +1,19 @@
 from __future__ import annotations
 
+import io
 import json
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from datetime import date, timedelta
 from pathlib import Path
 
-from test_workspace import SKILL_ROOT, initializer, load_module
+from test_workspace import SKILL_ROOT, initializer, load_module, validator
 
 
 catalogue = load_module("techne_catalogue", SKILL_ROOT / "scripts" / "catalogue.py")
+journal = load_module("feedback", SKILL_ROOT / "scripts" / "feedback.py")
 state_script = load_module("techne_state", SKILL_ROOT / "scripts" / "state.py")
 
 
@@ -165,6 +168,87 @@ class StateTransitionTests(unittest.TestCase):
 
         self.assertIsNotNone(warning)
         self.assertEqual(self.state["session"]["id"], "session-b")
+
+    def test_cli_records_feedback_with_its_context(self):
+        self.state["current"] = {"id": "l04-dicts", "track": "engineering"}
+        state_script.save(self.path, self.state)
+
+        self.assertEqual(self.run_cli("feedback", "add", "--type", "bug", "--text", "  la trace refuse mes réponses  "), 0)
+
+        entries = journal.read(self.workspace)
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0]["id"], "f1")
+        self.assertEqual(entries[0]["text"], "la trace refuse mes réponses")
+        self.assertEqual((entries[0]["activity"], entries[0]["track"]), ("l04-dicts", "engineering"))
+        self.assertEqual(entries[0]["status"], "open")
+
+    def test_cli_refuses_an_unknown_type_or_empty_text(self):
+        self.assertEqual(self.run_cli("feedback", "add", "--type", "bug", "--text", "   "), 1)
+        with self.assertRaises(SystemExit):
+            self.run_cli("feedback", "add", "--type", "rant", "--text", "x")
+        self.assertFalse(journal.journal_path(self.workspace).exists())
+
+    def test_cli_export_groups_by_type_and_hides_resolved_entries(self):
+        for kind, text in (("bug", "trace cassée"), ("friction", "sortie bruyante"), ("idea", "un raccourci")):
+            self.run_cli("feedback", "add", "--type", kind, "--text", text, "--activity", "l04", "--track", "engineering")
+        self.assertEqual(self.run_cli("feedback", "resolve", "f3", "--status", "applied"), 0)
+
+        with redirect_stdout(io.StringIO()) as printed:
+            self.assertEqual(self.run_cli("feedback", "export"), 0)
+        export = printed.getvalue()
+
+        self.assertIn("## Bugs (1)", export)
+        self.assertIn("## Frictions (1)", export)
+        self.assertNotIn("## Ideas", export)
+        self.assertIn("l04 · engineering", export)
+
+    def test_cli_export_leaves_the_state_untouched(self):
+        self.run_cli("feedback", "add", "--type", "bug", "--text", "trace cassée")
+        before = (self.workspace / ".techne" / "STATE.json").read_text(encoding="utf-8")
+
+        with redirect_stdout(io.StringIO()):
+            self.assertEqual(self.run_cli("feedback", "export"), 0)
+
+        self.assertEqual((self.workspace / ".techne" / "STATE.json").read_text(encoding="utf-8"), before)
+
+    def test_cli_export_without_a_journal_is_empty_not_an_error(self):
+        with redirect_stdout(io.StringIO()) as printed:
+            self.assertEqual(self.run_cli("feedback", "export"), 0)
+
+        self.assertIn("No feedback recorded", printed.getvalue())
+
+    def test_cli_list_narrows_by_date_and_status(self):
+        self.run_cli("feedback", "add", "--type", "bug", "--text", "vieux")
+        entries = journal.read(self.workspace)
+        entries[0]["at"] = "2026-01-05T09:00:00+01:00"
+        journal.write(self.workspace, entries)
+        self.run_cli("feedback", "add", "--type", "bug", "--text", "récent")
+
+        recent = journal.select(self.workspace, None, date.today().isoformat())
+        self.assertEqual([entry["text"] for entry in recent], ["récent"])
+
+        with redirect_stdout(io.StringIO()) as printed:
+            self.assertEqual(self.run_cli("feedback", "list", "--since", date.today().isoformat()), 0)
+        self.assertIn("récent", printed.getvalue())
+        self.assertNotIn("vieux", printed.getvalue())
+        self.assertEqual(self.run_cli("feedback", "list", "--since", "hier"), 1)
+
+    def test_ids_survive_a_damaged_journal(self):
+        self.run_cli("feedback", "add", "--type", "bug", "--text", "première")
+        path = journal.journal_path(self.workspace)
+        path.write_text(path.read_text(encoding="utf-8") + "{ not json\n", encoding="utf-8")
+
+        self.run_cli("feedback", "add", "--type", "idea", "--text", "seconde")
+
+        self.assertEqual([entry["id"] for entry in journal.read(self.workspace)], ["f1", "f2"])
+
+    def test_validator_reports_a_damaged_journal(self):
+        journal.journal_path(self.workspace).write_text(
+            json.dumps({"id": "f1", "at": "2026-09-20T09:00:00+02:00", "type": "rant", "text": "x", "status": "open"}) + "\n",
+            encoding="utf-8",
+        )
+
+        self.assertTrue(any("unknown type" in error for error in validator.validate(self.workspace / ".techne")))
 
     def test_cli_writes_state_and_reports_errors(self):
         self.assertEqual(self.run_cli("mastery", "ts.generics", "assisted", "--evidence", "helped", "--help-level", "H3"), 0)

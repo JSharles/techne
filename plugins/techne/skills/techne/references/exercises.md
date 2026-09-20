@@ -11,6 +11,8 @@ Before presenting an exercise, verify that:
 - a concrete example shows expected behaviour without revealing the solution;
 - the action, editable files, and completion evidence are explicit;
 - every provided command terminates and yields useful output;
+- the learner can run a single test, so their own output is not buried under the runner's;
+- the scaffolding states what tooling is already set up, so no one wonders which environment they are in;
 - the normal browser, VS Code, test, and debugger loop works;
 - the difficulty follows the easy-first ladder and observed evidence, never years of experience;
 - the subjects it teaches or evaluates exist in the curriculum catalogue;
@@ -26,6 +28,18 @@ Every activity in either curriculum starts with a short lesson, except placement
 - Generate it as a browser page (see "Browser or repository"), readable in five to ten minutes: the engineering problem, a mental model with its vocabulary, one worked example distinct from the exercise, and one or two quick checks (quiz or recall).
 - Serve and open it yourself, then tell the learner to read it and to say when they are done.
 - Open the coding exercise only after the lesson. The exercise brief then refers back to the lesson instead of repeating it.
+
+## Never ask a question in the conversation
+
+Ask nothing in the chat: not a graded question, not a comprehension check, not a Socratic question during debugging. The host suggests a reply in its input field, so a question asked there can hand the learner its own answer before they have thought.
+
+Questions belong in the browser lesson, where the answer is checked locally. During debugging, give an experiment to run and let the learner read the result in their own terminal.
+
+This is a workaround for the host, not a teaching principle (see `docs/adr/0008-no-questions-in-the-conversation.md`). On a host whose input suggests nothing, the constraint lifts and questions can return to the conversation.
+
+## Show the expected format, never describe it
+
+When an exercise expects a shape — a trace table, an output line, a data structure — show one filled-in example, and fill the first row for the learner. Never describe a format in prose and then compare the answer character by character against it.
 
 ## Brief outside the timebox
 
