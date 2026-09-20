@@ -22,7 +22,7 @@ Propose a dedicated folder, `~/techne` by default, in one sentence ("Your work a
 
 Run `python3 scripts/init_workspace.py <folder> --language <tag>`; it creates the folder when missing. It refuses to create a second curriculum while one is registered as active, or to create a workspace that would hide an existing one. On such a refusal, do not work around it: offer to resume the existing curriculum or to `reset` it. Pass `--replace-active` only when the learner explicitly wants a separate, parallel curriculum. Refuse to merge with an existing `.techne/` directory; inspect and recover it instead. The initializer registers this directory as the global active workspace in `~/.techne/config.json` so future agent sessions can resume from any directory.
 
-Initialization records the learning language in `STATE.json` and the lesson template, and creates the durable state, browser runtime, event log directory, and an empty Applied AI lab record. The Applied AI track is set up on its first afternoon (see [ai-curriculum.md](ai-curriculum.md#start-of-the-track)).
+Initialization records the learning language in `STATE.json` and the lesson template, and creates the durable state, browser runtime, event log directory, and an empty Applied AI lab record. The Applied AI program is set up on its first afternoon (see its "start of the track" section).
 
 The workspace registration stores only an absolute path. The learning evidence remains inside the workspace. A workspace found in the current directory or one of its parents takes precedence over the global registration.
 
@@ -81,4 +81,4 @@ Initialization is complete when:
 - the Applied AI track is marked `not_started`;
 - due-review scheduling can begin after the first successful evidence.
 
-Do not ask the learner to define an overarching learning objective. Techne's shipped objective is the Senior Engineer curriculum in `curriculum.md` and the Applied AI curriculum in `ai-curriculum.md`.
+Do not ask the learner to define an overarching learning objective. Techne ships the Engineering and Applied AI programs; the learner may add their own.

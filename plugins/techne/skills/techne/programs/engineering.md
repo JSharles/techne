@@ -1,4 +1,16 @@
-# Morning Engineering curriculum
+---
+id: engineering
+title: Engineering
+version: 1
+cadence: daily
+activity_kinds: code, browser
+lesson_to_practice: balanced
+timeboxes: lesson=10, exercise=30, review=5, project=90, placement=15
+red_thread: yes
+survey_ceiling: discovered
+---
+
+# Engineering
 
 ## Outcome and boundary
 
@@ -9,13 +21,13 @@ Depth beats coverage (see `docs/adr/0002-depth-over-breadth-core-and-survey.md`)
 - **Core**, taken to demonstrated independence: TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL and data modelling, DSA up to graphs, tests and debugging, applied architecture.
 - **Survey**, covered for working literacy only and grafted onto core exercises: security, performance, observability, delivery. Distributed systems and large-scale system design get a lesson and a quiz, nothing more.
 
-Out of the programme: maths for engineering, dynamic programming and advanced DSA patterns, Product and communication as separate lanes, Git and code review (already practised daily at work). Python and the Applied AI frameworks belong to the afternoon curriculum in [ai-curriculum.md](ai-curriculum.md).
+Out of the programme: maths for engineering, dynamic programming and advanced DSA patterns, Product and communication as separate lanes, Git and code review (already practised daily at work). Python and the Applied AI frameworks belong to the afternoon curriculum in [Applied AI](applied-ai.md).
 
 Techne controls the order from observed evidence. It may compress demonstrated material or repeat fragile material, but it preserves core coverage and prerequisite order.
 
 ## Shape of a week
 
-Six full mornings and one light day (see [pedagogy.md](pedagogy.md#rhythm)):
+Six full mornings and one light day (see [pedagogy.md](../references/pedagogy.md#rhythm)):
 
 - **four mornings** of isolated work: one web activity (TypeScript, JavaScript, React, Next.js, or NestJS), one DSA activity, and due reviews;
 - **two mornings** on the red-thread project;

@@ -12,21 +12,107 @@ from pathlib import Path
 from test_workspace import SKILL_ROOT, initializer, load_module, validator
 
 
-catalogue = load_module("techne_catalogue", SKILL_ROOT / "scripts" / "catalogue.py")
+programs = load_module("programs", SKILL_ROOT / "scripts" / "programs.py")
 journal = load_module("feedback", SKILL_ROOT / "scripts" / "feedback.py")
 store = load_module("store", SKILL_ROOT / "scripts" / "store.py")
 state_script = load_module("techne_state", SKILL_ROOT / "scripts" / "state.py")
 
 
-class CatalogueTests(unittest.TestCase):
-    def test_reads_both_curricula(self):
-        subjects = catalogue.subjects(SKILL_ROOT)
+VALID_PROGRAM = """---
+id: {identifier}
+title: {title}
+version: 1
+activity_kinds: code
+timeboxes: exercise=20
+---
 
+# {title}
+
+## Sequence
+
+### Week 1 — Start
+
+- something to learn.
+
+## Subject catalogue
+
+### {domain_title} — `{prefix}.*`
+
+`first`, `second`
+"""
+
+
+def write_program(directory: Path, identifier: str, **overrides) -> Path:
+    directory.mkdir(parents=True, exist_ok=True)
+    text = VALID_PROGRAM.format(
+        identifier=identifier,
+        title=overrides.get("title", identifier.title()),
+        domain_title=overrides.get("domain_title", "Algorithms"),
+        prefix=overrides.get("prefix", "dsa"),
+    )
+    for old, new in overrides.get("replace", []):
+        text = text.replace(old, new)
+    path = directory / f"{identifier}.md"
+    path.write_text(text, encoding="utf-8")
+    return path
+
+
+class ProgramTests(unittest.TestCase):
+    def test_reads_the_shipped_programs(self):
+        found, rejected = programs.discover(SKILL_ROOT)
+
+        self.assertEqual(rejected, {})
+        self.assertEqual(sorted(found), ["applied-ai", "engineering"])
+        self.assertTrue(found["engineering"].settings["red_thread"])
+        self.assertEqual(found["engineering"].settings["timeboxes"]["exercise"], 30)
+        self.assertGreater(len(found["engineering"].units), 3)
+
+        subjects = programs.subjects(SKILL_ROOT)
         self.assertIn("ts.narrowing", subjects)
-        self.assertIn("dsa.bfs", subjects)
         self.assertIn("agent.checkpointers", subjects)
         self.assertNotIn("ts.bogus", subjects)
         self.assertGreater(len(subjects), 150)
+
+    def test_the_learners_program_wins_an_identifier_clash(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            write_program(programs.workspace_dir(workspace), "engineering", title="My Engineering")
+
+            found, _ = programs.discover(SKILL_ROOT, workspace)
+
+            self.assertEqual(found["engineering"].title, "My Engineering")
+            self.assertEqual(found["engineering"].source, "workspace")
+
+    def test_an_unusable_program_is_rejected_with_its_reason(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            folder = programs.workspace_dir(workspace)
+            write_program(folder, "no-settings", replace=[("activity_kinds: code", "pace: fast")])
+            write_program(folder, "no-units", replace=[("### Week 1 — Start", "Nothing here")])
+            write_program(folder, "no-catalogue", replace=[("### Algorithms — `dsa.*`", "Nothing")])
+            write_program(folder, "bad-kind", replace=[("activity_kinds: code", "activity_kinds: telepathy")])
+            write_program(folder, "fine")
+
+            found, rejected = programs.discover(SKILL_ROOT, workspace)
+
+            self.assertIn("fine", found)
+            self.assertIn("unknown setting(s): pace", rejected["no-settings"])
+            self.assertIn("at least one unit", rejected["no-units"])
+            self.assertIn("subject catalogue", rejected["no-catalogue"])
+            self.assertIn("unknown activity kind: telepathy", rejected["bad-kind"])
+
+    def test_programs_disagreeing_about_a_domain_are_reported(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            folder = programs.workspace_dir(workspace)
+            write_program(folder, "interviews", domain_title="Algorithms", prefix="dsa")
+            write_program(folder, "gardening", domain_title="Digging", prefix="dsa")
+
+            found, _ = programs.discover(SKILL_ROOT, workspace)
+            problems = programs.contradictions(found["gardening"], list(found.values()))
+
+            self.assertTrue(any("`dsa.*`" in problem for problem in problems))
+            self.assertEqual(programs.contradictions(found["interviews"], [found["interviews"]]), [])
 
 
 class StateTransitionTests(unittest.TestCase):
@@ -36,7 +122,7 @@ class StateTransitionTests(unittest.TestCase):
         self.workspace = Path(self.directory.name)
         initializer.initialize(self.workspace, "fr")
         self.state = state_script.load(self.workspace)
-        self.known = catalogue.subjects(SKILL_ROOT)
+        self.known = programs.subjects(SKILL_ROOT, self.workspace)
 
     def run_cli(self, *args) -> int:
         return state_script.main(["--workspace", str(self.workspace), *args])

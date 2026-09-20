@@ -11,7 +11,7 @@ For a new or fragile concept, use:
 5. immediate evidence-based feedback;
 6. later transfer and spaced retrieval.
 
-Steps 1 to 3 form a short browser lesson shown before the exercise (see [exercises.md](exercises.md#lesson-before-practice)). Teach before demanding autonomous transfer. Difficulty climbs from easy, one step at a time, following [curriculum.md](curriculum.md#adaptation-rules). A first difficulty adjusts instruction; it does not establish a general level.
+Steps 1 to 3 form a short browser lesson shown before the exercise (see [exercises.md](exercises.md#lesson-before-practice)). Teach before demanding autonomous transfer. Difficulty climbs from easy, one step at a time, following the open program's adaptation rules. A first difficulty adjusts instruction; it does not establish a general level.
 
 ## Rhythm
 
@@ -31,7 +31,7 @@ Say which signal appeared, in one sentence, and let the learner decide.
 
 ## Morning shape
 
-Four mornings of isolated work and two mornings on the red-thread project, as described in [curriculum.md](curriculum.md#shape-of-a-week).
+Four mornings of isolated work and two mornings on the red-thread project, as described in the Engineering program's shape of a week.
 
 An isolated morning contains:
 
@@ -74,7 +74,7 @@ Reaching `independent` also schedules a transfer deadline one week later. Projec
 
 ## Mastery map
 
-Every subject in the catalogues of [curriculum.md](curriculum.md#subject-catalogue) and [ai-curriculum.md](ai-curriculum.md#subject-catalogue) carries exactly one state in `STATE.json` `mastery`, keyed by its identifier:
+Every subject in the catalogue of an enrolled program carries exactly one state in `STATE.json` `mastery`, keyed by its identifier:
 
 - `not_started`: never taught or evaluated;
 - `discovered`: taught, or recognized in a lesson check; the ceiling for survey subjects;

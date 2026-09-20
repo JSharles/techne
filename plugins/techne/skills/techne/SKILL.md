@@ -31,7 +31,7 @@ If a workspace exists and the learner asks for `init`, do not initialize again: 
 ## Route the request
 
 - For a resume, session start, pause, completion, hint, browser answer, status, checkpoint, reset, or uninstall request, read [operations.md](references/operations.md).
-- Before any lesson, exercise, recall, review, assessment, or feedback, read [pedagogy.md](references/pedagogy.md) and [exercises.md](references/exercises.md), then the relevant part of the track's curriculum: [curriculum.md](references/curriculum.md) for the morning Senior Engineer track, [ai-curriculum.md](references/ai-curriculum.md) for the afternoon Applied AI track. Do not load the other track's curriculum.
+- Before any lesson, exercise, recall, review, assessment, or feedback, read [pedagogy.md](references/pedagogy.md) and [exercises.md](references/exercises.md), then the open program's own file in `programs/` — the shipped ones are [engineering.md](programs/engineering.md) and [applied-ai.md](programs/applied-ai.md), and the learner's own live in their workspace. Do not load another program while one is open.
 - When the learner comments on or asks to change Techne's method, curriculum, schedule, assessment, or content, checkpoint the activity and read [calibration.md](references/calibration.md).
 
 ## Talk to the learner

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply every Techne state transition, so the agent never edits STATE.json.
+"""Apply every Techne state transition, so the agent never edits the state store.
 
 See docs/adr/0004-state-transitions-belong-to-a-script.md.
 """
@@ -13,8 +13,8 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import feedback as journal
+import programs
 import store
-from catalogue import subjects
 from workspace_registry import default_config_path, resolve_workspace
 
 
@@ -371,6 +371,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("ingest-events", help="Apply mechanical browser evidence")
     sub.add_parser("migrate", help="Bring an older workspace forward to the current state format")
+    sub.add_parser("programs", help="List the programs available to this learner")
     sub.add_parser("show", help="Print the current state as JSON")
     return parser
 
@@ -380,7 +381,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         workspace = args.workspace.expanduser().resolve() if args.workspace else resolve_workspace(Path("."), args.config)
         state = load(workspace, allow_old_format=args.command == "migrate")
-        known = subjects(SKILL_ROOT)
+        known = programs.subjects(SKILL_ROOT, workspace)
         warning = note_session(state, args.session)
         result: object = None
 
@@ -422,6 +423,22 @@ def main(argv: list[str] | None = None) -> int:
                 result = {"entries": journal.select(workspace, args.status, args.since)}
         elif args.command == "ingest-events":
             result = ingest_events(state, workspace, known)
+        elif args.command == "programs":
+            found, rejected = programs.discover(SKILL_ROOT, workspace)
+            result = {
+                "available": [
+                    {
+                        "id": program.identifier,
+                        "title": program.title,
+                        "source": program.source,
+                        "units": len(program.units),
+                        "subjects": len(program.subjects),
+                        "settings": program.settings,
+                    }
+                    for program in sorted(found.values(), key=lambda item: item.identifier)
+                ],
+                "rejected": rejected,
+            }
         elif args.command == "migrate":
             result = {"applied": migrate(state), "version": state["version"]}
         elif args.command == "show":
@@ -432,7 +449,7 @@ def main(argv: list[str] | None = None) -> int:
             print(warning, file=sys.stderr)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
-    except (StateError, journal.FeedbackError, FileNotFoundError, OSError, ValueError) as exc:
+    except (StateError, journal.FeedbackError, programs.ProgramError, FileNotFoundError, OSError, ValueError) as exc:
         print(f"Techne state transition failed: {exc}", file=sys.stderr)
         return 1
 
