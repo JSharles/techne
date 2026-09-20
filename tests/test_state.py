@@ -334,6 +334,23 @@ class StateTransitionTests(unittest.TestCase):
         self.assertEqual(state_script.off_programme(self.state, self.workspace), ["int.first"])
         self.assertEqual(self.state["mastery"]["int.first"]["state"], "independent")
 
+    def test_an_unscheduled_program_is_named_with_the_one_to_propose(self):
+        state_script.enroll(self.state, self.workspace, "engineering")
+        state_script.enroll(self.state, self.workspace, "applied-ai")
+        state_script.switch_block(self.state, "engineering")
+        store.save(self.workspace, self.state)
+        weekly.write(
+            self.workspace,
+            "| Day | Slot | Program |\n| --- | --- | --- |\n| monday | morning | engineering |\n",
+        )
+
+        with redirect_stdout(io.StringIO()) as printed:
+            self.assertEqual(self.run_cli("schedule"), 0)
+        reported = json.loads(printed.getvalue())
+
+        self.assertEqual(reported["unscheduled"], ["applied-ai"])
+        self.assertEqual(reported["least_recent"], "applied-ai", "the one worked on longest ago")
+
     def test_a_proposal_never_overwrites_a_schedule_without_being_told(self):
         state_script.enroll(self.state, self.workspace, "engineering")
         store.save(self.workspace, self.state)

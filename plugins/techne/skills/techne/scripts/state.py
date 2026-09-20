@@ -314,6 +314,9 @@ def switch_block(state: dict, program: str) -> dict:
         raise StateError(f"You are not enrolled in {program}. You follow: {following}.")
     day = state.setdefault("day", {})
     day["active_block"] = program
+    for item in state.get("enrolments", []):
+        if item["program"] == program:
+            item["last_opened_at"] = now_stamp()
     blocks = day.setdefault("blocks", {})
     if blocks.get(program) in (None, "pending", "closed"):
         blocks[program] = "in_progress"
@@ -531,6 +534,16 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def least_recent(state: dict) -> str | None:
+    """The enrolled program worked on longest ago, to propose when nothing is scheduled."""
+    following = enrolled(state)
+    if not following:
+        return None
+    blocks = state.get("day", {}).get("blocks", {})
+    seen = {item["program"]: item.get("last_opened_at", "") for item in state.get("enrolments", [])}
+    return sorted(following, key=lambda program: (seen.get(program, ""), blocks.get(program, "")))[0]
+
+
 def proposal(workspace: Path, program_ids: list[str], light_day: str = "sunday") -> str:
     """A schedule proposal that respects each program's declared cadence."""
     found, _ = programs.discover(SKILL_ROOT, workspace)
@@ -626,6 +639,8 @@ def main(argv: list[str] | None = None) -> int:
                 "entries": entries,
                 "problems": problems,
                 "expected_now": planned,
+                "unscheduled": [program for program in enrolled(state) if program not in {entry["program"] for entry in entries}],
+                "least_recent": least_recent(state),
                 "drifting": weekly.drifting(state, now),
             }
         elif args.command == "enroll":

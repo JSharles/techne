@@ -58,7 +58,8 @@ Choosing what to open:
 
 1. Resume an explicitly in-progress activity unless the learner requests a checkpoint or switch.
 2. Otherwise open what the schedule expects for now.
-3. A `switch` (or the equivalent natural-language request) overrides it, without comment.
+3. When the schedule expects nothing — an evening, a day it does not cover, a program with no slot yet — ask which program to open, and propose the one least recently worked on. Never pick silently.
+4. A `switch` (or the equivalent natural-language request) overrides all of this, without comment.
 
 ## The weekly schedule
 
