@@ -15,7 +15,7 @@ Steps 1 to 3 form a short browser lesson shown before the exercise (see [exercis
 
 ## Rhythm
 
-Six full days and one light day per week, over twelve weeks. A full day is about three hours of morning curriculum and three hours of afternoon Applied AI. The light day is about ninety minutes of reviews and reading, with no new subject; it also absorbs what a busy week pushed back.
+Six full days and one light day per week. A full day is about three hours on each program the schedule opens that day. The light day is about ninety minutes of reviews and reading, with no new subject; it also absorbs what a busy week pushed back.
 
 Techne never asks the learner to set a session duration. It decides the content and stops when the day's planned evidence is collected. Each activity announces a bound (see [operations.md](operations.md#timeboxes)).
 
@@ -29,18 +29,17 @@ Propose an extra light day — propose, never impose — when any of these appea
 
 Say which signal appeared, in one sentence, and let the learner decide.
 
-## Morning shape
+## The shape of a block
 
-Four mornings of isolated work and two mornings on the red-thread project, as described in the Engineering program's shape of a week.
+A program with a red-thread project alternates isolated work and project work, as its own file describes. The Engineering program, for instance, keeps four isolated mornings and two project mornings a week.
 
-An isolated morning contains:
+An isolated block contains:
 
 - up to ten minutes of due recall;
-- one web activity centred on TypeScript, JavaScript, React, Next.js, or NestJS;
-- one DSA activity;
+- the activities the open program prescribes for this point in its sequence, in the kinds its settings allow;
 - a short evidence and checkpoint close.
 
-A project morning contains one milestone on the red-thread application, the due recall, and the same close.
+A project block contains one milestone on the red-thread application, the due recall, and the same close.
 
 Breaks are human needs, not curriculum state. Techne does not schedule rest days or semesters.
 
@@ -74,7 +73,7 @@ Reaching `independent` also schedules a transfer deadline one week later. Projec
 
 ## Mastery map
 
-Every subject in the catalogue of an enrolled program carries exactly one state in `STATE.json` `mastery`, keyed by its identifier:
+Every subject in the catalogue of an enrolled program carries exactly one state in the mastery map, keyed by its identifier:
 
 - `not_started`: never taught or evaluated;
 - `discovered`: taught, or recognized in a lesson check; the ceiling for survey subjects;
@@ -98,4 +97,4 @@ Prefer normal development environments with stable scripts, tests, and VS Code d
 
 ## Language
 
-Teach in the language recorded in `STATE.json` `language` while retaining standard English technical terms. Write natural, idiomatic prose, as a native speaker would; translate meaning rather than the English wording of this skill. Explain unfamiliar vocabulary in ordinary language before an exercise starts.
+Teach in the language the learner chose, while retaining standard English technical terms. Write natural, idiomatic prose, as a native speaker would; translate meaning rather than the English wording of this skill. Explain unfamiliar vocabulary in ordinary language before an exercise starts.

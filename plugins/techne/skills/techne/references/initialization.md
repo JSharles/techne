@@ -22,7 +22,7 @@ Propose a dedicated folder, `~/techne` by default, in one sentence ("Your work a
 
 Run `python3 scripts/init_workspace.py <folder> --language <tag>`; it creates the folder when missing. It refuses to create a second curriculum while one is registered as active, or to create a workspace that would hide an existing one. On such a refusal, do not work around it: offer to resume the existing curriculum or to `reset` it. Pass `--replace-active` only when the learner explicitly wants a separate, parallel curriculum. Refuse to merge with an existing `.techne/` directory; inspect and recover it instead. The initializer registers this directory as the global active workspace in `~/.techne/config.json` so future agent sessions can resume from any directory.
 
-Initialization records the learning language in `STATE.json` and the lesson template, and creates the durable state, browser runtime, event log directory, and an empty Applied AI lab record. The Applied AI program is set up on its first afternoon (see its "start of the track" section).
+Initialization records the learning language in the state and the lesson template, and creates the store, browser runtime, event log directory, and an empty Applied AI lab record.
 
 The workspace registration stores only an absolute path. The learning evidence remains inside the workspace. A workspace found in the current directory or one of its parents takes precedence over the global registration.
 
@@ -32,7 +32,7 @@ If a valid existing workspace needs to become active again, run `python3 scripts
 
 Techne ships a fixed twelve-week program and measures the learner's level by observation. After the language and folder, ask nothing else: no subjects, order, session duration, availability, deadline, experience, stack, or weaknesses.
 
-State the rhythm instead, in one sentence: twelve weeks, about three hours on the Senior Engineer curriculum in the morning and three hours on Applied AI in the afternoon, at the learner's pace within each block.
+Then enrol them in the shipped programs with `state.py enroll engineering` and `state.py enroll applied-ai`, and say the rhythm in one sentence: about three hours on each, one in the morning and one in the afternoon, six days a week with a light seventh. Mention that `new` creates a program of their own whenever they want one, and write a first schedule with `state.py schedule --propose`.
 
 Check the environment yourself: Node.js, a package manager, Git, VS Code, a browser, and Python for the lesson server. When something is missing, say what and why, and install it only after the learner agrees.
 
@@ -69,7 +69,7 @@ At minimum observe:
 - JavaScript runtime and async reasoning;
 - HTTP, SQL, architecture, and Product fundamentals.
 
-Never guess a state: a subject nobody probed stays `not_started`. Record every probe result with `python3 scripts/state.py mastery <subject> <state> --evidence "…" --help-level H0`, never by editing `STATE.json`; store narrative decisions in `SESSION_LOG.md`. Pick the red-thread project domain with the learner during week 1, not during initialization.
+Never guess a state: a subject nobody probed stays `not_started`. Record every probe result with `python3 scripts/state.py mastery <subject> <state> --evidence "…" --help-level H0`, never by writing state yourself; store narrative decisions in `SESSION_LOG.md`. Pick the red-thread project domain with the learner during week 1, not during initialization.
 
 ## Finish initialization
 

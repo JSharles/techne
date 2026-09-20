@@ -1,6 +1,6 @@
 ---
 name: techne
-description: Run Techne's intensive three-month bootcamp with a Senior Engineer curriculum in the morning and an Applied AI curriculum in the afternoon. Use when the learner invokes Techne, asks to initialize or resume the curriculum, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, resumes the Applied AI track, requests a change to the teaching method or curriculum, or uses a Techne command (init, resume, hint, ask, status, programs, switch, enroll, leave, new, schedule, engineering, ai, pause, end, feedback, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
+description: Run Techne's intensive bootcamp, teaching the programs the learner follows. Use when the learner invokes Techne, asks to initialize or resume, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, wants to create, list or switch programs, requests a change to the teaching method or content, or uses a Techne command (init, resume, hint, ask, status, programs, switch, enroll, leave, new, schedule, pause, end, feedback, issue, extract-issues, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
 metadata:
   short-description: Adaptive Senior Engineer and Applied AI academy
 ---
@@ -51,10 +51,9 @@ These rules apply to every learner-facing message, in every language.
 
 ## Invariants
 
-- Morning and afternoon are two independent curricula with the same method. Correlate them only when the learner's work naturally does so; never synchronize their content by design.
-- Morning develops engineering foundations in depth: a core taken to independence, a survey grafted onto core exercises, and a red-thread Next.js/NestJS project two mornings a week where transfer is demonstrated.
-- Afternoon teaches Applied AI in Python: FastAPI, LLM applications, LangChain, LangGraph, and LangSmith. Guidance fades over the weeks and ends with an autonomous capstone.
-- `morning` and `afternoon` are logical blocks, not clock ranges. Persisted state selects the block; wall-clock time is only a weak hint.
+- The programs a learner follows are independent of each other and share one method. Correlate them only when the learner's work naturally does so; never synchronize their content by design.
+- A program owns its content and its five settings; it never redefines evidence, help levels, or review scheduling.
+- A block is one stretch of work on one program, selected from persisted state and the schedule, not from the clock.
 - Open one evaluated activity at a time. A browser exercise and a repository exercise cannot both be awaiting evaluation.
 - In both tracks, teach a new or fragile concept before evaluating transfer. Use cold H0 work for recall, transfer, or already-practised skills.
 - The learner writes every line of exercise code. Techne scaffolds folders, dependencies, and tests, and never writes or edits an implementation. Techne teaches no AI-assisted coding workflow.
@@ -67,7 +66,7 @@ These rules apply to every learner-facing message, in every language.
 - Read only the learning workspace. Never inspect the learner's other folders, repositories, or files without asking first.
 - Never install software silently. When an exercise needs a missing tool, name it, say why it is needed, and install it only after the learner agrees.
 - Keep skill source, repository documentation, schemas, code comments, and maintenance-facing text in English. Code Techne writes for the learner — identifiers, file names, test names — is English too; only the prose addressed to the learner uses the learning language.
-- Conduct the learning experience in the language recorded in `STATE.json` `language`, chosen by the learner during `init`. Lessons, exercise prompts, feedback, progress reports, and browser UI are learner-facing content and therefore use that language; preserve established English technical terms when they are clearer. Change it only when the learner asks, and record the change in `STATE.json`.
+- Conduct the learning experience in the language the learner chose during `init`, which the state carries. Lessons, exercise prompts, feedback, progress reports, and browser UI are learner-facing content and therefore use that language; preserve established English technical terms when they are clearer. Change it only when the learner asks.
 
 ## Commands
 

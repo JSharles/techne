@@ -2,7 +2,7 @@
 
 ## Source of truth
 
-Use `.techne/STATE.json` for machine-readable state and `.techne/CURRENT.md` for the one user-facing action. Keep these files consistent after every transition.
+Use the state store through `scripts/state.py` for machine-readable state, and `.techne/CURRENT.md` for the one user-facing action. Keep them consistent after every transition.
 
 The durable records are:
 
@@ -105,7 +105,7 @@ Do not expose internal file maintenance unless it blocks learning.
 
 The local browser runtime writes every opening, recall response, quiz choice, trace attempt, and code attempt to `.techne/events/browser.jsonl`. Read new events before declaring success, diagnosing a block, or changing a score.
 
-Browser events are evidence, not grades by themselves. Consider the task, correctness, attempt count, elapsed time, code, and help already given. Record the last consumed event timestamp or line number in `STATE.json`.
+Browser events are evidence, not grades by themselves. Consider the task, correctness, attempt count, elapsed time, code, and help already given. `state.py ingest-events` records how far the log has been consumed.
 
 ## Orientation
 

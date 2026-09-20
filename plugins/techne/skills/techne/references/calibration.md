@@ -15,8 +15,8 @@ When it is not clear which of the two it is, ask in one sentence.
 2. Set the mode to `calibration` and announce `TECHNE — CALIBRATION`, translated into the learning language when it differs.
 3. Classify the scope:
    - current activity;
-   - morning Senior Engineer curriculum;
-   - afternoon Applied AI curriculum;
+   - the open program;
+   - another program the learner follows;
    - global method or assessment.
 4. Identify the observed problem before discussing a preferred fix.
 
