@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""The issues journal: an append-only record of Techne's own defects.
+"""The issues journal: what the learner reports about Techne itself.
 
-See docs/adr/0009-feedback-journal-is-an-append-only-workspace-file.md.
+Entries are append-only in spirit — they are only ever added, or marked handled
+— and they are never learning evidence. They live in the state store with
+everything else that is computed (ADR 0009, as amended by ADR 0011).
 """
 
 from __future__ import annotations
@@ -16,63 +18,37 @@ STATUSES = ("open", "applied", "dismissed")
 HEADINGS = {"bug": "Bugs", "friction": "Frictions", "idea": "Ideas"}
 SCHEMA_VERSION = 1
 REQUIRED_KEYS = ("id", "at", "type", "text", "status")
+LEGACY_FILES = ("issues.jsonl", "feedback.jsonl")
 
 
 class IssueError(Exception):
     """The requested journal operation is not allowed."""
 
 
-def journal_path(workspace: Path) -> Path:
-    path = workspace / ".techne" / "issues.jsonl"
-    if not path.is_file():
-        # Workspaces created before the split kept the same journal here.
-        legacy = workspace / ".techne" / "feedback.jsonl"
-        if legacy.is_file():
-            return legacy
-    return path
+def entries(state: dict) -> list[dict]:
+    recorded = state.get("issues")
+    return recorded if isinstance(recorded, list) else []
 
 
-def read(workspace: Path) -> list[dict]:
-    """Return the journal's entries, ignoring lines that are not entries."""
-    path = journal_path(workspace)
-    if not path.is_file():
-        return []
-    entries = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        try:
-            entry = json.loads(line)
-        except ValueError:
-            continue
-        if isinstance(entry, dict) and all(key in entry for key in REQUIRED_KEYS):
-            entries.append(entry)
-    return entries
-
-
-def write(workspace: Path, entries: list[dict]) -> None:
-    path = journal_path(workspace)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("".join(json.dumps(entry, ensure_ascii=False) + "\n" for entry in entries), encoding="utf-8")
-
-
-def next_id(entries: list[dict]) -> str:
+def next_id(recorded: list[dict]) -> str:
     """Identify by the highest number used so far, never by list position."""
     used = []
-    for entry in entries:
+    for entry in recorded:
         raw = str(entry.get("id", ""))
         if raw.startswith("f") and raw[1:].isdigit():
             used.append(int(raw[1:]))
     return f"f{max(used, default=0) + 1}"
 
 
-def add(workspace: Path, kind: str, text: str, origin: dict) -> dict:
+def add(state: dict, kind: str, text: str, origin: dict) -> dict:
     if kind not in TYPES:
         raise IssueError(f"Unknown issue type: {kind}. Use one of {', '.join(TYPES)}.")
     if not text.strip():
         raise IssueError("The issue text is empty.")
-    entries = read(workspace)
+    recorded = entries(state)
     entry = {
         "version": SCHEMA_VERSION,
-        "id": next_id(entries),
+        "id": next_id(recorded),
         "at": datetime.now().astimezone().isoformat(timespec="seconds"),
         "type": kind,
         "text": text.strip(),
@@ -80,24 +56,22 @@ def add(workspace: Path, kind: str, text: str, origin: dict) -> dict:
         "track": origin.get("track"),
         "status": "open",
     }
-    write(workspace, [*entries, entry])
+    state["issues"] = [*recorded, entry]
     return entry
 
 
-def resolve(workspace: Path, entry_id: str, status: str) -> dict:
+def resolve(state: dict, entry_id: str, status: str) -> dict:
     if status not in STATUSES:
         raise IssueError(f"Unknown issue status: {status}. Use one of {', '.join(STATUSES)}.")
-    entries = read(workspace)
-    for entry in entries:
+    for entry in entries(state):
         if entry.get("id") == entry_id:
             entry["status"] = status
             entry["resolved_at"] = datetime.now().astimezone().isoformat(timespec="seconds")
-            write(workspace, entries)
             return entry
     raise IssueError(f"No issue with id {entry_id}.")
 
 
-def select(workspace: Path, status: str | None, since: str | None) -> list[dict]:
+def select(state: dict, status: str | None, since: str | None) -> list[dict]:
     if status is not None and status not in STATUSES:
         raise IssueError(f"Unknown issue status: {status}. Use one of {', '.join(STATUSES)}.")
     if since is not None:
@@ -106,7 +80,7 @@ def select(workspace: Path, status: str | None, since: str | None) -> list[dict]
         except ValueError as exc:
             raise IssueError(f"--since expects a date like 2026-09-19: {exc}") from exc
     selected = []
-    for entry in read(workspace):
+    for entry in entries(state):
         if status is not None and entry.get("status", "open") != status:
             continue
         if since is not None and str(entry.get("at", ""))[:10] < since:
@@ -115,16 +89,16 @@ def select(workspace: Path, status: str | None, since: str | None) -> list[dict]
     return selected
 
 
-def export(entries: list[dict], exported_on: date | None = None) -> str:
+def export(recorded: list[dict], exported_on: date | None = None) -> str:
     """Render the journal as Markdown, grouped by type, newest first."""
     stamp = (exported_on or datetime.now().astimezone().date()).isoformat()
     lines = [f"# Techne issues — exported {stamp}", ""]
-    if not entries:
+    if not recorded:
         lines.append("No issue recorded for this selection.")
         return "\n".join(lines) + "\n"
     for kind in TYPES:
         group = sorted(
-            (entry for entry in entries if entry.get("type") == kind),
+            (entry for entry in recorded if entry.get("type") == kind),
             key=lambda entry: str(entry.get("at", "")),
             reverse=True,
         )
@@ -141,28 +115,36 @@ def export(entries: list[dict], exported_on: date | None = None) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
-def problems(workspace: Path) -> list[str]:
+def problems(state: dict) -> list[str]:
     """Validation errors in the journal, for validate_workspace.py."""
-    path = journal_path(workspace)
-    if not path.is_file():
-        return []
     errors, seen = [], set()
-    for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
-        if not line.strip():
-            continue
-        try:
-            entry = json.loads(line)
-        except ValueError:
-            errors.append(f"issues.jsonl line {number} is not valid JSON")
-            continue
+    for position, entry in enumerate(entries(state), start=1):
         if not isinstance(entry, dict) or any(key not in entry for key in REQUIRED_KEYS):
-            errors.append(f"issues.jsonl line {number} is missing required keys")
+            errors.append(f"issue {position} is missing required keys")
             continue
         if entry["type"] not in TYPES:
-            errors.append(f"issues.jsonl line {number} has unknown type {entry['type']!r}")
+            errors.append(f"issue {entry['id']} has unknown type {entry['type']!r}")
         if entry["status"] not in STATUSES:
-            errors.append(f"issues.jsonl line {number} has unknown status {entry['status']!r}")
+            errors.append(f"issue {entry['id']} has unknown status {entry['status']!r}")
         if entry["id"] in seen:
-            errors.append(f"issues.jsonl has a duplicate id: {entry['id']}")
+            errors.append(f"the journal has a duplicate issue id: {entry['id']}")
         seen.add(entry["id"])
     return errors
+
+
+def read_legacy_journal(root: Path) -> list[dict]:
+    """Entries a workspace written before the storage move left on disk."""
+    recorded: list[dict] = []
+    for name in LEGACY_FILES:
+        path = root / name
+        if not path.is_file():
+            continue
+        for line in path.read_text(encoding="utf-8").splitlines():
+            try:
+                entry = json.loads(line)
+            except ValueError:
+                continue
+            if isinstance(entry, dict) and all(key in entry for key in REQUIRED_KEYS):
+                recorded.append(entry)
+        path.unlink()
+    return recorded

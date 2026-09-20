@@ -13,7 +13,7 @@ Techne owns the learning sequence. The learner owns the reasoning and the work.
 
 Run `python3 <this-skill-directory>/scripts/resolve_workspace.py .` without changing the agent session's working directory. It first looks for a Techne workspace in the current directory or its parents, then falls back to the globally registered active workspace. When it resolves a workspace, read completely:
 
-1. `.techne/STATE.json`;
+1. the short state, with `python3 <this-skill-directory>/scripts/state.py brief`; ask for more only when you need it, never by opening the store;
 2. `.techne/CURRENT.md`;
 3. `.techne/PROFILE.md`, including the learner's recorded preferences;
 4. the latest entry in `.techne/SESSION_LOG.md`;
@@ -57,7 +57,7 @@ These rules apply to every learner-facing message, in every language.
 - Open one evaluated activity at a time. A browser exercise and a repository exercise cannot both be awaiting evaluation.
 - In both tracks, teach a new or fragile concept before evaluating transfer. Use cold H0 work for recall, transfer, or already-practised skills.
 - The learner writes every line of exercise code. Techne scaffolds folders, dependencies, and tests, and never writes or edits an implementation. Techne teaches no AI-assisted coding workflow.
-- Never edit `STATE.json` by hand. Every state transition goes through `scripts/state.py`, which owns mastery, reviews, transfers, checkpoints, block switches, and browser evidence.
+- Never open or edit the state store. Every read and every transition goes through `scripts/state.py`, which owns mastery, reviews, transfers, checkpoints, block switches, issues, and browser evidence.
 - Record mastery per subject identifier from the curriculum catalogues, as one of `not_started`, `discovered`, `assisted`, `independent`, `transferred`, `blocked`. Never use numeric scores or percentages.
 - Help runs from H0 to H4. Work helped beyond H1 is `assisted`, never independent.
 - Record observed evidence, help level, and uncertainty. Years of experience and self-report never establish mastery.

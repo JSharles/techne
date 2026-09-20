@@ -4,6 +4,8 @@ Learner reports are evidence about Techne, not about the learner, and they accum
 
 Each entry carries its own schema version, an identifier derived from the highest one already used, the moment it was recorded, its type, its text, the activity and track it came from, and a status. `feedback.py` owns every read and write, as `state.py` owns `STATE.json` (ADR 0004), and the workspace validator checks the journal's entries.
 
+Amended by ADR 0011: the journal moved into the state store with everything else that is computed. Its rules survive the move — entries are only added or marked handled, identifiers come from the highest one used, the validator checks them, and nothing in the journal is learning evidence.
+
 ## Consequences
 
 - The file is created on the first entry, so existing workspaces need no migration and the state format is untouched.

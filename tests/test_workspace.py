@@ -26,6 +26,7 @@ def load_module(name: str, path: Path):
 sys.path.insert(0, str(SKILL_ROOT / "scripts"))
 registry = load_module("workspace_registry", SKILL_ROOT / "scripts" / "workspace_registry.py")
 initializer = load_module("techne_initializer", SKILL_ROOT / "scripts" / "init_workspace.py")
+store = load_module("store", SKILL_ROOT / "scripts" / "store.py")
 validator = load_module("techne_validator", SKILL_ROOT / "scripts" / "validate_workspace.py")
 resetter = load_module("techne_resetter", SKILL_ROOT / "scripts" / "reset_workspace.py")
 
@@ -40,14 +41,14 @@ class WorkspaceTests(unittest.TestCase):
             self.assertEqual(state_root, (workspace / ".techne").resolve())
             self.assertEqual(validator.validate(state_root), [])
             self.assertTrue((state_root / "browser" / "lessons").is_dir())
-            self.assertIn(str(workspace), (state_root / "STATE.json").read_text(encoding="utf-8"))
+            self.assertEqual(store.load(workspace)["workspace"], str(workspace.resolve()))
             self.assertEqual(registry.load_active_workspace(config), workspace.resolve())
 
     def test_records_learning_language_in_state_and_lesson_template(self):
         with tempfile.TemporaryDirectory() as directory:
             state_root = initializer.initialize(Path(directory), "PT-br")
 
-            state = json.loads((state_root / "STATE.json").read_text(encoding="utf-8"))
+            state = store.load(Path(directory))
             template = (state_root / "browser" / "lesson-template.html").read_text(encoding="utf-8")
             self.assertEqual(state["language"], "pt-br")
             self.assertIn('<html lang="pt-br">', template)
@@ -62,11 +63,11 @@ class WorkspaceTests(unittest.TestCase):
 
     def test_validator_requires_language_in_initialized_workspace(self):
         with tempfile.TemporaryDirectory() as directory:
-            state_root = initializer.initialize(Path(directory), "fr")
-            state_path = state_root / "STATE.json"
-            state = json.loads(state_path.read_text(encoding="utf-8"))
+            initializer.initialize(Path(directory), "fr")
+            state = store.load(Path(directory))
             state["language"] = None
-            state_path.write_text(json.dumps(state), encoding="utf-8")
+            store.save(Path(directory), state)
+            state_root = Path(directory) / ".techne"
 
             self.assertIn("STATE.json language must record the learner's chosen language", validator.validate(state_root))
 
@@ -110,7 +111,7 @@ class WorkspaceTests(unittest.TestCase):
 
             archive = resetter.reset(workspace, config)
 
-            self.assertTrue((archive / "STATE.json").is_file())
+            self.assertTrue((archive / "techne.db").is_file())
             self.assertFalse((workspace / ".techne").exists())
             self.assertTrue((workspace / "exercises").is_dir())
             self.assertIsNone(registry.load_active_workspace(config))

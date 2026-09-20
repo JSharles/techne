@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "status": "diagnostic_pending",
   "initialized_at": null,
   "workspace": null,
@@ -24,6 +24,8 @@
   "mastery": {},
   "reviews_due": [],
   "transfers_due": [],
+  "enrolments": [],
+  "issues": [],
   "red_thread": {
     "domain": null,
     "repository": null,

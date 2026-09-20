@@ -16,7 +16,6 @@ import store
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_FILES = (
-    "STATE.json",
     "CURRENT.md",
     "PROFILE.md",
     "SESSION_LOG.md",
@@ -25,7 +24,8 @@ REQUIRED_FILES = (
 )
 REQUIRED_STATE_KEYS = (
     "version", "status", "language", "mode", "day", "progress", "current",
-    "mastery", "reviews_due", "transfers_due", "red_thread", "ai", "browser",
+    "mastery", "reviews_due", "transfers_due", "enrolments", "issues",
+    "red_thread", "ai", "browser",
 )
 MASTERY_STATES = ("not_started", "discovered", "assisted", "independent", "transferred", "blocked")
 BROWSER_FILES = ("serve.py", "lesson-template.html", "assets/i18n.js", "assets/progress.js", "assets/exercise.js")
@@ -39,7 +39,9 @@ def validate(state_root: Path, require_browser: bool = True, template: bool = Fa
         if not path.is_file():
             errors.append(f"missing {path}")
 
-    if store.exists_at(state_root):
+    if not store.exists_at(state_root):
+        errors.append(f"missing Techne state in {state_root}")
+    else:
         try:
             state = store.load_at(state_root)
         except store.StoreError as exc:
@@ -48,8 +50,8 @@ def validate(state_root: Path, require_browser: bool = True, template: bool = Fa
             for key in REQUIRED_STATE_KEYS:
                 if key not in state:
                     errors.append(f"STATE.json missing key: {key}")
-            if state.get("version") != 2:
-                errors.append("STATE.json version must be 2; run state.py migrate on an older workspace")
+            if state.get("version") != 3:
+                errors.append("state version must be 3; run state.py migrate on an older workspace")
             if state.get("current", {}).get("help_level") not in {f"H{value}" for value in range(5)}:
                 errors.append("current.help_level must be H0 through H4")
             language = state.get("language")
@@ -67,7 +69,7 @@ def validate(state_root: Path, require_browser: bool = True, template: bool = Fa
                     if entry_state not in MASTERY_STATES:
                         errors.append(f"mastery.{subject}.state must be one of {', '.join(MASTERY_STATES)}")
 
-            errors.extend(journal.problems(state_root.parent))
+            errors.extend(journal.problems(state))
 
     if require_browser:
         browser = state_root / "browser"

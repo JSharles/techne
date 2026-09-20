@@ -229,14 +229,14 @@ class StateTransitionTests(unittest.TestCase):
             "project": {"phase": "discovery_pending"},
             "browser": {"last_event_line": 3},
         }
-        path = self.workspace / ".techne" / "STATE.json"
-        path.write_text(json.dumps(old), encoding="utf-8")
+        store.database_path(self.workspace / ".techne").unlink()
+        store.seed_path(self.workspace / ".techne").write_text(json.dumps(old), encoding="utf-8")
 
         with self.assertRaises(state_script.StateError):
             state_script.load(self.workspace)
         self.assertEqual(self.run_cli("migrate"), 0)
 
-        migrated = json.loads(path.read_text(encoding="utf-8"))
+        migrated = store.load(self.workspace)
         self.assertEqual(migrated["version"], state_script.FORMAT_VERSION)
         self.assertEqual(migrated["day"]["engineering"], "in_progress")
         self.assertEqual(migrated["ai"]["phase"], "discovery_pending")
@@ -268,24 +268,27 @@ class StateTransitionTests(unittest.TestCase):
         self.assertEqual(len(view["reviews_due"]), 3)
         self.assertNotIn("current", view, "the view carries only what the browser shows")
 
+    def reload(self) -> dict:
+        return state_script.load(self.workspace)
+
     def test_cli_records_an_issue_with_its_context(self):
         self.state["current"] = {"id": "l04-dicts", "track": "engineering"}
         store.save(self.workspace, self.state)
 
         self.assertEqual(self.run_cli("issue", "add", "--type", "bug", "--text", "  la trace refuse mes réponses  "), 0)
 
-        entries = journal.read(self.workspace)
-        self.assertEqual(len(entries), 1)
-        self.assertEqual(entries[0]["id"], "f1")
-        self.assertEqual(entries[0]["text"], "la trace refuse mes réponses")
-        self.assertEqual((entries[0]["activity"], entries[0]["track"]), ("l04-dicts", "engineering"))
-        self.assertEqual(entries[0]["status"], "open")
+        recorded = journal.entries(self.reload())
+        self.assertEqual(len(recorded), 1)
+        self.assertEqual(recorded[0]["id"], "f1")
+        self.assertEqual(recorded[0]["text"], "la trace refuse mes réponses")
+        self.assertEqual((recorded[0]["activity"], recorded[0]["track"]), ("l04-dicts", "engineering"))
+        self.assertEqual(recorded[0]["status"], "open")
 
     def test_cli_refuses_an_unknown_issue_type_or_empty_text(self):
         self.assertEqual(self.run_cli("issue", "add", "--type", "bug", "--text", "   "), 1)
         with self.assertRaises(SystemExit):
             self.run_cli("issue", "add", "--type", "rant", "--text", "x")
-        self.assertFalse(journal.journal_path(self.workspace).exists())
+        self.assertEqual(journal.entries(self.reload()), [])
 
     def test_cli_export_groups_by_type_and_hides_resolved_entries(self):
         for kind, text in (("bug", "trace cassée"), ("friction", "sortie bruyante"), ("idea", "un raccourci")):
@@ -301,14 +304,15 @@ class StateTransitionTests(unittest.TestCase):
         self.assertNotIn("## Ideas", export)
         self.assertIn("l04 · engineering", export)
 
-    def test_cli_export_leaves_the_state_untouched(self):
+    def test_cli_export_leaves_the_store_untouched(self):
         self.run_cli("issue", "add", "--type", "bug", "--text", "trace cassée")
-        before = (self.workspace / ".techne" / "STATE.json").read_text(encoding="utf-8")
+        database = store.database_path(self.workspace / ".techne")
+        before = database.read_bytes()
 
         with redirect_stdout(io.StringIO()):
             self.assertEqual(self.run_cli("issue", "export"), 0)
 
-        self.assertEqual((self.workspace / ".techne" / "STATE.json").read_text(encoding="utf-8"), before)
+        self.assertEqual(database.read_bytes(), before)
 
     def test_cli_export_without_a_journal_is_empty_not_an_error(self):
         with redirect_stdout(io.StringIO()) as printed:
@@ -318,12 +322,12 @@ class StateTransitionTests(unittest.TestCase):
 
     def test_cli_list_narrows_by_date_and_status(self):
         self.run_cli("issue", "add", "--type", "bug", "--text", "vieux")
-        entries = journal.read(self.workspace)
-        entries[0]["at"] = "2026-01-05T09:00:00+01:00"
-        journal.write(self.workspace, entries)
+        aged = self.reload()
+        aged["issues"][0]["at"] = "2026-01-05T09:00:00+01:00"
+        store.save(self.workspace, aged)
         self.run_cli("issue", "add", "--type", "bug", "--text", "récent")
 
-        recent = journal.select(self.workspace, None, date.today().isoformat())
+        recent = journal.select(self.reload(), None, date.today().isoformat())
         self.assertEqual([entry["text"] for entry in recent], ["récent"])
 
         with redirect_stdout(io.StringIO()) as printed:
@@ -332,26 +336,28 @@ class StateTransitionTests(unittest.TestCase):
         self.assertNotIn("vieux", printed.getvalue())
         self.assertEqual(self.run_cli("issue", "list", "--since", "hier"), 1)
 
-    def test_ids_survive_a_damaged_journal(self):
+    def test_ids_never_come_from_list_position(self):
         self.run_cli("issue", "add", "--type", "bug", "--text", "première")
-        path = journal.journal_path(self.workspace)
-        path.write_text(path.read_text(encoding="utf-8") + "{ not json\n", encoding="utf-8")
+        recorded = self.reload()
+        recorded["issues"].append({**recorded["issues"][0], "id": "hand-written", "text": "collée à la main"})
+        store.save(self.workspace, recorded)
 
         self.run_cli("issue", "add", "--type", "idea", "--text", "seconde")
 
-        self.assertEqual([entry["id"] for entry in journal.read(self.workspace)], ["f1", "f2"])
+        self.assertEqual(sorted(entry["id"] for entry in journal.entries(self.reload())), ["f1", "f2", "hand-written"])
 
     def test_validator_reports_a_damaged_journal(self):
-        journal.journal_path(self.workspace).write_text(
-            json.dumps({"id": "f1", "at": "2026-09-20T09:00:00+02:00", "type": "rant", "text": "x", "status": "open"}) + "\n",
-            encoding="utf-8",
-        )
+        damaged = self.reload()
+        damaged["issues"] = [
+            {"id": "f1", "at": "2026-09-20T09:00:00+02:00", "type": "rant", "text": "x", "status": "open"}
+        ]
+        store.save(self.workspace, damaged)
 
         self.assertTrue(any("unknown type" in error for error in validator.validate(self.workspace / ".techne")))
 
     def test_cli_writes_state_and_reports_errors(self):
         self.assertEqual(self.run_cli("mastery", "ts.generics", "assisted", "--evidence", "helped", "--help-level", "H3"), 0)
-        written = json.loads((self.workspace / ".techne" / "STATE.json").read_text(encoding="utf-8"))
+        written = store.load(self.workspace)
         self.assertEqual(written["mastery"]["ts.generics"]["state"], "assisted")
         self.assertEqual(self.run_cli("mastery", "ts.generics", "independent", "--help-level", "H4"), 1)
 

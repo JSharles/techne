@@ -7,7 +7,7 @@ Use `.techne/STATE.json` for machine-readable state and `.techne/CURRENT.md` for
 The durable records are:
 
 - `PROFILE.md`: declared context and verified constraints;
-- `STATE.json`: block state, the mastery map, review and transfer queues, working days, and Applied AI track progress. Written only by `scripts/state.py`;
+- the state store, a database in the workspace: block state, the mastery map, review and transfer queues, working days, enrolments, the issues journal, and Applied AI track progress. Read and written only through `scripts/state.py`;
 - `CURRENT.md`: one ready or in-progress activity;
 - `SESSION_LOG.md`: append-only narrative evidence;
 - `DECISIONS.md`: approved calibration decisions;
@@ -28,6 +28,9 @@ The durable records are:
 | `state.py checkpoint --note "…" [--help-level H2]` | Save the current activity. |
 | `state.py close --note "…"` | Close the block and count one working day. |
 | `state.py block <engineering\|ai>` | Switch the active block. |
+| `state.py brief` | The short state to read at the start of a turn. |
+| `state.py show` | The whole state, when the brief is not enough. |
+| `state.py export [--out FILE]` | A JSON backup of everything. |
 | `state.py ingest-events` | Apply mechanical browser evidence and return the rest for interpretation. |
 | `state.py issue add --type bug\|friction\|idea --text "…"` | Record a reported issue with its activity and track. |
 | `state.py issue list [--status …] [--since DATE]` | List issues as JSON. |

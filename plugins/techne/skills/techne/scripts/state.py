@@ -19,7 +19,7 @@ from workspace_registry import default_config_path, resolve_workspace
 
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
-FORMAT_VERSION = 2
+FORMAT_VERSION = 3
 RECENT_SESSION_HOURS = 12
 STATES = ("not_started", "discovered", "assisted", "independent", "transferred", "blocked")
 LADDER = ("not_started", "discovered", "assisted", "independent", "transferred")
@@ -68,6 +68,8 @@ def migrate(state: dict) -> list[str]:
     if not isinstance(version, int) or version > FORMAT_VERSION:
         raise StateError(f"Unknown state format: {version!r}.")
     applied = []
+    if version is None:
+        version = 2
     if version < 2:
         day = state.setdefault("day", {})
         if "curriculum" in day:
@@ -99,6 +101,10 @@ def migrate(state: dict) -> list[str]:
             state["current"]["help_level"] = "H4"
             applied.append("clamped help level to H4")
         applied.append("migrated state from format 1 to 2")
+    if version < 3:
+        state.setdefault("enrolments", [])
+        state.setdefault("issues", [])
+        applied.append("migrated state from format 2 to 3")
     state["version"] = FORMAT_VERSION
     return applied
 
@@ -372,6 +378,9 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("ingest-events", help="Apply mechanical browser evidence")
     sub.add_parser("migrate", help="Bring an older workspace forward to the current state format")
     sub.add_parser("programs", help="List the programs available to this learner")
+    sub.add_parser("brief", help="Print the short state an agent needs to start a turn")
+    export_state = sub.add_parser("export", help="Print the whole state as JSON, for backup")
+    export_state.add_argument("--out", type=Path, help="Write to this file instead of standard output")
     sub.add_parser("show", help="Print the current state as JSON")
     return parser
 
@@ -412,15 +421,15 @@ def main(argv: list[str] | None = None) -> int:
                     "activity": args.activity or current.get("id"),
                     "track": args.track or current.get("track"),
                 }
-                result = journal.add(workspace, args.type, args.text, origin)
+                result = journal.add(state, args.type, args.text, origin)
             elif args.action == "resolve":
-                result = journal.resolve(workspace, args.id, args.status)
+                result = journal.resolve(state, args.id, args.status)
             elif args.action == "export":
-                # A report reads; it never writes state.
-                print(journal.export(journal.select(workspace, args.status, args.since)), end="")
+                # An export reads; it never writes state.
+                print(journal.export(journal.select(state, args.status, args.since)), end="")
                 return 0
             else:
-                result = {"entries": journal.select(workspace, args.status, args.since)}
+                result = {"entries": journal.select(state, args.status, args.since)}
         elif args.command == "ingest-events":
             result = ingest_events(state, workspace, known)
         elif args.command == "programs":
@@ -440,7 +449,23 @@ def main(argv: list[str] | None = None) -> int:
                 "rejected": rejected,
             }
         elif args.command == "migrate":
-            result = {"applied": migrate(state), "version": state["version"]}
+            applied = migrate(state)
+            legacy = journal.read_legacy_journal(workspace / ".techne")
+            if legacy:
+                state["issues"] = [*journal.entries(state), *legacy]
+                applied.append(f"moved {len(legacy)} journal entries into the store")
+            result = {"applied": applied, "version": state["version"]}
+        elif args.command == "brief":
+            print(json.dumps(store.brief(state), ensure_ascii=False, indent=2))
+            return 0
+        elif args.command == "export":
+            document = json.dumps(state, ensure_ascii=False, indent=2) + "\n"
+            if args.out:
+                args.out.write_text(document, encoding="utf-8")
+                result = {"written": str(args.out)}
+            else:
+                print(document, end="")
+                return 0
         elif args.command == "show":
             result = state
 
