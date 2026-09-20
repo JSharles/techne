@@ -25,8 +25,7 @@ REQUIRED_FILES = (
 )
 REQUIRED_STATE_KEYS = (
     "version", "status", "language", "mode", "day", "progress", "current",
-    "mastery", "reviews_due", "transfers_due", "enrolments", "issues",
-    "red_thread", "ai", "browser",
+    "mastery", "reviews_due", "transfers_due", "enrolments", "issues", "browser",
 )
 MASTERY_STATES = ("not_started", "discovered", "assisted", "independent", "transferred", "blocked")
 BROWSER_FILES = ("serve.py", "lesson-template.html", "assets/i18n.js", "assets/progress.js", "assets/exercise.js")
@@ -50,20 +49,20 @@ def validate(state_root: Path, require_browser: bool = True, template: bool = Fa
         else:
             for key in REQUIRED_STATE_KEYS:
                 if key not in state:
-                    errors.append(f"STATE.json missing key: {key}")
+                    errors.append(f"state missing key: {key}")
             if state.get("version") != 3:
                 errors.append("state version must be 3; run state.py migrate on an older workspace")
             if state.get("current", {}).get("help_level") not in {f"H{value}" for value in range(5)}:
                 errors.append("current.help_level must be H0 through H4")
             language = state.get("language")
             if template and language is not None:
-                errors.append("template STATE.json language must be null until initialization")
+                errors.append("the seed language must be null until initialization")
             if not template and not (isinstance(language, str) and language):
-                errors.append("STATE.json language must record the learner's chosen language")
+                errors.append("state language must record the learner's chosen language")
 
             mastery = state.get("mastery")
             if not isinstance(mastery, dict):
-                errors.append("STATE.json mastery must be an object keyed by subject id")
+                errors.append("mastery must be an object keyed by subject id")
             else:
                 for subject, entry in mastery.items():
                     entry_state = entry.get("state") if isinstance(entry, dict) else None

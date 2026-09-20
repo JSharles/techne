@@ -22,7 +22,6 @@ from pathlib import Path
 
 DATABASE = "techne.db"
 SEED_FILE = "STATE.json"
-LEGACY_JOURNAL = "feedback.jsonl"
 PROGRESS_VIEW = ("browser", "progress.json")
 
 # These have tables of their own; every other key is kept as a document, so a
@@ -48,6 +47,7 @@ CREATE TABLE IF NOT EXISTS reviews_due (
 CREATE TABLE IF NOT EXISTS transfers_due (subject TEXT PRIMARY KEY, due_on TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS enrolments (
     program TEXT PRIMARY KEY,
+    position INTEGER NOT NULL DEFAULT 0,
     enrolled_at TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'active',
     data TEXT NOT NULL DEFAULT '{}'
@@ -89,10 +89,22 @@ def exists(workspace: Path) -> bool:
     return exists_at(state_root(workspace))
 
 
+# Columns added after a database may already exist in the wild.
+ADDED_COLUMNS = (("enrolments", "position", "INTEGER NOT NULL DEFAULT 0"),)
+
+
 def connect(root: Path) -> sqlite3.Connection:
-    connection = sqlite3.connect(database_path(root))
-    connection.row_factory = sqlite3.Row
-    connection.executescript(SCHEMA)
+    try:
+        connection = sqlite3.connect(database_path(root))
+        connection.row_factory = sqlite3.Row
+        connection.executescript(SCHEMA)
+        for table, column, declaration in ADDED_COLUMNS:
+            present = {row["name"] for row in connection.execute(f"PRAGMA table_info({table})")}
+            if column not in present:
+                connection.execute(f"ALTER TABLE {table} ADD COLUMN {column} {declaration}")
+        connection.commit()
+    except sqlite3.Error as exc:
+        raise StoreError(f"Cannot open the Techne state at {database_path(root)}: {exc}") from exc
     return connection
 
 
@@ -117,6 +129,14 @@ def load_at(root: Path) -> dict:
             raise StoreError(f"No Techne state at {database_path(root)}")
         return seed
 
+    state: dict = {}
+    try:
+        return read_tables(root)
+    except sqlite3.Error as exc:
+        raise StoreError(f"Cannot read the Techne state at {database_path(root)}: {exc}") from exc
+
+
+def read_tables(root: Path) -> dict:
     state: dict = {}
     with closing(connect(root)) as connection:
         for row in connection.execute("SELECT key, value FROM documents"):
@@ -149,10 +169,12 @@ def load_at(root: Path) -> dict:
                 "enrolled_at": row["enrolled_at"],
                 "status": row["status"],
             }
-            for row in connection.execute("SELECT * FROM enrolments ORDER BY enrolled_at, program")
+            # Order is the learner's, not the clock's: two enrolments made in the
+            # same second must come back the way they went in.
+            for row in connection.execute("SELECT * FROM enrolments ORDER BY position")
         ]
         state["issues"] = [
-            {key: row[key] for key in row.keys() if row[key] is not None}
+            {key: row[key] for key in row.keys() if key != "position"}
             for row in connection.execute("SELECT * FROM issues ORDER BY at, id")
         ]
     return state
@@ -163,6 +185,19 @@ def load(workspace: Path) -> dict:
 
 
 def save_at(root: Path, state: dict) -> None:
+    try:
+        write_tables(root, state)
+    except sqlite3.Error as exc:
+        raise StoreError(f"Cannot write the Techne state at {database_path(root)}: {exc}") from exc
+
+    seed = seed_path(root)
+    if seed.is_file():
+        # The seed document has done its job; the database is the state now.
+        seed.unlink()
+    write_progress_view(root, state)
+
+
+def write_tables(root: Path, state: dict) -> None:
     root.mkdir(parents=True, exist_ok=True)
     with closing(connect(root)) as connection:
         with connection:
@@ -208,10 +243,11 @@ def save_at(root: Path, state: dict) -> None:
 
             connection.execute("DELETE FROM enrolments")
             connection.executemany(
-                "INSERT INTO enrolments (program, enrolled_at, status, data) VALUES (?, ?, ?, ?)",
+                "INSERT INTO enrolments (program, position, enrolled_at, status, data) VALUES (?, ?, ?, ?, ?)",
                 [
                     (
                         item["program"],
+                        position,
                         item.get("enrolled_at", ""),
                         item.get("status", "active"),
                         json.dumps(
@@ -219,7 +255,7 @@ def save_at(root: Path, state: dict) -> None:
                             ensure_ascii=False,
                         ),
                     )
-                    for item in state.get("enrolments", [])
+                    for position, item in enumerate(state.get("enrolments", []))
                 ],
             )
 
@@ -242,13 +278,6 @@ def save_at(root: Path, state: dict) -> None:
                     for item in state.get("issues", [])
                 ],
             )
-
-    seed = seed_path(root)
-    if seed.is_file():
-        # The seed document has done its job; the database is the state now.
-        seed.unlink()
-    write_progress_view(root, state)
-
 
 def save(workspace: Path, state: dict) -> None:
     save_at(state_root(workspace), state)
@@ -283,8 +312,7 @@ def progress_path(root: Path) -> Path:
 def write_progress_view(root: Path, state: dict) -> None:
     """Render what the browser needs, so it never reads the store itself."""
     path = progress_path(root)
-    if not path.parent.is_dir():
-        return
+    path.parent.mkdir(parents=True, exist_ok=True)
     view = {
         "language": state.get("language"),
         "mastery": state.get("mastery", {}),

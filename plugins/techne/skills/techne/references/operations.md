@@ -7,7 +7,7 @@ Use the state store through `scripts/state.py` for machine-readable state, and `
 The durable records are:
 
 - `PROFILE.md`: declared context and verified constraints;
-- the state store, a database in the workspace: block state, the mastery map, review and transfer queues, working days, enrolments, the issues journal, and Applied AI track progress. Read and written only through `scripts/state.py`;
+- the state store, a database in the workspace: block state, the mastery map, review and transfer queues, working days, enrolments, and the issues journal. Read and written only through `scripts/state.py`;
 - `CURRENT.md`: one ready or in-progress activity;
 - `SESSION_LOG.md`: append-only narrative evidence;
 - `DECISIONS.md`: approved calibration decisions;
@@ -27,12 +27,11 @@ The durable records are:
 | `state.py transfer --due` | Get the subjects waiting to be reinvested in the red-thread project or the AI lab. |
 | `state.py checkpoint --note "…" [--help-level H2]` | Save the current activity. |
 | `state.py close --note "…"` | Close the block and count one working day. |
-| `state.py block <engineering\|ai>` | Switch the active block. |
 | `state.py brief` | The short state to read at the start of a turn. |
 | `state.py show` | The whole state, when the brief is not enough. |
 | `state.py export [--out FILE]` | A JSON backup of everything. |
 | `state.py ingest-events` | Apply mechanical browser evidence and return the rest for interpretation. |
-| `state.py issue add --type bug\|friction\|idea --text "…"` | Record a reported issue with its activity and track. |
+| `state.py issue add --type bug\|friction\|idea --text "…"` | Record a reported issue with its activity and program. |
 | `state.py issue list [--status …] [--since DATE]` | List issues as JSON. |
 | `state.py issue export [--status …] [--since DATE]` | Print the journal as Markdown, grouped by type. Reads only. |
 | `state.py issue resolve <id> --status applied\|dismissed` | Mark an issue handled so it leaves the default export. |
@@ -63,7 +62,9 @@ Choosing what to open:
 
 ## The weekly schedule
 
-`SCHEDULE.md` in the workspace says which program each slot of the week belongs to. It is the learner's file: they can dictate it in one sentence, edit it by hand, or ask for a proposal with `state.py schedule --propose`, which gives each enrolled program a slot and keeps one day light. `state.py schedule` shows it, what it expects now, and anything it could not read.
+`SCHEDULE.md` in the workspace says which program each slot of the week belongs to. It is the learner's file: they can dictate it in one sentence, edit it by hand, or ask for a proposal with `state.py schedule --propose`, which gives each enrolled program a slot, follows the cadence each program declares, and keeps one day light. `state.py schedule` shows it, what it expects now, and anything it could not read.
+
+The script writes the table only — the column names are what the parser reads, and days and slots are understood in English or French. Any sentence around it is yours to write, in the learner's language. A schedule already exists? `--propose` refuses; show them the current one and pass `--replace` only once they agree.
 
 It is an intention, never a rule:
 
@@ -119,7 +120,7 @@ The one thing `ask` declines is the answer to the open exercise. Say it in one s
 
 They go to different people (see `docs/adr/0012-issues-and-feedback-are-two-channels.md`).
 
-`issue <text>` is for Techne itself: a broken exercise, noisy output, a confusing wording, an idea for the tool. Record it with `state.py issue add --type bug|friction|idea --text "<text>"`, which stores it with the current activity and track. Classify the type yourself from what they said; ask only when it is genuinely ambiguous. Confirm in one line and return to the activity: reporting must cost the learner nothing mid-exercise.
+`issue <text>` is for Techne itself: a broken exercise, noisy output, a confusing wording, an idea for the tool. Record it with `state.py issue add --type bug|friction|idea --text "<text>"`, which stores it with the current activity and program. Classify the type yourself from what they said; ask only when it is genuinely ambiguous. Confirm in one line and return to the activity: reporting must cost the learner nothing mid-exercise.
 
 `extract-issues` prints `state.py issue export`, optionally narrowed with `--since` or `--status`, as Markdown grouped by type and ready to paste into the Techne repository. It reads only; it never writes state. Mark an entry handled with `state.py issue resolve <id> --status applied|dismissed`; resolved entries leave the default export.
 
@@ -236,10 +237,11 @@ For a `status` command, report:
 - current logical block and activity;
 - completed units in each curriculum;
 - the mastery map grouped by domain, with each subject's state and strongest evidence, and a pointer to the browser page at `/progress`;
+- any subject with evidence that no enrolled program teaches any more;
 - due reviews and fragile areas;
-- the Applied AI week, lab progress, and capstone milestone when started.
+- for each enrolled program: its coverage, what is open in it, and its milestone when it has one.
 
-Do not merge the two curricula into one progress percentage.
+Do not merge programs into one progress percentage.
 
 ## Reset
 

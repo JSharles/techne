@@ -69,7 +69,7 @@ class WorkspaceTests(unittest.TestCase):
             store.save(Path(directory), state)
             state_root = Path(directory) / ".techne"
 
-            self.assertIn("STATE.json language must record the learner's chosen language", validator.validate(state_root))
+            self.assertIn("state language must record the learner's chosen language", validator.validate(state_root))
 
     def test_refuses_second_curriculum_while_one_is_active(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -204,7 +204,9 @@ class WorkspaceTests(unittest.TestCase):
             command = (commands_dir / f"{name}.md").read_text(encoding="utf-8")
             self.assertTrue(command.startswith("---\ndescription: "), name)
             self.assertIn(f"Techne `{name}` command", command)
-        self.assertFalse((commands_dir / "lost.md").exists(), "lost was replaced by ask")
+        for gone in ("lost", "report", "help", "engineering", "ai"):
+            self.assertFalse((commands_dir / f"{gone}.md").exists(), f"{gone} was removed from the interface")
+            self.assertNotIn(f"| `{gone}`", skill, f"{gone} is still in the command table")
 
 
 if __name__ == "__main__":

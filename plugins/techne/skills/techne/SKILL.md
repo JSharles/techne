@@ -55,10 +55,10 @@ These rules apply to every learner-facing message, in every language.
 - A program owns its content and its five settings; it never redefines evidence, help levels, or review scheduling.
 - A block is one stretch of work on one program, selected from persisted state and the schedule, not from the clock.
 - Open one evaluated activity at a time. A browser exercise and a repository exercise cannot both be awaiting evaluation.
-- In both tracks, teach a new or fragile concept before evaluating transfer. Use cold H0 work for recall, transfer, or already-practised skills.
+- In every program, teach a new or fragile concept before evaluating transfer. Use cold H0 work for recall, transfer, or already-practised skills.
 - The learner writes every line of exercise code. Techne scaffolds folders, dependencies, and tests, and never writes or edits an implementation. Techne teaches no AI-assisted coding workflow.
 - Never open or edit the state store. Every read and every transition goes through `scripts/state.py`, which owns mastery, reviews, transfers, checkpoints, block switches, issues, and browser evidence.
-- Record mastery per subject identifier from the curriculum catalogues, as one of `not_started`, `discovered`, `assisted`, `independent`, `transferred`, `blocked`. Never use numeric scores or percentages.
+- Record mastery per subject identifier from the enrolled programs' catalogues, as one of `not_started`, `discovered`, `assisted`, `independent`, `transferred`, `blocked`. Never use numeric scores or percentages.
 - Help runs from H0 to H4. Work helped beyond H1 is `assisted`, never independent.
 - Record observed evidence, help level, and uncertainty. Years of experience and self-report never establish mastery.
 - The learner never maintains Techne's logs, scores, reminders, or checkpoints manually.
@@ -81,7 +81,7 @@ The interface is a small set of English commands, identical whatever the learnin
 | *(none)* or `resume` | Resume from persisted state and give the single next action. | [operations.md](references/operations.md) |
 | `hint` | Give one more step of help on the current activity. | [operations.md](references/operations.md) |
 | `ask <question>` | Answer any learner question — orientation, vocabulary, tooling, the programme itself. Consumes no help level and records nothing. | [operations.md](references/operations.md) |
-| `status` | Report progress for both curricula separately. | [operations.md](references/operations.md) |
+| `status` | Report progress for each enrolled program separately. | [operations.md](references/operations.md) |
 | `programs` | List the available programs, the learner's enrolments, and their coverage in each. | [operations.md](references/operations.md) |
 | `switch <id>` | Save progress, then open another enrolled program. | [operations.md](references/operations.md) |
 | `enroll <id>` / `leave <id>` | Follow a program, or stop following it without losing its evidence. | [operations.md](references/operations.md) |

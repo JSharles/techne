@@ -132,19 +132,32 @@ def problems(state: dict) -> list[str]:
     return errors
 
 
-def read_legacy_journal(root: Path) -> list[dict]:
-    """Entries a workspace written before the storage move left on disk."""
+IMPORTED_SUFFIX = ".imported"
+
+
+def read_legacy_journal(root: Path) -> tuple[list[dict], list[str]]:
+    """Import entries a workspace left on disk before the storage move.
+
+    The learner's file is kept, renamed, never deleted, and anything unreadable
+    is reported rather than silently dropped.
+    """
     recorded: list[dict] = []
+    problems: list[str] = []
     for name in LEGACY_FILES:
         path = root / name
         if not path.is_file():
             continue
-        for line in path.read_text(encoding="utf-8").splitlines():
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+            if not line.strip():
+                continue
             try:
                 entry = json.loads(line)
             except ValueError:
+                problems.append(f"{name} line {number} is not valid JSON and was not imported")
                 continue
             if isinstance(entry, dict) and all(key in entry for key in REQUIRED_KEYS):
                 recorded.append(entry)
-        path.unlink()
-    return recorded
+            else:
+                problems.append(f"{name} line {number} is missing required keys and was not imported")
+        path.rename(path.with_suffix(path.suffix + IMPORTED_SUFFIX))
+    return recorded, problems
