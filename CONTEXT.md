@@ -8,12 +8,23 @@ Techne is one Agent Skill that runs an intensive twelve-week bootcamp for a sing
 The single person a workspace belongs to.
 _Avoid_: student, user
 
-**Track**:
-One of the two independent curricula Techne teaches: Engineering (morning) and Applied AI (afternoon). They share the method but never synchronise their content.
-_Avoid_: lane, path
+**Program**:
+A Markdown file that defines what is taught: its units, its subject catalogue, and five settings the method leaves open. Techne ships some; the learner writes others. A program never redefines the method.
+_Avoid_: curriculum, track, course
+
+**Enrolment**:
+The learner's commitment to a program. Several run at once, each progressing on its own evidence.
+_Avoid_: subscription
+
+**Schedule**:
+The learner's weekly intention: which program each slot belongs to. A suggestion Techne follows and offers to rewrite when reality drifts, never a rule it enforces.
+_Avoid_: calendar, planning
+
+**Coverage**:
+How much of a program's catalogue has been taught and demonstrated. Reaching full coverage is what ends a program; time never does.
 
 **Block**:
-One half-day of work on one track. A logical unit selected from persisted state, not a clock range.
+One stretch of work on one program, opened from the schedule. A logical unit selected from persisted state, not a clock range.
 _Avoid_: session, slot
 
 **Activity**:
@@ -47,7 +58,7 @@ The unit the programme advances in: sixty morning and sixty afternoon blocks, wh
 _Avoid_: week (as a date), day off
 
 **Core**:
-The set of subjects the programme takes to demonstrated independence: TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL and data modelling, DSA up to graphs, tests and debugging, applied architecture.
+The set of subjects a program takes to demonstrated independence, for the Engineering program: TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL and data modelling, DSA up to graphs, tests and debugging, applied architecture.
 _Avoid_: priority lane, must-have
 
 **Survey**:
@@ -65,13 +76,13 @@ The conversation that changes how Techne teaches. A preference — lesson length
 The blunt review written every six working days, during the light day: what moved, what stalled, what is fragile, and the learner's real pace. On working days 20, 40 and 60 it also compares the mastery map to what a senior React/Node developer is expected to know.
 _Avoid_: progress report, recap
 
-**Feedback journal**:
-The learner's own record of what did not work — a bug, a friction, an idea — kept in their workspace with the activity each entry came from.
-_Avoid_: bug tracker, complaints
+**Issue**:
+A defect or an improvement the learner reports about Techne itself, recorded with the activity it came from and exported for whoever maintains the skill. Never learning evidence.
+_Avoid_: bug report, complaint
 
-**Feedback report**:
-The journal exported as Markdown for whoever maintains Techne. Distinct from the weekly assessment and from a session's closing lines, which are about learning rather than about Techne.
-_Avoid_: report (unqualified)
+**Feedback**:
+What the learner tells Techne about the programme in progress: a preference, applied at once and kept in the profile, or a request to change the method, which goes through calibration.
+_Avoid_: issue, report
 
 **Light day**:
 The seventh day of the week: about ninety minutes of review and reading, with no new subject. Techne may impose another when results degrade.
