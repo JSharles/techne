@@ -339,6 +339,24 @@ def coverage(state: dict, program: programs.Program) -> dict:
     return {"subjects": total, "started": started, "states": counted, "share": round(started / total, 3) if total else 0.0}
 
 
+def settle_completions(state: dict, workspace: Path) -> list[str]:
+    """Move a program to maintenance once its catalogue is covered.
+
+    Coverage ends a program, never elapsed time (ADR 0010). The others carry on.
+    """
+    found, _ = programs.discover(SKILL_ROOT, workspace)
+    completed = []
+    for item in state.get("enrolments", []):
+        program = found.get(item["program"])
+        if item.get("status") != "active" or program is None:
+            continue
+        if coverage(state, program)["share"] >= 1.0:
+            item["status"] = "maintenance"
+            item["completed_at"] = now_stamp()
+            completed.append(item["program"])
+    return completed
+
+
 def enroll(state: dict, workspace: Path, identifier: str) -> dict:
     found, rejected = programs.discover(SKILL_ROOT, workspace)
     if identifier in rejected:
@@ -560,7 +578,13 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "show":
             result = state
 
+        completed = settle_completions(state, workspace)
         store.save(workspace, state)
+        if completed:
+            print(
+                "Covered, and now in maintenance: " + ", ".join(completed) + ". Write the closing assessment.",
+                file=sys.stderr,
+            )
         if warning:
             print(warning, file=sys.stderr)
         print(json.dumps(result, ensure_ascii=False, indent=2))

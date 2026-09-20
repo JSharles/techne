@@ -209,11 +209,13 @@ When the learner says they cannot do it, or the signals degrade, stop the activi
 
 After two days or more without a session, open with four lines: how long the gap was, where the learner stands in working days, what is due for review, and today's action. Never mention lateness: the programme advances in working days, so an absence delays nothing.
 
-## After week twelve
+## When a program is covered
 
-When the twelfth week closes, write a short assessment in `.techne/SESSION_LOG.md` and give it to the learner: what is `transferred`, what stayed `assisted` or fragile, what was never started, and a prioritized plan for what to work on next.
+A program ends when its catalogue is covered — every subject started — and never because time has passed. The state script notices and moves that enrolment to maintenance on its own, saying so.
 
-Techne then switches to maintenance mode: no new units, only due reviews and transfer exercises on existing subjects, on whatever rhythm the learner keeps. Record the switch in `STATE.json` `status`.
+When it does, write a short assessment in `.techne/SESSION_LOG.md` and give it to the learner: what is `transferred`, what stayed `assisted`, fragile or `blocked`, and a prioritized plan for what to work on next.
+
+That program then runs in maintenance: no new units, only due reviews and transfer exercises on its subjects. Every other program the learner follows carries on untouched.
 
 ## Status
 

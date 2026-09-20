@@ -240,6 +240,23 @@ class StateTransitionTests(unittest.TestCase):
         self.assertIn("py.async", known)
         self.assertNotIn("dsa.bfs", known)
 
+    def test_a_covered_program_moves_to_maintenance_alone(self):
+        write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
+        state_script.enroll(self.state, self.workspace, "sprint")
+        state_script.enroll(self.state, self.workspace, "engineering")
+        known = state_script.known_subjects(self.state, self.workspace)
+
+        state_script.set_mastery(self.state, "int.first", "discovered", "lu", "H0", known)
+        self.assertEqual(state_script.settle_completions(self.state, self.workspace), [])
+
+        state_script.set_mastery(self.state, "int.second", "independent", "fait", "H0", known)
+        completed = state_script.settle_completions(self.state, self.workspace)
+
+        self.assertEqual(completed, ["sprint"])
+        statuses = {item["program"]: item["status"] for item in self.state["enrolments"]}
+        self.assertEqual(statuses["sprint"], "maintenance")
+        self.assertEqual(statuses["engineering"], "active")
+
     def test_coverage_counts_started_subjects(self):
         found, _ = programs.discover(SKILL_ROOT, self.workspace)
         state_script.enroll(self.state, self.workspace, "engineering")
