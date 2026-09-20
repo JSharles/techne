@@ -11,6 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import feedback as journal
+import store
 
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
@@ -38,12 +39,11 @@ def validate(state_root: Path, require_browser: bool = True, template: bool = Fa
         if not path.is_file():
             errors.append(f"missing {path}")
 
-    state_path = state_root / "STATE.json"
-    if state_path.is_file():
+    if store.exists_at(state_root):
         try:
-            state = json.loads(state_path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError as exc:
-            errors.append(f"invalid JSON in {state_path}: {exc}")
+            state = store.load_at(state_root)
+        except store.StoreError as exc:
+            errors.append(str(exc))
         else:
             for key in REQUIRED_STATE_KEYS:
                 if key not in state:

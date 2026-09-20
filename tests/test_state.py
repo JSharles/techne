@@ -14,6 +14,7 @@ from test_workspace import SKILL_ROOT, initializer, load_module, validator
 
 catalogue = load_module("techne_catalogue", SKILL_ROOT / "scripts" / "catalogue.py")
 journal = load_module("feedback", SKILL_ROOT / "scripts" / "feedback.py")
+store = load_module("store", SKILL_ROOT / "scripts" / "store.py")
 state_script = load_module("techne_state", SKILL_ROOT / "scripts" / "state.py")
 
 
@@ -34,7 +35,7 @@ class StateTransitionTests(unittest.TestCase):
         self.addCleanup(self.directory.cleanup)
         self.workspace = Path(self.directory.name)
         initializer.initialize(self.workspace, "fr")
-        self.path, self.state = state_script.load(self.workspace)
+        self.state = state_script.load(self.workspace)
         self.known = catalogue.subjects(SKILL_ROOT)
 
     def run_cli(self, *args) -> int:
@@ -169,9 +170,21 @@ class StateTransitionTests(unittest.TestCase):
         self.assertIsNotNone(warning)
         self.assertEqual(self.state["session"]["id"], "session-b")
 
+    def test_the_browser_reads_a_rendered_view_not_the_store(self):
+        view_path = store.progress_path(self.workspace / ".techne")
+        self.assertTrue(view_path.is_file(), "initialization seeds the view")
+
+        self.run_cli("mastery", "dsa.hashing", "independent", "--evidence", "two-sum", "--help-level", "H0")
+
+        view = json.loads(view_path.read_text(encoding="utf-8"))
+        self.assertEqual(view["language"], "fr")
+        self.assertEqual(view["mastery"]["dsa.hashing"]["state"], "independent")
+        self.assertEqual(len(view["reviews_due"]), 3)
+        self.assertNotIn("current", view, "the view carries only what the browser shows")
+
     def test_cli_records_feedback_with_its_context(self):
         self.state["current"] = {"id": "l04-dicts", "track": "engineering"}
-        state_script.save(self.path, self.state)
+        store.save(self.workspace, self.state)
 
         self.assertEqual(self.run_cli("feedback", "add", "--type", "bug", "--text", "  la trace refuse mes réponses  "), 0)
 

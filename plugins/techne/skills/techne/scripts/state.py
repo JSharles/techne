@@ -13,6 +13,7 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import feedback as journal
+import store
 from catalogue import subjects
 from workspace_registry import default_config_path, resolve_workspace
 
@@ -43,11 +44,11 @@ def now_stamp() -> str:
     return datetime.now().astimezone().isoformat(timespec="seconds")
 
 
-def load(workspace: Path, allow_old_format: bool = False) -> tuple[Path, dict]:
-    path = workspace / ".techne" / "STATE.json"
-    if not path.is_file():
-        raise StateError(f"No Techne state at {path}")
-    state = json.loads(path.read_text(encoding="utf-8"))
+def load(workspace: Path, allow_old_format: bool = False) -> dict:
+    try:
+        state = store.load(workspace)
+    except store.StoreError as exc:
+        raise StateError(str(exc)) from exc
     version = state.get("version")
     if not allow_old_format and version != FORMAT_VERSION:
         if isinstance(version, int) and version < FORMAT_VERSION:
@@ -56,7 +57,7 @@ def load(workspace: Path, allow_old_format: bool = False) -> tuple[Path, dict]:
                 "Run 'state.py migrate' to bring it forward; the learner's evidence is preserved."
             )
         raise StateError(f"Unknown state format: {version!r}. Update Techne rather than editing state by hand.")
-    return path, state
+    return state
 
 
 def migrate(state: dict) -> list[str]:
@@ -118,10 +119,6 @@ def note_session(state: dict, session: str | None) -> str | None:
             warning = "Another Techne session wrote this workspace recently; re-read the state before continuing."
     state["session"] = {"id": session, "seen_at": now_stamp()}
     return warning
-
-
-def save(path: Path, state: dict) -> None:
-    path.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def entry_for(state: dict, subject: str) -> dict:
@@ -382,7 +379,7 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv or sys.argv[1:])
     try:
         workspace = args.workspace.expanduser().resolve() if args.workspace else resolve_workspace(Path("."), args.config)
-        path, state = load(workspace, allow_old_format=args.command == "migrate")
+        state = load(workspace, allow_old_format=args.command == "migrate")
         known = subjects(SKILL_ROOT)
         warning = note_session(state, args.session)
         result: object = None
@@ -430,7 +427,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "show":
             result = state
 
-        save(path, state)
+        store.save(workspace, state)
         if warning:
             print(warning, file=sys.stderr)
         print(json.dumps(result, ensure_ascii=False, indent=2))
