@@ -1,6 +1,8 @@
 # Initialization
 
-Use this branch when workspace resolution fails: the learner is starting Techne, whatever command they used. If a workspace already resolves, do not initialize; offer to resume or `reset` instead.
+Use this branch when workspace resolution fails: the learner is starting Techne, whatever command they used.
+
+If a workspace already resolves, do not initialize. Offer to resume, or to add a program with `new` when they want to learn something else; `reset` only when they truly want to start over. A learner trying Techne out without touching their own workspace can run a session with `TECHNE_HOME` set to another directory, which gives that session its own registry.
 
 This is always a fresh start. Never read or reuse `.techne-archive-*` folders left by a `reset`, and never refer to a previous start.
 

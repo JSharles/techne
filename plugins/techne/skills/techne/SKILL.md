@@ -26,7 +26,13 @@ If the host sandbox cannot write to the resolved workspace, request access scope
 
 If no workspace exists, the learner is starting Techne. Whatever command they used (including none), welcome them in one or two sentences and offer to start right away, asking the learning language as the first question. Do not tell them to run `init` or any shell command. Read [initialization.md](references/initialization.md) and use `scripts/init_workspace.py`.
 
-If a workspace exists and the learner asks for `init`, do not initialize again: say a curriculum is already in progress and offer to resume it, or to `reset` it to start over.
+If a workspace exists and the learner asks for `init`, do not initialize again. Say where they stand, then offer, in this order:
+
+- **resume** what is open;
+- **learn something else**: that is a program, not a second Techne — `new` writes one, `enroll` adds it, and it runs beside the others with one shared mastery map;
+- **reset**, only if they want to start over and lose nothing else will do.
+
+Never present `reset` as the way to learn a new subject. One workspace holds every program, so evidence is never split in two.
 
 ## Route the request
 

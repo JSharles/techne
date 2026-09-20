@@ -139,6 +139,17 @@ Techne decides what comes next: the subject, due reviews, difficulty, and activi
 
 You can also just talk to the agent, in any language: "on reprend", "I'm stuck", "où en suis-je ?". The agent maps a clear request to the matching command and runs it. If your intent is ambiguous, it asks which command you mean. Inside an active Techne workspace, you can often skip the invocation entirely.
 
+## Learning something else
+
+A new subject is a **program**, not a second Techne: `new` writes one with you, `enroll` adds it beside the ones you already follow, and `switch` opens it. Everything stays in one workspace, so a subject you proved in one program counts in every other.
+
+One workspace holds your whole learning life, and `reset` is only for starting that life over. To try Techne out without touching it — a new version, a program you are unsure about — give the session its own registry:
+
+```bash
+mkdir -p /tmp/techne-trial && cd /tmp/techne-trial
+TECHNE_HOME=/tmp/techne-trial/registry claude
+```
+
 ## Resume from another directory or a new conversation
 
 The conversation transcript is not the source of truth. Techne reconstructs the learning session from persisted files.
