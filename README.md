@@ -123,7 +123,7 @@ Techne decides what comes next: the subject, due reviews, difficulty, and activi
 | `engineering` | Saves your progress and switches to the Senior Engineer curriculum. | When you want to work on the morning curriculum. |
 | `ai` | Saves your progress and switches to the Applied AI curriculum. | When the morning block is done, or you want to work on Applied AI now. |
 | `pause` | Saves your progress and keeps the day open; `resume` continues exactly where you stopped. | Before a short break. |
-| `end` | Saves your progress, closes the session, and gives a four-line report. | At the end of your working session. |
+| `end` | Saves your progress, closes the session, and gives you four closing lines. | At the end of your working session. |
 | `feedback <text>` | Records what annoyed you — a bug, a friction, an idea — with the activity it came from, and opens a discussion when it is really a method change. | The moment something does not work, without losing your thread. |
 | `report` | Exports everything you recorded, grouped and dated, ready to paste into the Techne repository. | When you sit down to improve Techne itself. |
 | `reset` | After you confirm, puts your progress aside (archived, not deleted unless you ask) so Techne starts again from `init`. Your exercise files stay unless you ask to remove them. | To start the whole curriculum over. Updating Techne never needs it: an older workspace is migrated, not reset. |

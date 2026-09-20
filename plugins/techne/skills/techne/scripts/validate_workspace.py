@@ -8,6 +8,10 @@ import json
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import feedback as journal
+
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_FILES = (
@@ -62,6 +66,8 @@ def validate(state_root: Path, require_browser: bool = True, template: bool = Fa
                     entry_state = entry.get("state") if isinstance(entry, dict) else None
                     if entry_state not in MASTERY_STATES:
                         errors.append(f"mastery.{subject}.state must be one of {', '.join(MASTERY_STATES)}")
+
+            errors.extend(journal.problems(state_root.parent))
 
     if require_browser:
         browser = state_root / "browser"

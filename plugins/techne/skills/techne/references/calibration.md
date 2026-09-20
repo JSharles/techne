@@ -1,6 +1,11 @@
 # Calibration mode
 
-Enter calibration when the learner uses `feedback <text>`, or explicitly comments on or asks to change Techne's method, curriculum, schedule, assessment, exercise design, or content in natural language. `feedback` needs no further syntax: the text is the learner's description of the problem.
+Every `feedback <text>` is recorded in the learner's journal first (see [operations.md](operations.md#feedback-and-reports)). What happens next depends on what they reported:
+
+- a defect or an annoyance — a broken exercise, noisy output, a confusing wording: recording is the whole answer. Confirm in one line and return to the activity.
+- a request to change Techne's method, curriculum, schedule, assessment, exercise design, or content, whether typed as `feedback` or said in passing: continue into calibration below.
+
+When it is not clear which of the two it is, treat it as a defect, record it, and say the learner can ask to discuss the method if that is what they meant.
 
 ## Two regimes
 

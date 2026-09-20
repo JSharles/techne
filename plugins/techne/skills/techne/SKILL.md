@@ -1,6 +1,6 @@
 ---
 name: techne
-description: Run Techne's intensive three-month bootcamp with a Senior Engineer curriculum in the morning and an Applied AI curriculum in the afternoon. Use when the learner invokes Techne, asks to initialize or resume the curriculum, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, resumes the Applied AI track, requests a change to the teaching method or curriculum, or uses a Techne command (init, resume, hint, ask, help, status, engineering, ai, pause, end, feedback, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
+description: Run Techne's intensive three-month bootcamp with a Senior Engineer curriculum in the morning and an Applied AI curriculum in the afternoon. Use when the learner invokes Techne, asks to initialize or resume the curriculum, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, resumes the Applied AI track, requests a change to the teaching method or curriculum, or uses a Techne command (init, resume, hint, ask, help, report, status, engineering, ai, pause, end, feedback, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
 metadata:
   short-description: Adaptive Senior Engineer and Applied AI academy
 ---
@@ -87,7 +87,7 @@ The interface is a small set of English commands, identical whatever the learnin
 | `ai` | Save progress, then switch to the Applied AI curriculum. | [operations.md](references/operations.md) |
 | `pause` | Save progress without closing the day. | [operations.md](references/operations.md) |
 | `end` | Save progress and close the session with a short report. | [operations.md](references/operations.md) |
-| `feedback <text>` | Record a problem with the method, the content, or the tooling, and discuss it when it is a method change. | [calibration.md](references/calibration.md) |
+| `feedback <text>` | Record a problem with the method, the content, or the tooling, and discuss it when it is a method change. | [operations.md](references/operations.md), [calibration.md](references/calibration.md) |
 | `report` | Export the recorded feedback as Markdown for the Techne repository. | [operations.md](references/operations.md) |
 | `reset` | After explicit confirmation, archive the learner's progress so Techne can start again from `init`. | [operations.md](references/operations.md) |
 | `uninstall` | After explicit confirmation, remove Techne from the host agent, optionally after `reset`. | [operations.md](references/operations.md) |

@@ -4,6 +4,8 @@ The hosts Techne runs on suggest a reply in their input field, so a question ask
 
 This is a workaround for a host behaviour, not a pedagogical principle. On a host that does not suggest replies — a custom interface, or a terminal whose input stays empty — the constraint can be lifted and questions can return to the conversation, which is where they naturally belong.
 
+The rule covers questions whose answer is part of the learning: comprehension checks, graded questions, Socratic questions during debugging. It does not cover operational exchanges — which folder to use, whether to install a missing tool, confirming a reset, or which of two things the learner meant — where a suggested reply gives nothing away.
+
 ## Consequences
 
 - Any surface Techne gains must be checked for the same leak before questions move onto it.

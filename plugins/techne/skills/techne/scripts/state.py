@@ -12,6 +12,7 @@ import sys
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
+import feedback as journal
 from catalogue import subjects
 from workspace_registry import default_config_path, resolve_workspace
 
@@ -28,9 +29,6 @@ BLOCKED_RETRY_DAYS = 14
 FAILURES_BEFORE_BLOCKED = 3
 EVIDENCE_KEPT = 5
 BLOCKS = ("engineering", "ai")
-FEEDBACK_TYPES = ("bug", "friction", "idea")
-FEEDBACK_STATUSES = ("open", "applied", "dismissed")
-FEEDBACK_HEADINGS = {"bug": "Bugs", "friction": "Frictions", "idea": "Ideas"}
 
 
 class StateError(Exception):
@@ -318,108 +316,6 @@ def ingest_events(state: dict, workspace: Path, known: set[str]) -> dict:
     return {"applied": applied, "for_agent": for_agent}
 
 
-def feedback_path(workspace: Path) -> Path:
-    return workspace / ".techne" / "feedback.jsonl"
-
-
-def read_feedback(workspace: Path) -> list[dict]:
-    path = feedback_path(workspace)
-    if not path.is_file():
-        return []
-    entries = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        try:
-            entry = json.loads(line)
-        except ValueError:
-            continue
-        if isinstance(entry, dict):
-            entries.append(entry)
-    return entries
-
-
-def write_feedback(workspace: Path, entries: list[dict]) -> None:
-    path = feedback_path(workspace)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("".join(json.dumps(entry, ensure_ascii=False) + "\n" for entry in entries), encoding="utf-8")
-
-
-def add_feedback(state: dict, workspace: Path, kind: str, text: str, activity: str | None, track: str | None) -> dict:
-    if kind not in FEEDBACK_TYPES:
-        raise StateError(f"Unknown feedback type: {kind}. Use one of {', '.join(FEEDBACK_TYPES)}.")
-    if not text.strip():
-        raise StateError("Feedback text is empty.")
-    current = state.get("current", {})
-    entries = read_feedback(workspace)
-    entry = {
-        "id": f"f{len(entries) + 1}",
-        "at": now_stamp(),
-        "type": kind,
-        "text": text.strip(),
-        "activity": activity or current.get("id"),
-        "track": track or current.get("track"),
-        "status": "open",
-    }
-    write_feedback(workspace, [*entries, entry])
-    return entry
-
-
-def resolve_feedback(workspace: Path, entry_id: str, status: str) -> dict:
-    if status not in FEEDBACK_STATUSES:
-        raise StateError(f"Unknown feedback status: {status}. Use one of {', '.join(FEEDBACK_STATUSES)}.")
-    entries = read_feedback(workspace)
-    for entry in entries:
-        if entry.get("id") == entry_id:
-            entry["status"] = status
-            entry["resolved_at"] = now_stamp()
-            write_feedback(workspace, entries)
-            return entry
-    raise StateError(f"No feedback entry with id {entry_id}.")
-
-
-def select_feedback(workspace: Path, status: str | None, since: str | None) -> list[dict]:
-    if status is not None and status not in FEEDBACK_STATUSES:
-        raise StateError(f"Unknown feedback status: {status}. Use one of {', '.join(FEEDBACK_STATUSES)}.")
-    if since is not None:
-        try:
-            date.fromisoformat(since)
-        except ValueError as exc:
-            raise StateError(f"--since expects a date like 2026-09-19: {exc}") from exc
-    selected = []
-    for entry in read_feedback(workspace):
-        if status is not None and entry.get("status", "open") != status:
-            continue
-        if since is not None and str(entry.get("at", ""))[:10] < since:
-            continue
-        selected.append(entry)
-    return selected
-
-
-def export_feedback(entries: list[dict]) -> str:
-    """Render the journal as Markdown, grouped by type, newest first."""
-    lines = [f"# Techne feedback — exported {today().isoformat()}", ""]
-    if not entries:
-        lines.append("No feedback recorded for this selection.")
-        return "\n".join(lines) + "\n"
-    for kind in FEEDBACK_TYPES:
-        group = sorted(
-            (entry for entry in entries if entry.get("type") == kind),
-            key=lambda entry: str(entry.get("at", "")),
-            reverse=True,
-        )
-        if not group:
-            continue
-        lines.append(f"## {FEEDBACK_HEADINGS[kind]} ({len(group)})")
-        lines.append("")
-        for entry in group:
-            context = " · ".join(str(part) for part in (entry.get("activity"), entry.get("track")) if part)
-            suffix = f" — {context}" if context else ""
-            status = "" if entry.get("status", "open") == "open" else f" [{entry['status']}]"
-            lines.append(f"- **{entry.get('id', '?')}** · {str(entry.get('at', ''))[:10]}{suffix}{status}")
-            lines.append(f"  {entry.get('text', '').strip()}")
-        lines.append("")
-    return "\n".join(lines).rstrip() + "\n"
-
-
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Apply a Techne state transition.")
     parser.add_argument("--workspace", type=Path, help="Learning workspace (default: resolved like the skill does)")
@@ -456,15 +352,25 @@ def build_parser() -> argparse.ArgumentParser:
     block.add_argument("name", choices=BLOCKS)
 
     feedback = sub.add_parser("feedback", help="Record, list, resolve or export learner feedback")
-    feedback.add_argument("--add", metavar="TEXT", help="Record a new entry")
-    feedback.add_argument("--type", choices=FEEDBACK_TYPES, help="Type of the recorded entry")
-    feedback.add_argument("--activity", help="Activity the entry came from (default: the current activity)")
-    feedback.add_argument("--track", help="Track the entry came from (default: the current track)")
-    feedback.add_argument("--list", action="store_true", help="List entries as JSON")
-    feedback.add_argument("--export", action="store_true", help="Print the entries as Markdown grouped by type")
-    feedback.add_argument("--resolve", metavar="ID", help="Mark an entry applied or dismissed")
-    feedback.add_argument("--status", choices=FEEDBACK_STATUSES, help="Filter, or the status to resolve to")
-    feedback.add_argument("--since", metavar="DATE", help="Only entries recorded on or after this date")
+    actions = feedback.add_subparsers(dest="action", required=True)
+
+    record = actions.add_parser("add", help="Record a new entry")
+    record.add_argument("--type", choices=journal.TYPES, required=True)
+    record.add_argument("--text", required=True)
+    record.add_argument("--activity", help="Activity the entry came from (default: the current activity)")
+    record.add_argument("--track", help="Track the entry came from (default: the current track)")
+
+    listing = actions.add_parser("list", help="List entries as JSON")
+    listing.add_argument("--status", choices=journal.STATUSES)
+    listing.add_argument("--since", metavar="DATE")
+
+    exporting = actions.add_parser("export", help="Print the entries as Markdown grouped by type")
+    exporting.add_argument("--status", choices=journal.STATUSES, default="open")
+    exporting.add_argument("--since", metavar="DATE")
+
+    resolving = actions.add_parser("resolve", help="Mark an entry applied or dismissed")
+    resolving.add_argument("id")
+    resolving.add_argument("--status", choices=journal.STATUSES, default="applied")
 
     sub.add_parser("ingest-events", help="Apply mechanical browser evidence")
     sub.add_parser("migrate", help="Bring an older workspace forward to the current state format")
@@ -502,18 +408,21 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "block":
             result = switch_block(state, args.name)
         elif args.command == "feedback":
-            if args.add:
-                if not args.type:
-                    raise StateError("--add requires --type bug|friction|idea")
-                result = add_feedback(state, workspace, args.type, args.add, args.activity, args.track)
-            elif args.resolve:
-                result = resolve_feedback(workspace, args.resolve, args.status or "applied")
-            elif args.export:
-                save(path, state)
-                print(export_feedback(select_feedback(workspace, args.status or "open", args.since)), end="")
+            if args.action == "add":
+                current = state.get("current", {})
+                origin = {
+                    "activity": args.activity or current.get("id"),
+                    "track": args.track or current.get("track"),
+                }
+                result = journal.add(workspace, args.type, args.text, origin)
+            elif args.action == "resolve":
+                result = journal.resolve(workspace, args.id, args.status)
+            elif args.action == "export":
+                # A report reads; it never writes state.
+                print(journal.export(journal.select(workspace, args.status, args.since)), end="")
                 return 0
             else:
-                result = {"entries": select_feedback(workspace, args.status, args.since)}
+                result = {"entries": journal.select(workspace, args.status, args.since)}
         elif args.command == "ingest-events":
             result = ingest_events(state, workspace, known)
         elif args.command == "migrate":
@@ -526,7 +435,7 @@ def main(argv: list[str] | None = None) -> int:
             print(warning, file=sys.stderr)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
-    except (StateError, FileNotFoundError, OSError, ValueError) as exc:
+    except (StateError, journal.FeedbackError, FileNotFoundError, OSError, ValueError) as exc:
         print(f"Techne state transition failed: {exc}", file=sys.stderr)
         return 1
 

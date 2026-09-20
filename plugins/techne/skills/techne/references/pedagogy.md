@@ -56,7 +56,7 @@ Five rules, and clarity wins every arbitration:
 
 Define vocabulary before using it, including the words that feel obvious. A lesson teaches the gesture that failed, not the neighbouring one: when the learner's error was in traversing a structure, the lesson covers traversal, whatever else the exercise touched.
 
-At any moment the learner can ask for a passage to be rephrased. Rewrite it, at no cost, with no help level and no trace, and correct the lesson page as well as the chat — the page is what they will reread.
+At any moment the learner can ask for a passage to be rephrased — the word "reformule" in French, "rephrase" in English, or any plain equivalent. Rewrite it, at no cost, with no help level and no trace, and correct the lesson page as well as the chat — the page is what they will reread. Tell the learner the word exists the first time a lesson opens.
 
 ## Spaced retrieval
 
