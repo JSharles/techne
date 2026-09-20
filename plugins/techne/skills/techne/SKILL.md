@@ -1,6 +1,6 @@
 ---
 name: techne
-description: Run Techne's intensive three-month bootcamp with a Senior Engineer curriculum in the morning and an Applied AI curriculum in the afternoon. Use when the learner invokes Techne, asks to initialize or resume the curriculum, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, resumes the Applied AI track, requests a change to the teaching method or curriculum, or uses a Techne command (init, resume, hint, ask, status, programs, switch, enroll, leave, schedule, engineering, ai, pause, end, feedback, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
+description: Run Techne's intensive three-month bootcamp with a Senior Engineer curriculum in the morning and an Applied AI curriculum in the afternoon. Use when the learner invokes Techne, asks to initialize or resume the curriculum, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, resumes the Applied AI track, requests a change to the teaching method or curriculum, or uses a Techne command (init, resume, hint, ask, status, programs, switch, enroll, leave, new, schedule, engineering, ai, pause, end, feedback, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
 metadata:
   short-description: Adaptive Senior Engineer and Applied AI academy
 ---
@@ -31,6 +31,7 @@ If a workspace exists and the learner asks for `init`, do not initialize again: 
 ## Route the request
 
 - For a resume, session start, pause, completion, hint, browser answer, status, checkpoint, reset, or uninstall request, read [operations.md](references/operations.md).
+- Before listing, creating, or changing a program, read [programs.md](references/programs.md).
 - Before any lesson, exercise, recall, review, assessment, or feedback, read [pedagogy.md](references/pedagogy.md) and [exercises.md](references/exercises.md), then the open program's own file in `programs/` — the shipped ones are [engineering.md](programs/engineering.md) and [applied-ai.md](programs/applied-ai.md), and the learner's own live in their workspace. Do not load another program while one is open.
 - When the learner comments on or asks to change Techne's method, curriculum, schedule, assessment, or content, checkpoint the activity and read [calibration.md](references/calibration.md).
 
@@ -85,6 +86,7 @@ The interface is a small set of English commands, identical whatever the learnin
 | `programs` | List the available programs, the learner's enrolments, and their coverage in each. | [operations.md](references/operations.md) |
 | `switch <id>` | Save progress, then open another enrolled program. | [operations.md](references/operations.md) |
 | `enroll <id>` / `leave <id>` | Follow a program, or stop following it without losing its evidence. | [operations.md](references/operations.md) |
+| `new` | Create a program by interview, in either mode, and write it to the workspace. | [programs.md](references/programs.md) |
 | `schedule` | Show the weekly schedule, or propose one from the learner's enrolments. | [operations.md](references/operations.md) |
 | `pause` | Save progress without closing the day. | [operations.md](references/operations.md) |
 | `end` | Save progress and close the session with a short report. | [operations.md](references/operations.md) |
