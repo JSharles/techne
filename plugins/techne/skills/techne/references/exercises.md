@@ -29,6 +29,10 @@ Every activity in either curriculum starts with a short lesson, except placement
 - Serve and open it yourself, then tell the learner to read it and to say when they are done.
 - Open the coding exercise only after the lesson. The exercise brief then refers back to the lesson instead of repeating it.
 
+### Before a project ticket
+
+A ticket on a red-thread project is practice too, so the same rule holds. Before opening one, list the catalogue subjects it mobilises. For each one still `not_started`, give a lesson of about ten minutes first: what the notion is and how one goes about it, never a ready-made setup to copy into the project. When the learner then gets stuck on something neither the ticket nor a lesson covered, the ticket is at fault: handle it as [an activity Techne broke](operations.md#void-an-activity-techne-broke). See `docs/adr/0016-teach-before-the-ticket.md`.
+
 ## Never ask a question in the conversation
 
 Ask nothing in the chat: not a graded question, not a comprehension check, not a Socratic question during debugging. The host suggests a reply in its input field, so a question asked there can hand the learner its own answer before they have thought.

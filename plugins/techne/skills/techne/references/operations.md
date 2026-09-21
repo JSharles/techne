@@ -169,7 +169,7 @@ Announce a bound before starting, and say it is an estimate, not a deadline:
 - lesson: 10 minutes;
 - isolated coding exercise: 30 minutes;
 - review: 5 minutes;
-- red-thread morning: 90 minutes across milestones;
+- red-thread morning: 90 minutes; a ticket may take several mornings, and says how many;
 - placement exercise: 15 minutes.
 
 At the bound, say so and let the learner choose to continue or stop. A repeated large overrun is a signal for a light day, never a penalty.
@@ -207,6 +207,14 @@ When a program sends the learner's changes through pull requests, Techne reviews
 - On the pull request page, a question is fine: ADR 0008 is about the host's input field. When the review happens in the conversation, give an experiment to run instead.
 
 To evaluate the learner as a reviewer, prepare a pull request for them to read, with defects placed on purpose, never the solution to an exercise they have yet to write. The evidence is which real defects they found and how they justified each, at H0. Show the ones they missed afterwards.
+
+## Reviewing a ticket's slicing
+
+Before writing code for a ticket, the learner writes how they will slice it into sub-tasks, in a file beside the ticket, and Techne reviews it in about five minutes. Write the review in that file, where a question is fine for the same reason as on a pull request page.
+
+- A question about the slicing is H1.
+- Anything more — a missing or misplaced sub-task, a proposed order — is help beyond H1 and counts as such.
+- The slicing is evidence for `flow.ticket-slicing`: record it at the highest help level the review used.
 
 ## Checkpoint and close
 

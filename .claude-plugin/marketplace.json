@@ -11,7 +11,7 @@
       "displayName": "Techne",
       "source": "./plugins/techne",
       "description": "An intensive bootcamp that teaches the programs you follow, from engineering foundations to applied AI, and adapts from what you demonstrate.",
-      "version": "0.9.7",
+      "version": "0.9.8",
       "author": {
         "name": "Jean-Charles",
         "url": "https://github.com/JSharles"

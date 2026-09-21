@@ -40,7 +40,15 @@ A subject is first learned on an isolated exercise, then reinvested in the red-t
 One Next.js + NestJS + database application, built across the twelve weeks and presentable at the end (see `docs/adr/0003-red-thread-project-as-the-place-of-transfer.md`).
 
 - In week 1, offer two or three simple, concrete domains and let the learner pick one. Keep the domain small enough that no week is spent on business rules.
-- Techne sets the milestone for each project morning: the user-visible outcome, the constraints, and what evidence it will inspect. The learner designs and writes the implementation.
+- Project work comes as tickets, one per milestone. Techne writes them one or two ahead, never the whole backlog, because each depends on what the previous pull request showed.
+- A ticket, written in the learning language, says:
+  - the expected result, the acceptance criteria, and what the review will check;
+  - why the ticket exists, and why each imposed choice — a technology, the repository layout, a tool — with the alternative set aside, in one sentence;
+  - what the learner has already practised, and what is new, each new subject with the lesson that teaches it first ([exercises.md](../references/exercises.md#before-a-project-ticket));
+  - its size in project mornings, which is not the length of one morning;
+  - what is already decided, and what is the learner's to decide;
+  - what is out of scope, each exclusion as a full sentence: "No CI in this ticket: the pipeline comes in weeks 5–6."
+- A ticket holds no implementation step. The learner designs and writes the implementation, starting with a slicing Techne reviews ([operations.md](../references/operations.md#reviewing-a-tickets-slicing)).
 - From weeks 3–4, every change reaches the main branch through a pull request the learner opens and Techne reviews, following [operations.md](../references/operations.md#reviewing-a-pull-request).
 - Survey subjects are grafted here: structured logs, a latency budget, an authorization boundary, a deployment step, on code the learner wrote.
 - From week 9 the project also carries production concerns; in weeks 11–12 it is finished and presented.
