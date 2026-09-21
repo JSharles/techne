@@ -427,6 +427,43 @@ class StateTransitionTests(unittest.TestCase):
         self.assertEqual(statuses["sprint"], "maintenance")
         self.assertEqual(statuses["engineering"], "active")
 
+    def test_a_survey_subject_at_its_ceiling_covers_the_program(self):
+        write_program(
+            programs.workspace_dir(self.workspace),
+            "sprint",
+            prefix="int",
+            domain_title="Interviews",
+            replace=[("`first`, `second`\n", "`first`, `second`\n\n### Survey — `survey.*`\n\n`logs`\n")],
+        )
+        state_script.enroll(self.state, self.workspace, "sprint")
+        known = state_script.known_subjects(self.state, self.workspace)
+        state_script.set_mastery(self.state, "int.first", "independent", "fait", "H0", known)
+        state_script.set_mastery(self.state, "int.second", "transferred", "fait", "H0", known)
+        self.assertEqual(
+            state_script.settle_completions(self.state, self.workspace),
+            [],
+            "a survey subject never taught leaves the program open",
+        )
+
+        state_script.set_mastery(self.state, "survey.logs", "discovered", "lu", "H0", known)
+        found, _ = programs.discover(SKILL_ROOT, self.workspace)
+        measured = state_script.coverage(self.state, found["sprint"])
+
+        self.assertEqual(measured["demonstrated"], 2, "a survey subject is literacy, never mastery")
+        self.assertEqual(measured["share"], 1.0)
+        self.assertEqual(state_script.settle_completions(self.state, self.workspace), ["sprint"])
+
+    def test_the_shipped_engineering_program_can_be_covered(self):
+        found, _ = programs.discover(SKILL_ROOT, self.workspace)
+        engineering = found["engineering"]
+        ceiling = engineering.settings["survey_ceiling"]
+        self.state["mastery"] = {
+            subject: {"state": ceiling if subject.startswith("survey.") else "transferred"}
+            for subject in engineering.subjects
+        }
+
+        self.assertEqual(state_script.coverage(self.state, engineering)["share"], 1.0)
+
     def test_coverage_counts_started_subjects(self):
         found, _ = programs.discover(SKILL_ROOT, self.workspace)
         state_script.enroll(self.state, self.workspace, "engineering")

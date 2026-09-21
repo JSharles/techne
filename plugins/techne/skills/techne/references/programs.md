@@ -18,7 +18,7 @@ A header declares exactly these, and nothing else:
 | `lesson_to_practice` | `lesson-heavy`, `balanced`, `practice-heavy` | how much teaching precedes practice |
 | `timeboxes` | `lesson=`, `exercise=`, `review=`, `project=`, `placement=`, in minutes | the bounds announced before work |
 | `red_thread` | `yes`, `no` | whether the program carries a running project |
-| `survey_ceiling` | a mastery state | how far a survey subject may go |
+| `survey_ceiling` | a mastery state | how far a survey subject — any under the `survey.*` prefix — may go |
 
 A sixth setting is refused, so a program cannot quietly invent its own rules.
 

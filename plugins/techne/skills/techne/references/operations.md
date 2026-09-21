@@ -225,7 +225,7 @@ After two days or more without a session, open with four lines: how long the gap
 
 ## When a program is covered
 
-A program ends when its catalogue is covered — every subject started — and never because time has passed. The state script notices and moves that enrolment to maintenance on its own, saying so.
+A program ends when its catalogue is covered — every core subject `independent` or `transferred`, every survey subject at the program's `survey_ceiling` — and never because time has passed. The state script notices and moves that enrolment to maintenance on its own, saying so.
 
 When it does, write a short assessment in `.techne/SESSION_LOG.md` and give it to the learner: what is `transferred`, what stayed `assisted`, fragile or `blocked`, and a prioritized plan for what to work on next.
 

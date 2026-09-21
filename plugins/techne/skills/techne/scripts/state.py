@@ -334,6 +334,14 @@ def known_subjects(state: dict, workspace: Path) -> set[str]:
 
 
 DEMONSTRATED = ("independent", "transferred")
+SURVEY_PREFIX = "survey"
+
+
+def is_covered(subject: str, name: str, ceiling: str) -> bool:
+    """A core subject is covered once demonstrated; a survey one once at its ceiling."""
+    if subject.partition(".")[0] == SURVEY_PREFIX:
+        return name in LADDER and LADDER.index(name) >= LADDER.index(ceiling)
+    return name in DEMONSTRATED
 
 
 def off_programme(state: dict, workspace: Path) -> list[str]:
@@ -355,23 +363,33 @@ def coverage(state: dict, program: programs.Program) -> dict:
 
     A program is covered when its subjects are demonstrated, not merely seen:
     `discovered` means taught, `blocked` means stuck, and neither finishes a
-    program. `share` is what completion is measured against.
+    program. A survey subject is covered at its ceiling, since it is never
+    meant to go further, but it is never counted as demonstrated (ADR 0002).
+    `share` is what completion is measured against.
     """
     mastery = state.get("mastery", {})
+    ceiling = program.settings.get("survey_ceiling", "discovered")
     counted = {"not_started": 0, "discovered": 0, "assisted": 0, "independent": 0, "transferred": 0, "blocked": 0}
+    covered = 0
     for subject in program.subjects:
         name = mastery.get(subject, {}).get("state", "not_started")
         counted[name] = counted.get(name, 0) + 1
+        covered += is_covered(subject, name, ceiling)
     total = len(program.subjects)
     started = total - counted["not_started"]
-    demonstrated = sum(counted[name] for name in DEMONSTRATED)
-    ceiling = program.settings.get("survey_ceiling", "discovered")
+    demonstrated = sum(
+        1
+        for subject in program.subjects
+        if subject.partition(".")[0] != SURVEY_PREFIX
+        and mastery.get(subject, {}).get("state", "not_started") in DEMONSTRATED
+    )
     return {
         "subjects": total,
         "started": started,
         "demonstrated": demonstrated,
+        "covered": covered,
         "states": counted,
-        "share": round(demonstrated / total, 3) if total else 0.0,
+        "share": round(covered / total, 3) if total else 0.0,
         "survey_ceiling": ceiling,
     }
 
