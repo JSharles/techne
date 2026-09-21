@@ -38,7 +38,7 @@ For unstable technical content, verify current primary documentation before prop
 
 ## Approval and record
 
-Before a persistent modification, present:
+Before a persistent modification, propose it the way you would to a colleague: a short argued message in paragraphs, which covers
 
 - the problem and evidence;
 - the proposed change;

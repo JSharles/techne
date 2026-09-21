@@ -2,7 +2,7 @@
 
 Techne is one Agent Skill shared by Codex and Claude Code. Keep `plugins/techne/skills/techne/SKILL.md` and its `references/` as the single source of truth; do not create divergent agent-specific copies.
 
-Write skill source, repository documentation, schemas, code comments, and maintenance-facing text in English. Learner-facing lessons, exercises, feedback, progress reports, and browser UI use the language the learner chose during `init`, carried in the state store; never hard-code a learner language in skill source. Browser UI strings live in `assets/browser/assets/i18n.js` and `assets/browser/serve.py`, with English as the fallback. Techne commands stay in English. Preserve established English technical terms where they improve precision.
+Write skill source, repository documentation, schemas, code comments, and maintenance-facing text in English. Learner-facing lessons, exercises, feedback, progress reports, and browser UI use the language the learner chose during `init`, carried in the state store; never hard-code a learner language in skill source, except in a `references/style-<language>.md` file, which holds that language's examples and is read only when the learner chose it. Browser UI strings live in `assets/browser/assets/i18n.js` and `assets/browser/serve.py`, with English as the fallback. Techne commands stay in English. Preserve established English technical terms where they improve precision.
 
 Techne commands are defined in the skill's `SKILL.md`. Each one also has a thin Claude Code slash command in `plugins/techne/commands/<name>.md` that only forwards to the skill; keep both in sync and never put behaviour in the command files.
 
@@ -22,4 +22,10 @@ python3 plugins/techne/skills/techne/scripts/validate_workspace.py --template
 claude plugin validate .
 ```
 
-Also run the available Agent Skill validator against `plugins/techne/skills/techne`. Treat `.techne/` as learner runtime state, not skill source.
+Also run the available Agent Skill validator against `plugins/techne/skills/techne`.
+
+Before releasing a change to learner-facing wording (message rules, `pedagogy.md`, a `style-<language>.md` file), run the style eval suite; it makes real model calls, so it is not part of the routine checks:
+
+```bash
+claude plugin eval plugins/techne --tag style-fr --scaffold --allow-tools Bash Write Edit --trust-plugin
+``` Treat `.techne/` as learner runtime state, not skill source.

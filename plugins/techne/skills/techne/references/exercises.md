@@ -51,7 +51,7 @@ Every quiz question, recall prompt and placement question follows [Writing for t
 
 ## Brief outside the timebox
 
-Present, in order:
+Cover, in this order, in prose; in an exercise file these may be section headings, in the conversation they are sentences:
 
 1. the situation;
 2. why it matters in production;

@@ -252,6 +252,12 @@ uvx --from skills-ref agentskills validate plugins/techne/skills/techne
 claude plugin validate .
 ```
 
+Before releasing a change to learner-facing wording, run the style eval suite. It runs Techne on three reference situations in French and fails when a reported turn of phrase comes back; it makes real model calls:
+
+```bash
+claude plugin eval plugins/techne --tag style-fr --scaffold --allow-tools Bash Write Edit --trust-plugin
+```
+
 For local Claude Code testing, add this checkout as a marketplace:
 
 ```bash
