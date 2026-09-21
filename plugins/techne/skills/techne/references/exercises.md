@@ -41,6 +41,14 @@ This is a workaround for the host, not a teaching principle (see `docs/adr/0008-
 
 When an exercise expects a shape — a trace table, an output line, a data structure — show one filled-in example, and fill the first row for the learner. Never describe a format in prose and then compare the answer character by character against it.
 
+## Writing a question
+
+Every quiz question, recall prompt and placement question follows [Writing for the learner](pedagogy.md#writing-for-the-learner), and three more rules:
+
+- The page carries everything the question depends on: every signature, contract and identifier is printed there. A from-memory page is self-contained, since the learner is told not to reopen the exercise.
+- When a question turns on a contract, print the contract; the learner never infers it from a function's name.
+- Exactly one option is defensible against what the page prints. Before publishing, check each distractor against the snippet and the contract as written, not as intended.
+
 ## Brief outside the timebox
 
 Present, in order:

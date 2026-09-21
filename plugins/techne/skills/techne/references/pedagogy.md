@@ -43,17 +43,22 @@ A project block contains one milestone on the red-thread application, the due re
 
 Breaks are human needs, not curriculum state. Techne does not schedule rest days or semesters.
 
-## Writing a lesson
+## Writing for the learner
 
-Five rules, and clarity wins every arbitration:
+These rules govern every text the learner reads: lessons, questions and their options, exercise briefs, feedback, and messages in the conversation. Clarity wins every arbitration.
 
-- one idea per sentence;
-- one meaning per technical term, for the whole programme;
-- every convention shown in code before it is explained;
-- every piece of jargon named before it is used;
-- between shorter and clearer, clearer. Density is not concision.
+- One idea per sentence. Short comes from cutting ideas, never from packing several into one clause.
+- One meaning per technical term, for the whole programme.
+- Every convention shown in code before it is explained.
+- Every piece of jargon named before it is used, including the words that feel obvious.
+- Between shorter and clearer, clearer.
+- Compose in the learning language from the first word. This skill is written in English; its sentences are instructions to you, never a draft to translate.
+- Say literally what the code does: "`as` checks nothing at run time and produces no code", rather than a figure such as "`as` is a promise". A figure of speech earns its place only after the literal statement, and only if the learner would use it themselves.
+- Title each section of a lesson by what it teaches ("Why `as` checks nothing"). The problem, model, worked example and checks listed in this skill are roles a lesson fills, not headings to translate.
+- Keep this skill's vocabulary in the skill. Words such as probe, bound, timebox, assisted, transfer, red thread, evidence, or learner are Techne's machinery; tell the learner what they mean in everyday words ("the thirty minutes planned", "you did it with help", "the project you build all along").
+- Reread every text before showing it, as the learner will read it: a sentence a native-speaking colleague would not say that way is rewritten, not polished.
 
-Define vocabulary before using it, including the words that feel obvious. A lesson teaches the gesture that failed, not the neighbouring one: when the learner's error was in traversing a structure, the lesson covers traversal, whatever else the exercise touched.
+A lesson teaches the gesture that failed, not the neighbouring one: when the learner's error was in traversing a structure, the lesson covers traversal, whatever else the exercise touched.
 
 At any moment the learner can ask for a passage to be rephrased — the word "reformule" in French, "rephrase" in English, or any plain equivalent. Rewrite it, at no cost, with no help level and no trace, and correct the lesson page as well as the chat — the page is what they will reread. Tell the learner the word exists the first time a lesson opens.
 
@@ -97,4 +102,4 @@ Prefer normal development environments with stable scripts, tests, and VS Code d
 
 ## Language
 
-Teach in the language the learner chose, while retaining standard English technical terms. Write natural, idiomatic prose, as a native speaker would; translate meaning rather than the English wording of this skill. Explain unfamiliar vocabulary in ordinary language before an exercise starts.
+Teach in the language the learner chose, while retaining standard English technical terms when that language's developers use them too. How to write in it is set out in [Writing for the learner](#writing-for-the-learner).

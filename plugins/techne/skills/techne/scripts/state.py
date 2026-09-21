@@ -259,7 +259,7 @@ def due_reviews(state: dict, limit: int | None) -> tuple[list[dict], list[dict]]
     due.sort(key=lambda item: (state.get("mastery", {}).get(item["subject"], {}).get("state") not in fragile, item["due_on"]))
     for subject in dict.fromkeys(item["subject"] for item in dropped):
         # One step down per subject, however many of its reviews went stale.
-        step_down(state, subject, "révision abandonnée (trop en retard)")
+        step_down(state, subject, "review dropped (too overdue)")
     state["reviews_due"] = kept + due
     return (due if limit is None else due[:limit]), dropped
 
@@ -279,10 +279,10 @@ def record_review(state: dict, subject: str, passed: bool, known: set[str]) -> d
             first = min(done, key=lambda item: item["due_on"])
             state["reviews_due"] = [item for item in queue(state, "reviews_due") if item is not first]
         entry["last_evidence_at"] = now_stamp()
-        entry["evidence"] = ([*entry.get("evidence", []), f"{today().isoformat()} · révision réussie"])[-EVIDENCE_KEPT:]
+        entry["evidence"] = ([*entry.get("evidence", []), f"{today().isoformat()} · review passed"])[-EVIDENCE_KEPT:]
         return entry
     drop_from_queue(state, "reviews_due", subject)
-    entry = step_down(state, subject, "révision ratée")
+    entry = step_down(state, subject, "review failed")
     queue(state, "reviews_due").append(
         {"subject": subject, "due_on": (today() + timedelta(days=2)).isoformat(), "interval_days": 2}
     )
@@ -467,7 +467,7 @@ def ingest_events(state: dict, workspace: Path, known: set[str]) -> dict:
             if event.get("kind") == "quiz" and event.get("correct") and subject in known:
                 entry = entry_for(state, subject)
                 if entry.get("state", "not_started") == "not_started":
-                    set_mastery(state, subject, "discovered", "question de leçon réussie", "H0", known)
+                    set_mastery(state, subject, "discovered", "lesson question answered", "H0", known)
                     applied.append(subject)
                     continue
             for_agent.append(event)

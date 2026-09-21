@@ -16,9 +16,10 @@ Run `python3 <this-skill-directory>/scripts/resolve_workspace.py .` without chan
 1. the short state, with `python3 <this-skill-directory>/scripts/state.py brief`; ask for more only when you need it, never by opening the store;
 2. `.techne/CURRENT.md`;
 3. `.techne/PROFILE.md`, including the learner's recorded preferences;
-4. the latest entry in `.techne/SESSION_LOG.md`;
-5. due reviews and transfers, with `python3 <this-skill-directory>/scripts/state.py review --due` and `state.py transfer --due`;
-6. new browser evidence, with `state.py ingest-events`.
+4. `.techne/DECISIONS.md`, the method changes approved with this learner, which take precedence over this skill's defaults;
+5. the latest entry in `.techne/SESSION_LOG.md`;
+6. due reviews and transfers, with `python3 <this-skill-directory>/scripts/state.py review --due` and `state.py transfer --due`;
+7. new browser evidence, with `state.py ingest-events`.
 
 If the host sandbox cannot write to the resolved workspace, request access scoped to that workspace. Keep using the registered state; never create a second curriculum merely because the current agent session started elsewhere.
 
@@ -52,8 +53,8 @@ These rules apply to every learner-facing message, in every language.
 - Keep Techne's machinery out of the conversation: no state-file names, registry, workspace resolution, help levels, checkpoints, or internal terms such as baseline, probe, timebox, or track. Use plain words. Show internals only for `status` or when they truly block the learner, and then in one sentence with the fix.
 - Never ask the learner to run a shell command for Techne's own operations; run scripts yourself. Do not assume a terminal exists: the host may be Claude Desktop, an IDE, or a CLI.
 - Open things yourself when the host allows it: exercise files in the editor (for example `code -g <file>:<line>`) and browser lessons (for example `open <url>`). Otherwise give the exact file or URL.
-- Write the way a native speaker of the learning language would write to a colleague. Translate meaning, not English wording; never calque the English terms of this skill. Keep established English technical terms (array, closure, render…) when natural in that language.
-- Stay short. If the learner says they do not understand, restate the single next action in simpler words instead of explaining why.
+- Write the way a native speaker of the learning language would write to a colleague, composing in that language rather than translating this skill. Keep established English technical terms (array, closure, render…) when natural in that language. The full rules are in [pedagogy.md](references/pedagogy.md#writing-for-the-learner).
+- Stay short by cutting ideas, never by packing several into one sentence. If the learner says they do not understand, restate the single next action in simpler words instead of explaining why.
 
 ## Invariants
 
@@ -71,7 +72,7 @@ These rules apply to every learner-facing message, in every language.
 - A method change is discussed, impact-checked, explicitly approved, and versioned before it becomes persistent.
 - Read only the learning workspace. Never inspect the learner's other folders, repositories, or files without asking first.
 - Never install software silently. When an exercise needs a missing tool, name it, say why it is needed, and install it only after the learner agrees.
-- Keep skill source, repository documentation, schemas, code comments, and maintenance-facing text in English. Code Techne writes for the learner — identifiers, file names, test names — is English too; only the prose addressed to the learner uses the learning language.
+- Keep skill source, repository documentation, schemas, code comments, and maintenance-facing text in English. Code Techne writes for the learner — identifiers, file names, test names — is English too, and so are Techne's own working records in the workspace (`CURRENT.md`, `SESSION_LOG.md`, `DECISIONS.md`, `PROFILE.md`, `AI_LAB.md`, evidence lines). Only the prose addressed to the learner uses the learning language, composed for them rather than lifted from those records. See `docs/adr/0013-working-records-in-english.md`.
 - Conduct the learning experience in the language the learner chose during `init`, which the state carries. Lessons, exercise prompts, feedback, progress reports, and browser UI are learner-facing content and therefore use that language; preserve established English technical terms when they are clearer. Change it only when the learner asks.
 
 ## Commands

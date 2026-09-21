@@ -2,15 +2,15 @@
 
 ## Source of truth
 
-Use the state store through `scripts/state.py` for machine-readable state, and `.techne/CURRENT.md` for the one user-facing action. Keep them consistent after every transition.
+Use the state store through `scripts/state.py` for machine-readable state, and `.techne/CURRENT.md` for the one activity ready or in progress. Keep them consistent after every transition.
 
-The durable records are:
+The durable records are written in English, whatever the learning language (see [Writing for the learner](pedagogy.md#writing-for-the-learner)):
 
 - `PROFILE.md`: declared context and verified constraints;
 - the state store, a database in the workspace: block state, the mastery map, review and transfer queues, working days, enrolments, and the issues journal. Read and written only through `scripts/state.py`;
 - `CURRENT.md`: one ready or in-progress activity;
 - `SESSION_LOG.md`: append-only narrative evidence;
-- `DECISIONS.md`: approved calibration decisions;
+- `DECISIONS.md`: approved calibration decisions, read at the start of every turn;
 - `AI_LAB.md`: Applied AI lab repository, model provider, and capstone facts;
 - `events/browser.jsonl`: browser interactions recorded locally.
 
