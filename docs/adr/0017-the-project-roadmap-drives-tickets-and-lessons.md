@@ -11,4 +11,5 @@ The exploration method is described in the program itself rather than delegated 
 - The exploration takes up to three of the four project mornings of weeks 1–2, so the first vertical slice may only start then.
 - The weekly "Red thread" lines of the sequence become constraints the roadmap must meet, rather than the product's features.
 - A learner whose project began before this decision is offered the exploration once; their open tickets are paused and rewritten from the roadmap.
+- ADR 0018 replaces the exploration with a seven-step discovery that starts from a blank page.
 - ADR 0008's rule is narrowed in wording to exercise questions, since the exploration is a conversation of questions the learner decides rather than finds.

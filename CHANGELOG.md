@@ -2,6 +2,13 @@
 
 Learner-visible changes, newest first. Versions match `plugins/techne/.claude-plugin/plugin.json`.
 
+## 0.11.0
+
+- Product discovery starts from a blank page and runs in seven announced steps: goals and frame, your ideas, the choice against criteria stated in advance, the problem, the scope, the teaching value, and the architecture with the roadmap. Techne tells you which step you are on and what must be settled to move on.
+- Your ideas come first; Techne offers its own only when you ask. The project's repository and name are created only once you have chosen.
+- Starting discovery over sets every earlier idea aside in an archive Techne never reads, and Techne no longer brings them up.
+- Everything Techne records carries a full date, time and time zone from the system clock, and Techne no longer says "this morning" or "yesterday" without computing it.
+
 ## 0.10.0
 
 - Before the first ticket of the red-thread project, Techne holds a product exploration with you in the conversation, three project mornings at most: the problem, the scope and its hard technical problems, what each part will teach you, and the architecture. You decide; Techne questions and writes it down.

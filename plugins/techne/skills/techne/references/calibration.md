@@ -40,6 +40,6 @@ For unstable technical content, verify current primary documentation before prop
 
 Before a persistent modification, argue for it in a few short paragraphs, the way you would with a colleague: what you observed and what it shows; what you propose to change, and where in the programme; what it gains and what it costs; and what result, later, will show whether it worked. These are the steps of an argument, told in sentences that follow each other, never headings or labels.
 
-Apply only after explicit agreement. Append the approved decision to `.techne/DECISIONS.md` with date, scope, rationale, and review signal. Update the smallest single source of truth; do not duplicate the rule into every reference.
+Apply only after explicit agreement. Append the approved decision to `.techne/DECISIONS.md` with its timestamp, scope, rationale, and review signal. That file holds decisions about the method; decisions about the red-thread product belong to its discovery record and the project's own ADRs. Update the smallest single source of truth; do not duplicate the rule into every reference.
 
 Resume from the saved checkpoint or replace the activity only when the approved decision requires it.

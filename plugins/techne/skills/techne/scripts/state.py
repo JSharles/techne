@@ -545,7 +545,8 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("ingest-events", help="Apply mechanical browser evidence")
     sub.add_parser("migrate", help="Bring an older workspace forward to the current state format")
     sub.add_parser("programs", help="List the programs available to this learner")
-    sub.add_parser("brief", help="Print the short state an agent needs to start a turn")
+    sub.add_parser("brief", help="Print the short state an agent needs to start a turn, with the current time")
+    sub.add_parser("now", help="Print the current date, time and UTC offset, to stamp a record")
     export_state = sub.add_parser("export", help="Print the whole state as JSON, for backup")
     export_state.add_argument("--out", type=Path, help="Write to this file instead of standard output")
     sub.add_parser("show", help="Print the current state as JSON")
@@ -607,6 +608,10 @@ def readable(state: dict) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv or sys.argv[1:])
+    if args.command == "now":
+        # The system clock, never the conversation, dates what Techne records.
+        print(now_stamp())
+        return 0
     try:
         workspace = args.workspace.expanduser().resolve() if args.workspace else resolve_workspace(Path("."), args.config)
         state = load(workspace, allow_old_format=args.command == "migrate")
@@ -716,7 +721,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(problem, file=sys.stderr)
             result = {"applied": applied, "version": state["version"]}
         elif args.command == "brief":
-            print(json.dumps(store.brief(state), ensure_ascii=False, indent=2))
+            print(json.dumps({**store.brief(state), "now": now_stamp()}, ensure_ascii=False, indent=2))
             return 0
         elif args.command == "export":
             document = json.dumps(state, ensure_ascii=False, indent=2) + "\n"

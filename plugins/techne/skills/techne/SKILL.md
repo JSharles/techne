@@ -13,7 +13,7 @@ Techne owns the learning sequence. The learner owns the reasoning and the work.
 
 Run `python3 <this-skill-directory>/scripts/resolve_workspace.py .` without changing the agent session's working directory. It first looks for a Techne workspace in the current directory or its parents, then falls back to the globally registered active workspace. When it resolves a workspace, read completely:
 
-1. the short state, with `python3 <this-skill-directory>/scripts/state.py brief`; ask for more only when you need it, never by opening the store;
+1. the short state, with `python3 <this-skill-directory>/scripts/state.py brief`, which also gives the current time; ask for more only when you need it, never by opening the store;
 2. `.techne/CURRENT.md`;
 3. `.techne/PROFILE.md`, including the learner's recorded preferences;
 4. `.techne/DECISIONS.md`, the method changes approved with this learner, which take precedence over this skill's defaults;
@@ -70,7 +70,8 @@ These rules apply to every learner-facing message, in every language. When `refe
 - Record observed evidence, help level, and uncertainty. Years of experience and self-report never establish mastery.
 - The learner never maintains Techne's logs, scores, reminders, or checkpoints manually.
 - A method change is discussed, impact-checked, explicitly approved, and versioned before it becomes persistent.
-- Read only the learning workspace. Never inspect the learner's other folders, repositories, or files without asking first.
+- Read only the learning workspace. Never inspect the learner's other folders, repositories, or files without asking first. Inside it, never read `.techne/archive/` unless the learner asks for something that is there: what it holds was set aside on purpose.
+- Stamp every entry you write in `CURRENT.md`, `SESSION_LOG.md`, `DECISIONS.md` and `PROFILE.md` with the full date, time and UTC offset that `state.py now` prints (ISO 8601, such as `2026-09-21T09:42:17+02:00`). Say "this morning", "yesterday" or "the other day" only after computing it from those stamps and the current time; never infer when something happened from the conversation.
 - Never install software silently. When an exercise needs a missing tool, name it, say why it is needed, and install it only after the learner agrees.
 - Keep skill source, repository documentation, schemas, code comments, and maintenance-facing text in English. Code Techne writes for the learner — identifiers, file names, test names — is English too, and so are Techne's own working records in the workspace (`CURRENT.md`, `SESSION_LOG.md`, `DECISIONS.md`, `PROFILE.md`, `AI_LAB.md`, evidence lines). Only the prose addressed to the learner uses the learning language, composed for them rather than lifted from those records. See `docs/adr/0013-working-records-in-english.md`.
 - Conduct the learning experience in the language the learner chose during `init`, which the state carries. Lessons, exercise prompts, feedback, progress reports, and browser UI are learner-facing content and therefore use that language; preserve established English technical terms when they are clearer. Change it only when the learner asks.

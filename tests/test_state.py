@@ -427,6 +427,21 @@ class StateTransitionTests(unittest.TestCase):
         self.assertEqual(statuses["sprint"], "maintenance")
         self.assertEqual(statuses["engineering"], "active")
 
+    def test_now_prints_a_full_timestamp_from_the_system_clock(self):
+        with redirect_stdout(io.StringIO()) as printed:
+            self.assertEqual(state_script.main(["now"]), 0)
+        stamp = datetime.fromisoformat(printed.getvalue().strip())
+
+        self.assertIsNotNone(stamp.tzinfo, "a record's time carries its UTC offset")
+        self.assertLess(abs((datetime.now().astimezone() - stamp).total_seconds()), 5)
+
+    def test_the_brief_carries_the_current_time(self):
+        store.save(self.workspace, self.state)
+        with redirect_stdout(io.StringIO()) as printed:
+            self.assertEqual(self.run_cli("brief"), 0)
+
+        self.assertIsNotNone(datetime.fromisoformat(json.loads(printed.getvalue())["now"]).tzinfo)
+
     def test_a_survey_subject_at_its_ceiling_covers_the_program(self):
         write_program(
             programs.workspace_dir(self.workspace),

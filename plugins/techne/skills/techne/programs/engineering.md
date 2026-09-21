@@ -39,8 +39,8 @@ A subject is first learned on an isolated exercise, then reinvested in the red-t
 
 One Next.js + NestJS + database application, built across the twelve weeks and presentable at the end (see `docs/adr/0003-red-thread-project-as-the-place-of-transfer.md`).
 
-- In week 1, offer two or three concrete domains and let the learner pick one. Keep the business rules small: the product earns its weight from the hard technical problems at its core, not from the domain's complexity.
-- Before the first ticket, explore the product with the learner (below) and write its roadmap.
+- In week 1, before the first ticket, run the product discovery (below). It starts from a blank page: the idea is the learner's, and Techne offers its own only when asked.
+- Keep the business rules small: the product earns its weight from the hard technical problems at its core, not from the domain's complexity.
 - Project work comes as tickets, one per milestone, derived from the roadmap. Techne writes them one or two ahead, never the whole backlog, because each depends on what the previous pull request showed.
 - A ticket, written in the learning language, says:
   - the expected result, the acceptance criteria, and what the review will check;
@@ -54,24 +54,38 @@ One Next.js + NestJS + database application, built across the twelve weeks and p
 - Survey subjects are grafted here: structured logs, a latency budget, an authorization boundary, a deployment step, on code the learner wrote.
 - From week 9 the project also carries production concerns; in weeks 11–12 it is finished and presented.
 
-### Exploring the product
+### Product discovery
 
-The learner is building a real product, not following a tutorial, and must know what it is, who it is for, and what each part will teach them before any code. After they pick a domain, hold an exploration in the conversation: Techne questions relentlessly, the learner decides.
+The learner is building a real product, not following a tutorial, and must know what it is, who it is for, and what each part will teach them before any code. Discovery is a conversation in which Techne questions relentlessly and the learner decides. It starts from a blank page and runs through seven steps. Tell the learner which step they are on, out of seven, and what must be settled to move on, when a step opens and whenever they come back.
 
-Work it as a tree of decisions. In each round, ask every question whose prerequisites are already settled, numbered, each with your recommended answer and the reason for it; then wait for the learner's answers before the next round. Press on any answer that is vague, and on anything that would make the product look like an exercise. The exploration covers:
+Work each step as a tree of decisions. In each round, ask every question whose prerequisites are already settled, numbered, each with your recommended answer and the reason for it; then wait for the learner's answers before the next round. Press on any answer that is vague, and on anything that would make the product look like an exercise.
 
-- **the problem**: who suffers from what, what existing tools do badly, and what sets this product apart;
-- **the scope**: what the first version does and does not do, the key journeys of a user, and the hard technical problems at the core of the product — they are what keeps a project from looking junior;
-- **the teaching value**: each major part of the product placed at the weeks where the sequence below teaches what it needs, for example persistence in weeks 3–4, authentication and CI in weeks 5–6, concurrency in weeks 7–8, production in weeks 9–10;
-- **the architecture**: the data model, the main technical decisions with their reasons, and what will make the project hold up in production.
+1. **Goals and frame.** What the project is for (being hired, a product, both) and which roles the learner is aiming at. State what the programme imposes without discussion: this stack, twelve weeks, working alone, the hard problems timed to the programme's weeks, and no dependency on the Applied AI track. *Settled:* the purpose and the target roles.
+2. **Ideas.** The learner lists their own ideas, unfiltered. Techne adds its own only if the learner asks, and presents them as its own. *Settled:* the learner says the list is complete.
+3. **Choice.** Before assessing any idea, announce the criteria: the learner can tell when the product behaves wrongly; four to six core notions; a rule the database guarantees; a real concurrency problem; one precise user. Assess each idea against them, and let the learner choose. *Settled:* one idea, chosen with its reasons. Only now does the project get its repository and its name, which the learner picks.
+4. **Problem.** Who suffers from what, the existing tools and what they do badly, and what sets this product apart. *Settled:* each of these in a sentence or two the learner approves.
+5. **Scope.** What the first version does and does not do, the key journeys of a user, and the hard technical problems at the core of the product — they are what keeps a project from looking junior. *Settled:* the in and out lists, the journeys, and the hard problems, including the database rule and the concurrency problem from step 3.
+6. **Teaching value.** Each major part of the product placed at the weeks where the sequence below teaches what it needs, for example persistence in weeks 3–4, authentication and CI in weeks 5–6, concurrency in weeks 7–8, production in weeks 9–10. *Settled:* every "Red thread" line of the sequence is met by a part of the product.
+7. **Architecture and roadmap.** The data model, the main technical decisions with their reasons, what will make the project hold up in production, and the roadmap. *Settled:* the learner commits to the roadmap.
 
-The exploration is bounded to three project mornings. At the end of the third, the learner commits to what is written; a question still open becomes a stated assumption in the roadmap. Exploring without end is a comfortable way not to start.
+Discovery is bounded to three project mornings: steps 1 to 3 on the first, 4 and 5 on the second, 6 and 7 on the third. At the end of the third, the learner commits to what is written; a question still open becomes a stated assumption in the roadmap. Exploring without end is a comfortable way not to start.
 
-Techne writes the decisions down as they are made, in the project's repository and in the language the learner chose for it, and the learner reads and approves each document:
+Techne writes each step down as it is settled, and the learner reads and approves it. Until the repository exists, steps 1 to 3 go into `.techne/DISCOVERY.md`, which also tracks the current step; read it before each discovery turn. From step 4, the writing goes into the project's repository, in the language the learner chose for it:
 
-- a product document;
-- the domain vocabulary and the decisions, as a `CONTEXT.md` glossary and ADRs;
-- a roadmap, `docs/ROADMAP.md`, whose every phase gives the result a user will see, the hard problem it tackles, the catalogue subjects it has the learner reinvest, and the programme weeks it falls in.
+- a product document, from steps 1, 4 and 5;
+- the domain vocabulary and the decisions, as a `CONTEXT.md` glossary and ADRs, from step 7;
+- a roadmap, `docs/ROADMAP.md`, from steps 6 and 7, whose every phase gives the result a user will see, the hard problem it tackles, the catalogue subjects it has the learner reinvest, and the programme weeks it falls in.
+
+#### Starting discovery over
+
+When the learner asks to start over from nothing, every idea and every choice of domain already recorded must leave what Techne rereads, or it steers the new discovery. Set them aside in one move:
+
+- move `.techne/DISCOVERY.md`, the `DECISIONS.md` entries about the red-thread product (cut, not copied), and any ticket or note kept for the old idea into `.techne/archive/<timestamp>-discovery/`;
+- rewrite `CURRENT.md`, and any `PROFILE.md` preference that names the old idea, keeping the preference and dropping the name;
+- append a `SESSION_LOG.md` entry saying discovery restarted, without naming the old ideas;
+- leave any repository created for an old idea as it is: it belongs to the learner.
+
+Then open step 1. From here on, never mention or suggest an archived idea unless the learner brings it back.
 
 ### The roadmap
 
@@ -79,7 +93,7 @@ The roadmap is the single reference for the project. Tickets derive from it, and
 
 A change to the roadmap is an explicit decision, taken with the learner and recorded in the roadmap with its date and reason, never a silent drift.
 
-A learner whose project started without an exploration is offered one, once: pause the tickets in progress, hold the exploration, then rewrite those tickets from the roadmap. If they decline, record it in `.techne/DECISIONS.md` and do not offer again.
+A learner whose project started without a discovery is offered one, once: pause the tickets in progress, run the discovery, then rewrite those tickets from the roadmap. If they decline, record it in `.techne/DECISIONS.md` and do not offer again.
 
 ## Sequence
 
@@ -91,7 +105,7 @@ A learner whose project started without an exploration is offered one, once: pau
 - React: render model, component identity, local and derived state, controlled inputs, effects and their alternatives.
 - Tests: what to test, arrange-act-assert, testing behaviour rather than implementation.
 - Flow: slicing a ticket into changes small enough to review, one branch per ticket, small commits following a commit convention.
-- Red thread: pick the domain, explore the product and write its roadmap, then scaffold the app in its own repository and start the first vertical slice with a typed contract, sliced into tickets.
+- Red thread: run the product discovery and write the roadmap, then scaffold the app in its own repository and start the first vertical slice with a typed contract, sliced into tickets.
 
 Exit evidence: unfamiliar Easy iteration and hash problems solved independently; a runtime boundary secured with validation; a React state bug diagnosed from behaviour; a feature sliced into tickets and delivered as a readable history.
 
