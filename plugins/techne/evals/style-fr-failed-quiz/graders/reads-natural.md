@@ -20,4 +20,4 @@ The wording may differ freely. This is the reference for the expected tone:
 >
 > Je t'ouvre l'exercice : tu vas écrire une fonction qui vérifie des préférences lues depuis `localStorage`.
 
-When failing, quote the sentence at fault.
+Fail only for a violation you can quote. A colon that announces what follows, a long message, or a bold title at the top of the message is not a violation. If you cannot quote a faulty sentence, pass. When failing, quote the sentence at fault.

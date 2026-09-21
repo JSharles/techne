@@ -17,6 +17,6 @@ The wording may differ freely. This is the reference for the expected tone:
 >
 > Tu vas écrire deux fonctions dans `duplicates.ts`. La première, `hasDuplicate`, dit si une valeur apparaît au moins deux fois. La seconde, `allWithin`, dit si toutes les valeurs sont comprises entre `min` et `max`. Le détail est dans le README du dossier, que je viens d'ouvrir.
 >
-> Compte une trentaine de minutes. Tu as fini quand les 10 tests passent avec `node --test duplicates.test.ts`. Si tu bloques, tape `/techne:hint`.
+> Compte une trentaine de minutes. Tu as fini quand les 6 tests passent avec `node --test duplicates.test.ts`. Si tu bloques, tape `/techne:hint`.
 
-When failing, quote the sentence at fault.
+Fail only for a violation you can quote. A colon that announces what follows, a long message, or a bold title at the top of the message is not a violation. If you cannot quote a faulty sentence, pass. When failing, quote the sentence at fault.

@@ -2,6 +2,10 @@
 
 Learner-visible changes, newest first. Versions match `plugins/techne/.claude-plugin/plugin.json`.
 
+## 0.9.9
+
+- A proposal to change the method is argued in sentences, not laid out under labels such as « Ce que ça coûte : ».
+
 ## 0.9.8
 
 - Before a project ticket, every subject it needs that you have never studied gets a ten-minute lesson first. A ticket no longer asks you for something Techne never taught.

@@ -18,4 +18,4 @@ The wording and the decision may differ freely. This is the reference for the ex
 >
 > On fait le point dans une semaine : si les rappels passent et que tu réussis les Medium seul, on bascule entièrement. Ça te va ?
 
-When failing, quote the sentence at fault.
+Fail only for a violation you can quote. A colon that announces what follows, a long message, or a bold title at the top of the message is not a violation. If you cannot quote a faulty sentence, pass. When failing, quote the sentence at fault.

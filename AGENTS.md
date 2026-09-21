@@ -29,3 +29,5 @@ Before releasing a change to learner-facing wording (message rules, `pedagogy.md
 ```bash
 claude plugin eval plugins/techne --tag style-fr --scaffold --allow-tools Bash Write Edit --trust-plugin
 ```
+
+While iterating, add `--runs 1 --ablation none`: one run per case and no baseline arm, about a sixth of the cost of a full pass.

@@ -26,7 +26,7 @@ STYLE_FR = SKILL_ROOT / "references" / "style-fr.md"
 # Rows whose pattern a regex can see; the others are left to the LLM grader.
 # « preuve » and « borne » also have plain meanings (« bornes incluses »), so a
 # regex would flag correct French: only the LLM grader judges them.
-DETECTABLE = ("Bold label", "Machinery word", "Anglicism")
+DETECTABLE = ("Bold label", "Label", "Machinery word", "Anglicism")
 JUDGED_ONLY = ("« preuve »",)
 
 
@@ -56,7 +56,7 @@ def regex_graders() -> dict[Path, re.Pattern]:
         if fields.get("type") != "regex":
             continue
         pattern = json.loads(fields["pattern"])
-        flags = re.IGNORECASE if "i" in fields.get("flags", "") else 0
+        flags = (re.IGNORECASE if "i" in fields.get("flags", "") else 0) | (re.MULTILINE if "m" in fields.get("flags", "") else 0)
         graders[path] = re.compile(pattern, flags)
     return graders
 
@@ -101,6 +101,13 @@ class StyleSuiteTests(unittest.TestCase):
                     capture_output=True,
                 )
                 self.assertEqual(validator.validate(cwd / ".techne"), [], scaffold.parent.name)
+                expected = scaffold.parent / "workspace" / "state" / "CURRENT.md"
+                self.assertTrue(expected.is_file(), f"{scaffold.parent.name} has no committed CURRENT.md")
+                self.assertEqual(
+                    (cwd / ".techne" / "CURRENT.md").read_text(encoding="utf-8"),
+                    expected.read_text(encoding="utf-8"),
+                    f"{scaffold.parent.name} did not lay its own state over the workspace",
+                )
                 state = json.loads(
                     subprocess.run(
                         ["python3", str(SKILL_ROOT / "scripts" / "state.py"), "--workspace", str(cwd), "brief"],

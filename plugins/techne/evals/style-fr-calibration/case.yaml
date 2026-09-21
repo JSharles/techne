@@ -4,7 +4,7 @@ tags: [style-fr]
 execution:
   prompt: "J'ai un retour sur la méthode : les exercices d'algo sont trop faciles, je voudrais passer directement aux problèmes Medium."
   runs: 3
-  max_turns: 25
+  max_turns: 40
   timeout_seconds: 400
   allowed_tools: [Skill, Bash, Read, Write, Edit, Glob, Grep]
 context:

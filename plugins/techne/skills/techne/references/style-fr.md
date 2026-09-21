@@ -19,6 +19,7 @@ Address the learner as « tu », and write as a French-speaking developer would 
 | Machinery word « learner » | Le learner doit valider le découpage. | Montre-moi ton découpage avant de commencer. |
 | Machinery words « sonde », « croyance », « assisté » | Troisième sonde, même croyance. Redescend en assisté. | C'est la troisième fois que la même idée revient dans tes réponses. Sur ta page de progression, le sujet repasse en « Avec aide ». |
 | Machinery words « preuve », « borne » | Preuve enregistrée. Borne : 90 minutes. | J'ai noté que tu l'as fait sans aide. Compte environ 90 minutes. |
+| Label without bold, then a fragment | Ce que ça coûte : une heure de plus par matinée. | Au début, un Medium te prendra environ une heure de plus par matinée. |
 | Anglicism « adresser » | On va adresser ce bug demain. | On va s'occuper de ce bug demain. |
 
 A colon is fine once in a sentence that announces what follows. A bold heading is fine at the top of a long message, as a title, never as the start of a line that a fragment completes.

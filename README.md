@@ -258,6 +258,8 @@ Before releasing a change to learner-facing wording, run the style eval suite. I
 claude plugin eval plugins/techne --tag style-fr --scaffold --allow-tools Bash Write Edit --trust-plugin
 ```
 
+While iterating, add `--runs 1 --ablation none`: one run per case and no baseline arm, about a sixth of the cost of a full pass.
+
 For local Claude Code testing, add this checkout as a marketplace:
 
 ```bash
