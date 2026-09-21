@@ -22,10 +22,10 @@ python3 plugins/techne/skills/techne/scripts/validate_workspace.py --template
 claude plugin validate .
 ```
 
-Also run the available Agent Skill validator against `plugins/techne/skills/techne`.
+Also run the available Agent Skill validator against `plugins/techne/skills/techne`. Treat `.techne/` as learner runtime state, not skill source.
 
 Before releasing a change to learner-facing wording (message rules, `pedagogy.md`, a `style-<language>.md` file), run the style eval suite; it makes real model calls, so it is not part of the routine checks:
 
 ```bash
 claude plugin eval plugins/techne --tag style-fr --scaffold --allow-tools Bash Write Edit --trust-plugin
-``` Treat `.techne/` as learner runtime state, not skill source.
+```
