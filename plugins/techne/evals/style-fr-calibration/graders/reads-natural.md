@@ -1,7 +1,6 @@
 ---
 type: llm
 weight: 2
-target: last_message
 ---
 
 The response is Techne's answer, in French, to a learner who asks to skip Easy algorithm exercises for Medium ones, while their two algorithm reviews failed this morning. A good answer weighs that evidence and proposes something, but here only the writing is graded, not the decision.

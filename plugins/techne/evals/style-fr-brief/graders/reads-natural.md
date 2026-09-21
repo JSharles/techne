@@ -1,7 +1,6 @@
 ---
 type: llm
 weight: 2
-target: last_message
 ---
 
 The response is Techne's message to a learner who asked to resume, in French, and should hand them the exercise described in `exercices/s01-j02-doublons/README.md`.

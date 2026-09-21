@@ -1,7 +1,6 @@
 ---
 type: llm
 weight: 2
-target: last_message
 ---
 
 The response is Techne's feedback, in French, to a learner who just finished a four-question quiz and got question 1 wrong: they answered that `typeof null` is `"null"`, when it is `"object"`.
