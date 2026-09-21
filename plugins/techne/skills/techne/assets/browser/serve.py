@@ -41,7 +41,8 @@ MESSAGES = {
         "due_on": "due",
         "domain.ts": "TypeScript", "domain.js": "JavaScript", "domain.react": "React",
         "domain.next": "Next.js", "domain.nest": "NestJS & backend", "domain.sql": "SQL & data",
-        "domain.dsa": "Algorithms", "domain.test": "Tests & debugging", "domain.arch": "Architecture",
+        "domain.dsa": "Algorithms", "domain.test": "Tests & debugging", "domain.flow": "Delivery flow",
+        "domain.arch": "Architecture",
         "domain.survey": "Survey", "domain.py": "Python", "domain.svc": "Services",
         "domain.llm": "LLM applications", "domain.rag": "Retrieval", "domain.agent": "Agents",
         "domain.eval": "Evaluation & operations",
@@ -70,7 +71,8 @@ MESSAGES = {
         "due_on": "pour le",
         "domain.ts": "TypeScript", "domain.js": "JavaScript", "domain.react": "React",
         "domain.next": "Next.js", "domain.nest": "NestJS et backend", "domain.sql": "SQL et données",
-        "domain.dsa": "Algorithmique", "domain.test": "Tests et debugging", "domain.arch": "Architecture",
+        "domain.dsa": "Algorithmique", "domain.test": "Tests et debugging", "domain.flow": "Git, revue et CI",
+        "domain.arch": "Architecture",
         "domain.survey": "Survol", "domain.py": "Python", "domain.svc": "Services",
         "domain.llm": "Applications LLM", "domain.rag": "Recherche documentaire", "domain.agent": "Agents",
         "domain.eval": "Évaluation et production",
@@ -84,7 +86,7 @@ MESSAGES = {
 
 
 DOMAIN_ORDER = (
-    "ts", "js", "react", "next", "nest", "sql", "dsa", "test", "arch", "survey",
+    "ts", "js", "react", "next", "nest", "sql", "dsa", "test", "flow", "arch", "survey",
     "py", "svc", "llm", "rag", "agent", "eval",
 )
 STATE_ORDER = ("transferred", "independent", "assisted", "blocked", "discovered", "not_started")

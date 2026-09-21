@@ -58,7 +58,7 @@ The unit the programme advances in: sixty morning and sixty afternoon blocks, wh
 _Avoid_: week (as a date), day off
 
 **Core**:
-The set of subjects a program takes to demonstrated independence, for the Engineering program: TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL and data modelling, DSA up to graphs, tests and debugging, applied architecture.
+The set of subjects a program takes to demonstrated independence, for the T-shaped Product Engineer program: TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL and data modelling, DSA up to graphs, tests and debugging, applied architecture, and the delivery flow (Git, pull requests, review, CI).
 _Avoid_: priority lane, must-have
 
 **Survey**:

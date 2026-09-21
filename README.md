@@ -4,7 +4,7 @@ Techne is an intensive, adaptive bootcamp delivered as one Agent Skill for Codex
 
 Techne teaches **programs**: Markdown files describing what to learn. Two ship with it, and you can write or generate your own — a program never changes the method, only the content.
 
-- **Engineering:** a core taken to independence (TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL, algorithms up to graphs, tests and debugging, architecture), plus a red-thread Next.js/NestJS application built two mornings a week and presentable at the end;
+- **T-shaped Product Engineer:** a core taken to independence (TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL, algorithms up to graphs, tests and debugging, architecture, and the delivery flow: Git, pull requests, review, CI), plus a red-thread Next.js/NestJS application built two mornings a week and presentable at the end;
 - **Applied AI:** Python, FastAPI, LLM applications, RAG with LangChain, agents with LangGraph, evaluation with LangSmith, and a final capstone.
 
 You follow as many programs as you like, and a weekly schedule you own says which one each slot of your week belongs to.

@@ -1,7 +1,7 @@
 ---
 id: engineering
-title: Engineering
-version: 1
+title: T-shaped Product Engineer
+version: 2
 cadence: daily
 activity_kinds: code, browser
 lesson_to_practice: balanced
@@ -10,18 +10,18 @@ red_thread: yes
 survey_ceiling: discovered
 ---
 
-# Engineering
+# T-shaped Product Engineer
 
 ## Outcome and boundary
 
 Twelve weeks for one learner profile: a self-taught React/Node developer, bootcamp-trained rather than engineering-school-trained, who wants to stay employable as generative AI reshapes the job market. Goals, in order: be better on a React/Node job, then pass senior interviews, then be able to move roles.
 
-Depth beats coverage (see `docs/adr/0002-depth-over-breadth-core-and-survey.md`). Subjects are split in two:
+The name is the shape: a deep core carried to independence, and a broad survey of what a product engineer touches around it. Depth beats coverage (see `docs/adr/0002-depth-over-breadth-core-and-survey.md`). Subjects are split in two:
 
-- **Core**, taken to demonstrated independence: TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL and data modelling, DSA up to graphs, tests and debugging, applied architecture.
+- **Core**, taken to demonstrated independence: TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL and data modelling, DSA up to graphs, tests and debugging, applied architecture, and the delivery flow — Git, pull requests, review, CI (see `docs/adr/0014-the-delivery-flow-joins-the-programme.md`).
 - **Survey**, covered for working literacy only and grafted onto core exercises: security, performance, observability, delivery. Distributed systems and large-scale system design get a lesson and a quiz, nothing more.
 
-Out of the programme: maths for engineering, dynamic programming and advanced DSA patterns, Product and communication as separate lanes, Git and code review (already practised daily at work). Python and the Applied AI frameworks belong to the afternoon curriculum in [Applied AI](applied-ai.md).
+Out of the programme: maths for engineering, dynamic programming and advanced DSA patterns, Product and communication as separate lanes. Python and the Applied AI frameworks belong to the afternoon curriculum in [Applied AI](applied-ai.md).
 
 Techne controls the order from observed evidence. It may compress demonstrated material or repeat fragile material, but it preserves core coverage and prerequisite order.
 
@@ -41,6 +41,7 @@ One Next.js + NestJS + database application, built across the twelve weeks and p
 
 - In week 1, offer two or three simple, concrete domains and let the learner pick one. Keep the domain small enough that no week is spent on business rules.
 - Techne sets the milestone for each project morning: the user-visible outcome, the constraints, and what evidence it will inspect. The learner designs and writes the implementation.
+- From weeks 3–4, every change reaches the main branch through a pull request the learner opens and Techne reviews, following [operations.md](../references/operations.md#reviewing-a-pull-request).
 - Survey subjects are grafted here: structured logs, a latency budget, an authorization boundary, a deployment step, on code the learner wrote.
 - From week 9 the project also carries production concerns; in weeks 11–12 it is finished and presented.
 
@@ -53,9 +54,10 @@ One Next.js + NestJS + database application, built across the twelve weeks and p
 - JavaScript: values and references, closures, call stack, event loop, promises, errors, modules.
 - React: render model, component identity, local and derived state, controlled inputs, effects and their alternatives.
 - Tests: what to test, arrange-act-assert, testing behaviour rather than implementation.
-- Red thread: pick the domain, scaffold the app, ship one vertical slice with a typed contract.
+- Flow: slicing a ticket into changes small enough to review, one branch per ticket, small commits following a commit convention.
+- Red thread: pick the domain, scaffold the app in its own repository, ship one vertical slice with a typed contract, sliced into tickets.
 
-Exit evidence: unfamiliar Easy iteration and hash problems solved independently; a runtime boundary secured with validation; a React state bug diagnosed from behaviour.
+Exit evidence: unfamiliar Easy iteration and hash problems solved independently; a runtime boundary secured with validation; a React state bug diagnosed from behaviour; a feature sliced into tickets and delivered as a readable history.
 
 ### Weeks 3–4 — Data, APIs, and frontend depth
 
@@ -64,9 +66,10 @@ Exit evidence: unfamiliar Easy iteration and hash problems solved independently;
 - NestJS: modules, controllers, providers and dependency injection, DTO validation pipes, exception filters, configuration.
 - TypeScript: generics with constraints, `keyof`, indexed access, type predicates, domain modelling, public API design.
 - React: reconciliation, keys, composition, async UI states, forms, accessibility.
-- Red thread: real persistence behind the API, with a data model the learner defends.
+- Flow: opening a pull request a reviewer can follow, reviewing someone else's, merge versus rebase, resolving conflicts by understanding both sides.
+- Red thread: real persistence behind the API, with a data model the learner defends; from here every change goes through a pull request.
 
-Exit evidence: a data model defended under constraints; a query investigated with a query plan; a NestJS endpoint that validates and fails correctly.
+Exit evidence: a data model defended under constraints; a query investigated with a query plan; a NestJS endpoint that validates and fails correctly; a pull request reviewed with its real defects found; a conflict resolved without losing either side's intent.
 
 ### Weeks 5–6 — Next.js, deeper backend, and structures
 
@@ -75,9 +78,10 @@ Exit evidence: a data model defended under constraints; a query investigated wit
 - NestJS: authentication vs authorization with guards, interceptors, error taxonomy, unit and e2e tests with the Nest testing module.
 - Testing: unit, integration, contract and end-to-end boundaries; test doubles and failure-focused cases.
 - Debugging: reproducing, bisecting, reading stack traces, the VS Code debugger, logs as evidence.
-- Red thread: authentication, authorization boundaries, and a test suite that catches regressions.
+- Flow: a CI pipeline, written by the learner, that runs lint, type checking and tests on every pull request and blocks the merge when red.
+- Red thread: authentication, authorization boundaries, and a test suite that catches regressions before they merge.
 
-Exit evidence: a caching or rendering choice justified with measurements; a multi-file bug diagnosed with the debugger; a tree problem solved without pattern announcement.
+Exit evidence: a caching or rendering choice justified with measurements; a multi-file bug diagnosed with the debugger; a tree problem solved without pattern announcement; a regression stopped by the pipeline.
 
 ### Weeks 7–8 — Graphs, architecture, and concurrency
 
@@ -86,13 +90,14 @@ Exit evidence: a caching or rendering choice justified with measurements; a mult
 - Concurrency: races, idempotency, retries, cancellation, backpressure, partial failure.
 - JavaScript and Node runtime: async reasoning under load, streams where relevant, memory.
 - Survey: distributed systems (consistency, delivery semantics, queues, caches) as a lesson and a quiz.
+- Flow: recovering history — `revert`, `reset`, `reflog`, finding when a change went wrong.
 - Red thread: a refactor that moves a boundary, defended with tests; one asynchronous or failure-prone path made safe.
 
-Exit evidence: a race or partial failure reproduced and protected; an architecture change explained with its alternatives and consequences.
+Exit evidence: a race or partial failure reproduced and protected; an architecture change explained with its alternatives and consequences; a lost or broken step recovered from history without help.
 
 ### Weeks 9–10 — Production behaviour
 
-- Survey grafted onto the project: security (hostile input, authorization boundaries, OWASP-relevant risks, secrets), performance (profiling before optimizing, latency budgets, database and frontend bottlenecks), observability (structured logs, metrics, traces, actionable alerts), delivery (containers, CI, deployment, rollback, configuration).
+- Survey grafted onto the project: security (hostile input, authorization boundaries, OWASP-relevant risks, secrets), performance (profiling before optimizing, latency budgets, database and frontend bottlenecks), observability (structured logs, metrics, traces, actionable alerts), delivery (containers, deployment, rollback, configuration).
 - TypeScript and tooling: ESM/CJS, module resolution, declaration files, builds, compiler diagnosis.
 - Next.js production: caching correctness, hydration, bundle and runtime analysis, resilience.
 - DSA: mixed retrieval across every pattern learned, under time constraints.
@@ -147,13 +152,17 @@ Stable identifiers for the mastery map. Every lesson and exercise declares the s
 
 `what-to-test`, `behaviour-vs-implementation`, `unit`, `integration`, `contract`, `end-to-end`, `test-doubles`, `failure-cases`, `reproduce`, `bisect`, `stack-traces`, `debugger`, `logs-as-evidence`
 
+### Delivery flow — `flow.*`
+
+`commits`, `branches`, `pull-requests`, `review`, `commit-conventions`, `merge-rebase`, `conflicts`, `history-recovery`, `ci-pipeline`, `ticket-slicing`
+
 ### Architecture and concurrency — `arch.*`
 
 `deep-modules`, `cohesion-coupling`, `dependency-direction`, `ports-adapters`, `evolutionary-design`, `races`, `idempotency`, `retries`, `cancellation`, `backpressure`, `partial-failure`
 
 ### Survey — `survey.*`
 
-`security-input`, `security-authz`, `secrets`, `profiling`, `latency-budgets`, `db-bottlenecks`, `frontend-bottlenecks`, `structured-logs`, `metrics`, `traces`, `alerts`, `containers`, `ci`, `deployment-rollback`, `configuration`, `distributed-systems`, `system-design`
+`security-input`, `security-authz`, `secrets`, `profiling`, `latency-budgets`, `db-bottlenecks`, `frontend-bottlenecks`, `structured-logs`, `metrics`, `traces`, `alerts`, `containers`, `deployment-rollback`, `configuration`, `distributed-systems`, `system-design`
 
 Survey subjects never reach `independent` or `transferred` in the mastery map; `discovered` is their ceiling.
 
