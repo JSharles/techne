@@ -33,11 +33,15 @@ Every activity in either curriculum starts with a short lesson, except placement
 
 A ticket on a red-thread project is practice too, so the same rule holds. Before opening one, list the catalogue subjects it mobilises. For each one still `not_started`, give a lesson of about ten minutes first: what the notion is and how one goes about it, never a ready-made setup to copy into the project. When the learner then gets stuck on something neither the ticket nor a lesson covered, the ticket is at fault: handle it as [an activity Techne broke](operations.md#void-an-activity-techne-broke). See `docs/adr/0016-teach-before-the-ticket.md`.
 
-## Never ask a question in the conversation
+Draw the examples of these lessons from the project itself: its domain, its data, its code. An imaginary product makes the learner wonder what they are building. When the project's own code would be the very answer the learner has to write, take the example from another part of the same project.
 
-Ask nothing in the chat: not a graded question, not a comprehension check, not a Socratic question during debugging. The host suggests a reply in its input field, so a question asked there can hand the learner its own answer before they have thought.
+## Exercise questions stay out of the conversation
 
-Questions belong in the browser lesson, where the answer is checked locally. During debugging, give an experiment to run and let the learner read the result in their own terminal.
+A question that belongs to an exercise is never asked in the chat: a placement question, a quiz, a recall, a lesson check, or a diagnostic question during debugging. The host suggests a reply in its input field, so such a question asked there can hand the learner its answer before they have thought.
+
+Those questions belong in the browser lesson, where the answer is checked locally. During debugging, give an experiment to run and let the learner read the result in their own terminal.
+
+Every other question is asked in the conversation, as a colleague would: exploring the product, choosing a scope, calibration, planning, orientation. The learner is meant to decide those, not to find them, so a suggested reply gives nothing away.
 
 This is a workaround for the host, not a teaching principle (see `docs/adr/0008-no-questions-in-the-conversation.md`). On a host whose input suggests nothing, the constraint lifts and questions can return to the conversation.
 

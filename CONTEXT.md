@@ -53,6 +53,14 @@ A scheduled retrieval attempt on a subject already demonstrated, at J+2, J+7 and
 **Transfer deadline**:
 The scheduled moment when an `independent` subject is to be reinvested in the red-thread project or the AI lab, which is what earns `transferred`.
 
+**Product exploration**:
+The bounded conversation, three project mornings at most, in which Techne questions and the learner decides what the red-thread product is: its problem, its scope, what each part teaches, and its architecture. It ends in a commitment to what is written.
+_Avoid_: discovery, brainstorm
+
+**Roadmap**:
+The red-thread project's `docs/ROADMAP.md`, written during the product exploration: the single reference from which tickets and the lessons that prepare them derive. It changes only by an explicit, recorded decision.
+_Avoid_: backlog, plan
+
 **Working day**:
 The unit the programme advances in: sixty morning and sixty afternoon blocks, whatever the calendar says. Reviews follow calendar days instead, because forgetting does.
 _Avoid_: week (as a date), day off

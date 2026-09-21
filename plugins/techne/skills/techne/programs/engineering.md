@@ -39,8 +39,9 @@ A subject is first learned on an isolated exercise, then reinvested in the red-t
 
 One Next.js + NestJS + database application, built across the twelve weeks and presentable at the end (see `docs/adr/0003-red-thread-project-as-the-place-of-transfer.md`).
 
-- In week 1, offer two or three simple, concrete domains and let the learner pick one. Keep the domain small enough that no week is spent on business rules.
-- Project work comes as tickets, one per milestone. Techne writes them one or two ahead, never the whole backlog, because each depends on what the previous pull request showed.
+- In week 1, offer two or three concrete domains and let the learner pick one. Keep the business rules small: the product earns its weight from the hard technical problems at its core, not from the domain's complexity.
+- Before the first ticket, explore the product with the learner (below) and write its roadmap.
+- Project work comes as tickets, one per milestone, derived from the roadmap. Techne writes them one or two ahead, never the whole backlog, because each depends on what the previous pull request showed.
 - A ticket, written in the learning language, says:
   - the expected result, the acceptance criteria, and what the review will check;
   - why the ticket exists, and why each imposed choice — a technology, the repository layout, a tool — with the alternative set aside, in one sentence;
@@ -53,6 +54,33 @@ One Next.js + NestJS + database application, built across the twelve weeks and p
 - Survey subjects are grafted here: structured logs, a latency budget, an authorization boundary, a deployment step, on code the learner wrote.
 - From week 9 the project also carries production concerns; in weeks 11–12 it is finished and presented.
 
+### Exploring the product
+
+The learner is building a real product, not following a tutorial, and must know what it is, who it is for, and what each part will teach them before any code. After they pick a domain, hold an exploration in the conversation: Techne questions relentlessly, the learner decides.
+
+Work it as a tree of decisions. In each round, ask every question whose prerequisites are already settled, numbered, each with your recommended answer and the reason for it; then wait for the learner's answers before the next round. Press on any answer that is vague, and on anything that would make the product look like an exercise. The exploration covers:
+
+- **the problem**: who suffers from what, what existing tools do badly, and what sets this product apart;
+- **the scope**: what the first version does and does not do, the key journeys of a user, and the hard technical problems at the core of the product — they are what keeps a project from looking junior;
+- **the teaching value**: each major part of the product placed at the weeks where the sequence below teaches what it needs, for example persistence in weeks 3–4, authentication and CI in weeks 5–6, concurrency in weeks 7–8, production in weeks 9–10;
+- **the architecture**: the data model, the main technical decisions with their reasons, and what will make the project hold up in production.
+
+The exploration is bounded to three project mornings. At the end of the third, the learner commits to what is written; a question still open becomes a stated assumption in the roadmap. Exploring without end is a comfortable way not to start.
+
+Techne writes the decisions down as they are made, in the project's repository and in the language the learner chose for it, and the learner reads and approves each document:
+
+- a product document;
+- the domain vocabulary and the decisions, as a `CONTEXT.md` glossary and ADRs;
+- a roadmap, `docs/ROADMAP.md`, whose every phase gives the result a user will see, the hard problem it tackles, the catalogue subjects it has the learner reinvest, and the programme weeks it falls in.
+
+### The roadmap
+
+The roadmap is the single reference for the project. Tickets derive from it, and the lessons that prepare a ticket are planned from the subjects of its phase. Reread it before writing each ticket. Each phase must meet the "Red thread" line of its weeks in the sequence below; the roadmap decides which part of the product does it.
+
+A change to the roadmap is an explicit decision, taken with the learner and recorded in the roadmap with its date and reason, never a silent drift.
+
+A learner whose project started without an exploration is offered one, once: pause the tickets in progress, hold the exploration, then rewrite those tickets from the roadmap. If they decline, record it in `.techne/DECISIONS.md` and do not offer again.
+
 ## Sequence
 
 ### Weeks 1–2 — Foundations and the first slice
@@ -63,7 +91,7 @@ One Next.js + NestJS + database application, built across the twelve weeks and p
 - React: render model, component identity, local and derived state, controlled inputs, effects and their alternatives.
 - Tests: what to test, arrange-act-assert, testing behaviour rather than implementation.
 - Flow: slicing a ticket into changes small enough to review, one branch per ticket, small commits following a commit convention.
-- Red thread: pick the domain, scaffold the app in its own repository, ship one vertical slice with a typed contract, sliced into tickets.
+- Red thread: pick the domain, explore the product and write its roadmap, then scaffold the app in its own repository and start the first vertical slice with a typed contract, sliced into tickets.
 
 Exit evidence: unfamiliar Easy iteration and hash problems solved independently; a runtime boundary secured with validation; a React state bug diagnosed from behaviour; a feature sliced into tickets and delivered as a readable history.
 
