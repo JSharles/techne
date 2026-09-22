@@ -102,6 +102,45 @@ class ProgramTests(unittest.TestCase):
             self.assertIn("subject catalogue", rejected["no-catalogue"])
             self.assertIn("unknown activity kind: telepathy", rejected["bad-kind"])
 
+    def test_a_domain_prefix_may_contain_digits(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            write_program(programs.workspace_dir(workspace), "access", prefix="a11y", domain_title="Accessibility")
+
+            found, rejected = programs.discover(SKILL_ROOT, workspace)
+
+            self.assertEqual(rejected, {})
+            self.assertEqual(found["access"].subjects, {"a11y.first", "a11y.second"})
+
+    def test_a_catalogue_heading_that_names_no_domain_is_refused(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            write_program(
+                programs.workspace_dir(workspace),
+                "blurred",
+                replace=[("`first`, `second`\n", "`first`, `second`\n\n### Styling — `CSS.*`\n\n`grid`\n")],
+            )
+
+            found, rejected = programs.discover(SKILL_ROOT, workspace)
+
+            self.assertNotIn("blurred", found, "its subjects would land in the domain above")
+            self.assertIn("Styling", rejected["blurred"])
+
+    def test_prose_under_a_domain_mints_no_subject(self):
+        found, _ = programs.discover(SKILL_ROOT)
+
+        self.assertNotIn("survey.discovered", found["engineering"].subjects)
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            write_program(
+                programs.workspace_dir(workspace),
+                "noted",
+                replace=[("`first`, `second`\n", "`first`, `second`\n\nThese stop at `discovered`.\n")],
+            )
+            found, _ = programs.discover(SKILL_ROOT, workspace)
+
+            self.assertEqual(found["noted"].subjects, {"dsa.first", "dsa.second"})
+
     def test_programs_disagreeing_about_a_domain_are_reported(self):
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)

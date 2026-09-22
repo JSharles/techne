@@ -25,8 +25,11 @@ SETTING_KEYS = ("activity_kinds", "lesson_to_practice", "timeboxes", "red_thread
 HEADER_KEYS = ("id", "title", "version", "cadence", *SETTING_KEYS)
 
 IDENTIFIER = re.compile(r"^[a-z][a-z0-9-]*$")
-SUBJECT_DOMAIN = re.compile(r"^###\s+(.+?)\s+—\s+`([a-z]+)\.\*`", re.MULTILINE)
+PREFIX = r"[a-z][a-z0-9]*"
+SUBJECT_DOMAIN = re.compile(rf"^###\s+(.+?)\s+—\s+`({PREFIX})\.\*`", re.MULTILINE)
 SUBJECT_TOKEN = re.compile(r"`([a-z0-9-]+)`")
+# A line of subjects holds nothing but them: prose under a domain may quote words in backticks.
+SUBJECT_LINE = re.compile(r"^\s*`[a-z0-9-]+`(\s*,\s*`[a-z0-9-]+`)*\s*,?\s*$")
 UNIT_HEADING = re.compile(r"^###\s+(.+)$", re.MULTILINE)
 
 
@@ -118,12 +121,18 @@ def parse_catalogue(body: str) -> tuple[set[str], dict[str, str]]:
         section = section[:end]
     subjects: set[str] = set()
     domains: dict[str, str] = {}
+    for line in section.splitlines():
+        if line.startswith("###") and not SUBJECT_DOMAIN.match(line):
+            # Otherwise its subjects would silently join the domain above it.
+            raise ProgramError(f"catalogue heading names no domain as `prefix.*`: {line.strip()!r}")
     headings = list(SUBJECT_DOMAIN.finditer(section))
     for index, heading in enumerate(headings):
         title, prefix = heading.group(1).strip(), heading.group(2)
         domains[prefix] = title
         stop = headings[index + 1].start() if index + 1 < len(headings) else len(section)
-        subjects.update(f"{prefix}.{token}" for token in SUBJECT_TOKEN.findall(section[heading.end() : stop]))
+        for line in section[heading.end() : stop].splitlines():
+            if SUBJECT_LINE.match(line):
+                subjects.update(f"{prefix}.{token}" for token in SUBJECT_TOKEN.findall(line))
     return subjects, domains
 
 
@@ -161,7 +170,7 @@ def read(path: Path, source: str = "workspace") -> Program:
     subjects, domains = parse_catalogue(body)
     if not subjects:
         raise ProgramError("a program needs a subject catalogue")
-    malformed = sorted(subject for subject in subjects if not re.match(r"^[a-z]+\.[a-z0-9-]+$", subject))
+    malformed = sorted(subject for subject in subjects if not re.match(rf"^{PREFIX}\.[a-z0-9-]+$", subject))
     if malformed:
         raise ProgramError(f"malformed subject identifier(s): {', '.join(malformed)}")
 

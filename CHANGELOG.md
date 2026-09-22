@@ -2,6 +2,11 @@
 
 Learner-visible changes, newest first. Versions match `plugins/techne/.claude-plugin/plugin.json`.
 
+## 0.12.1
+
+- The T-shaped Product Engineer program no longer counts three phantom subjects read from a sentence of its catalogue, which kept it from ever being covered.
+- A program's domain may be named with digits, such as `a11y.*`; a catalogue heading that names no domain is refused with its reason instead of merging its subjects into the domain above.
+
 ## 0.12.0
 
 - A `project` command opens your red-thread project wherever it stands, whenever you want, outside the schedule.
