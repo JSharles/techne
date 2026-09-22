@@ -11,5 +11,6 @@ Every entry Techne writes in its records carries a full ISO 8601 timestamp from 
 ## Consequences
 
 - The first project morning goes to goals, ideas and choice; code starts after the third.
+- ADR 0019 gives ideation its own command and no deadline; building the roadmap keeps the three-morning bound.
 - An archived idea stays on disk and can be restored by the learner; Techne never reopens it on its own.
 - Entries written before this decision carry dates only; their time cannot be recovered and is not guessed.

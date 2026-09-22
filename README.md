@@ -125,6 +125,7 @@ Techne decides what comes next: the subject, due reviews, difficulty, and activi
 | `programs` | Lists the programs you can follow, the ones you are enrolled in, and your coverage in each. | To see what you are carrying. |
 | `switch <id>` | Saves your progress and opens another program you follow. | Whenever you want to change course. |
 | `schedule` | Shows your weekly schedule and offers to change it, or writes a first one from your enrolments. | When your week changes shape. |
+| `project` | Opens your red-thread project where it stands: finding the idea from what drives you, building its roadmap, or the next ticket. | Whenever you want to think about your project, even outside the schedule. |
 | `enroll <id>` / `leave <id>` | Follow a program, or stop following it without losing what you proved. | When your goals change. |
 | `new` | Creates a program with you, by interview: you bring the subjects and Techne structures them, or you give an objective and Techne designs the course. | When you want to learn something Techne does not ship. |
 | `pause` | Saves your progress and keeps the day open; `resume` continues exactly where you stopped. | Before a short break. |

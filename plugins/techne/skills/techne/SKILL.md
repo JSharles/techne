@@ -1,6 +1,6 @@
 ---
 name: techne
-description: Run Techne's intensive bootcamp, teaching the programs the learner follows. Use when the learner invokes Techne, asks to initialize or resume, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, wants to create, list or switch programs, requests a change to the teaching method or content, or uses a Techne command (init, resume, hint, ask, status, programs, switch, enroll, leave, new, schedule, pause, end, feedback, issue, extract-issues, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
+description: Run Techne's intensive bootcamp, teaching the programs the learner follows. Use when the learner invokes Techne, asks to initialize or resume, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, wants to create, list or switch programs, works on their red-thread project, requests a change to the teaching method or content, or uses a Techne command (init, resume, hint, ask, status, programs, switch, enroll, leave, new, schedule, project, pause, end, feedback, issue, extract-issues, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
 metadata:
   short-description: Adaptive Senior Engineer and Applied AI academy
 ---
@@ -40,6 +40,7 @@ Never present `reset` as the way to learn a new subject. One workspace holds eve
 - For a resume, session start, pause, completion, hint, browser answer, status, checkpoint, reset, or uninstall request, read [operations.md](references/operations.md).
 - Before listing, creating, or changing a program, read [programs.md](references/programs.md).
 - Before any lesson, exercise, recall, review, assessment, or feedback, read [pedagogy.md](references/pedagogy.md) and [exercises.md](references/exercises.md), then the open program's own file in `programs/` — the shipped ones are [engineering.md](programs/engineering.md) and [applied-ai.md](programs/applied-ai.md), and the learner's own live in their workspace. Do not load another program while one is open.
+- Before any work on a red-thread project — the `project` command, ideation, its roadmap, a ticket, or starting it over — read [project.md](references/project.md).
 - When the learner comments on or asks to change Techne's method, curriculum, schedule, assessment, or content, checkpoint the activity and read [calibration.md](references/calibration.md).
 
 ## Talk to the learner
@@ -95,6 +96,7 @@ The interface is a small set of English commands, identical whatever the learnin
 | `enroll <id>` / `leave <id>` | Follow a program, or stop following it without losing its evidence. | [operations.md](references/operations.md) |
 | `new` | Create a program by interview, in either mode, and write it to the workspace. | [programs.md](references/programs.md) |
 | `schedule` | Show the weekly schedule, or propose one from the learner's enrolments. | [operations.md](references/operations.md) |
+| `project` | Open the red-thread project wherever it stands: ideation, building the roadmap, or the next ticket. | [project.md](references/project.md) |
 | `pause` | Save progress without closing the day. | [operations.md](references/operations.md) |
 | `end` | Save progress and close the session with a short report. | [operations.md](references/operations.md) |
 | `feedback <text>` | Discuss the programme in progress: a preference is applied at once, a method change goes through calibration. | [calibration.md](references/calibration.md) |

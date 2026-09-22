@@ -2,6 +2,14 @@
 
 Learner-visible changes, newest first. Versions match `plugins/techne/.claude-plugin/plugin.json`.
 
+## 0.12.0
+
+- A `project` command opens your red-thread project wherever it stands, whenever you want, outside the schedule.
+- Choosing the project is now an ideation with no deadline. It starts from what drives you — work you have done, people and trades you know, problems you have lived — and settles one decision per session on a map kept in your workspace. Techne offers ideas of its own only if you ask.
+- Until the project is chosen, project mornings become isolated practice, so the programme keeps moving.
+- Once you choose, building the roadmap takes four announced steps over three project mornings at most: problem, scope, teaching value, architecture and roadmap.
+- The method follows Matt Pocock's `wayfinder`, `grilling` and `domain-modeling` skills, adapted inside Techne so it works without them installed.
+
 ## 0.11.0
 
 - Product discovery starts from a blank page and runs in seven announced steps: goals and frame, your ideas, the choice against criteria stated in advance, the problem, the scope, the teaching value, and the architecture with the roadmap. Techne tells you which step you are on and what must be settled to move on.

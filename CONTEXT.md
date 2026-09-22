@@ -53,12 +53,16 @@ A scheduled retrieval attempt on a subject already demonstrated, at J+2, J+7 and
 **Transfer deadline**:
 The scheduled moment when an `independent` subject is to be reinvested in the red-thread project or the AI lab, which is what earns `transferred`.
 
-**Product discovery**:
-The seven-step conversation, three project mornings at most, in which the learner goes from a blank page to a committed roadmap for the red-thread product: goals, ideas, choice, problem, scope, teaching value, architecture. Techne questions; the learner decides.
-_Avoid_: exploration, brainstorm
+**Ideation**:
+The first phase of the red-thread project: finding, from what drives the learner, an idea they want to build. It has no deadline and runs on a map of decisions settled one per session, in `.techne/project/MAP.md`, opened with the `project` command. Techne questions; the learner decides.
+_Avoid_: brainstorm, discovery
+
+**Building the roadmap**:
+The second phase of the red-thread project, three project mornings at most: problem, scope, teaching value, architecture and roadmap, ending in the learner's commitment to the roadmap.
+_Avoid_: exploration
 
 **Roadmap**:
-The red-thread project's `docs/ROADMAP.md`, written during the product discovery: the single reference from which tickets and the lessons that prepare them derive. It changes only by an explicit, recorded decision.
+The red-thread project's `docs/ROADMAP.md`, written while building the roadmap: the single reference from which tickets and the lessons that prepare them derive. It changes only by an explicit, recorded decision.
 _Avoid_: backlog, plan
 
 **Working day**:
