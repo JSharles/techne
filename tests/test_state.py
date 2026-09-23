@@ -13,7 +13,6 @@ from test_workspace import SKILL_ROOT, initializer, load_module, validator
 
 
 programs = load_module("programs", SKILL_ROOT / "scripts" / "programs.py")
-weekly = load_module("schedule", SKILL_ROOT / "scripts" / "schedule.py")
 journal = load_module("issues", SKILL_ROOT / "scripts" / "issues.py")
 store = load_module("store", SKILL_ROOT / "scripts" / "store.py")
 state_script = load_module("techne_state", SKILL_ROOT / "scripts" / "state.py")
@@ -141,18 +140,25 @@ class ProgramTests(unittest.TestCase):
 
             self.assertEqual(found["noted"].subjects, {"dsa.first", "dsa.second"})
 
-    def test_programs_disagreeing_about_a_domain_are_reported(self):
+    def test_programs_sharing_a_domain_prefix_are_reported(self):
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)
             folder = programs.workspace_dir(workspace)
             write_program(folder, "interviews", domain_title="Algorithms", prefix="dsa")
-            write_program(folder, "gardening", domain_title="Digging", prefix="dsa")
+            write_program(folder, "drills", domain_title="Algorithms", prefix="dsa")
+            write_program(folder, "gardening", domain_title="Digging", prefix="dig")
 
             found, _ = programs.discover(SKILL_ROOT, workspace)
-            problems = programs.contradictions(found["gardening"], list(found.values()))
 
-            self.assertTrue(any("`dsa.*`" in problem for problem in problems))
-            self.assertEqual(programs.contradictions(found["interviews"], [found["interviews"]]), [])
+            # Even under the same title: each program keeps its own evidence.
+            self.assertTrue(any("`dsa.*`" in problem for problem in programs.overlaps(found["drills"], [found["interviews"]])))
+            self.assertEqual(programs.overlaps(found["gardening"], [found["interviews"]]), [])
+            self.assertEqual(programs.overlaps(found["interviews"], [found["interviews"]]), [])
+
+    def test_the_shipped_programs_share_no_domain(self):
+        found, _ = programs.discover(SKILL_ROOT)
+
+        self.assertEqual(programs.overlaps(found["engineering"], [found["applied-ai"]]), [])
 
 
 class StateTransitionTests(unittest.TestCase):
@@ -208,6 +214,44 @@ class StateTransitionTests(unittest.TestCase):
         # One step down, not one per dropped review.
         self.assertEqual(self.state["mastery"]["react.effects-and-alternatives"]["state"], "assisted")
 
+    def test_due_work_stays_inside_the_open_program(self):
+        write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
+        for program in ("engineering", "sprint"):
+            state_script.enroll(self.state, self.workspace, program)
+        known = state_script.known_subjects(self.state, self.workspace)
+        state_script.set_mastery(self.state, "dsa.hashing", "independent", "two-sum", "H0", known)
+        state_script.set_mastery(self.state, "int.first", "independent", "done", "H0", known)
+        for item in self.state["reviews_due"] + self.state["transfers_due"]:
+            item["due_on"] = date.today().isoformat()
+        state_script.switch_block(self.state, "sprint")
+
+        here = state_script.program_subjects(self.state, self.workspace, "sprint")
+        due, _ = state_script.due_reviews(self.state, None, here)
+        transfers = state_script.due_transfers(self.state, here)
+
+        self.assertEqual({item["subject"] for item in due}, {"int.first"}, "another program's reviews stay there")
+        self.assertEqual({item["subject"] for item in transfers}, {"int.first"})
+        everywhere, _ = state_script.due_reviews(self.state, None, None)
+        self.assertEqual({item["subject"] for item in everywhere}, {"int.first", "dsa.hashing"})
+
+    def test_the_cli_proposes_only_the_open_programs_reviews(self):
+        write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
+        for program in ("engineering", "sprint"):
+            state_script.enroll(self.state, self.workspace, program)
+        known = state_script.known_subjects(self.state, self.workspace)
+        state_script.set_mastery(self.state, "dsa.hashing", "independent", "two-sum", "H0", known)
+        state_script.set_mastery(self.state, "int.first", "independent", "done", "H0", known)
+        for item in self.state["reviews_due"]:
+            item["due_on"] = date.today().isoformat()
+        state_script.switch_block(self.state, "sprint")
+        store.save(self.workspace, self.state)
+
+        with redirect_stdout(io.StringIO()) as printed:
+            self.assertEqual(self.run_cli("review", "--due"), 0)
+        reported = json.loads(printed.getvalue())
+
+        self.assertEqual({item["subject"] for item in reported["due"]}, {"int.first"})
+
     def test_fragile_subjects_come_first_in_the_due_queue(self):
         state_script.set_mastery(self.state, "dsa.hashing", "independent", "ok", "H0", self.known)
         state_script.set_mastery(self.state, "sql.indexes", "assisted", "helped", "H3", self.known)
@@ -252,6 +296,25 @@ class StateTransitionTests(unittest.TestCase):
         state_script.enroll(self.state, self.workspace, "engineering")
         self.assertEqual(state_script.enrolled(self.state), ["engineering"])
 
+    def test_enrolling_opens_the_program_at_once(self):
+        store.save(self.workspace, self.state)
+        with redirect_stdout(io.StringIO()):
+            self.assertEqual(self.run_cli("enroll", "applied-ai"), 0)
+
+        after = self.reload()
+        self.assertEqual(after["day"]["active_block"], "applied-ai", "enrol, then start")
+        self.assertEqual(after["day"]["blocks"]["applied-ai"], "in_progress")
+
+    def test_any_enrolled_program_opens_whenever_the_learner_wants(self):
+        store.save(self.workspace, self.state)
+        with redirect_stdout(io.StringIO()):
+            for command in (["enroll", "engineering"], ["enroll", "applied-ai"], ["switch", "engineering"]):
+                self.assertEqual(self.run_cli(*command), 0)
+
+        after = self.reload()
+        self.assertEqual(after["day"]["active_block"], "engineering")
+        self.assertNotIn("schedule_drift", after)
+
     def test_enrolment_refuses_what_it_cannot_use(self):
         with self.assertRaises(state_script.StateError) as unknown:
             state_script.enroll(self.state, self.workspace, "gardening")
@@ -272,14 +335,31 @@ class StateTransitionTests(unittest.TestCase):
 
         self.assertEqual(state_script.enrolled(self.state), ["engineering"])
 
-    def test_enrolment_refuses_a_program_that_disagrees_about_a_domain(self):
+    def test_enrolment_refuses_a_program_that_shares_a_domain(self):
         state_script.enroll(self.state, self.workspace, "engineering")
-        write_program(programs.workspace_dir(self.workspace), "gardening", domain_title="Digging", prefix="dsa")
+        write_program(programs.workspace_dir(self.workspace), "drills", domain_title="DSA", prefix="dsa")
 
         with self.assertRaises(state_script.StateError) as clash:
-            state_script.enroll(self.state, self.workspace, "gardening")
+            state_script.enroll(self.state, self.workspace, "drills")
 
-        self.assertIn("disagrees with a program you follow", str(clash.exception))
+        self.assertIn("shares a domain with a program you follow", str(clash.exception))
+
+    def test_a_survey_domain_is_known_by_its_title_not_its_prefix(self):
+        write_program(
+            programs.workspace_dir(self.workspace),
+            "sprint",
+            prefix="int",
+            domain_title="Interviews",
+            replace=[("`first`, `second`\n", "`first`, `second`\n\n### Survey — `intsurvey.*`\n\n`logs`\n")],
+        )
+        state_script.enroll(self.state, self.workspace, "sprint")
+        known = state_script.known_subjects(self.state, self.workspace)
+        for subject in ("int.first", "int.second"):
+            state_script.set_mastery(self.state, subject, "independent", "done", "H0", known)
+        state_script.set_mastery(self.state, "intsurvey.logs", "discovered", "read", "H0", known)
+        found, _ = programs.discover(SKILL_ROOT, self.workspace)
+
+        self.assertEqual(state_script.coverage(self.state, found["sprint"])["share"], 1.0)
 
     def test_measurable_subjects_follow_the_learners_enrolments(self):
         state_script.enroll(self.state, self.workspace, "applied-ai")
@@ -288,73 +368,6 @@ class StateTransitionTests(unittest.TestCase):
 
         self.assertIn("py.async", known)
         self.assertNotIn("dsa.bfs", known)
-
-    def test_the_schedule_reads_both_languages_and_says_what_is_expected(self):
-        weekly.write(
-            self.workspace,
-            "| Jour | Créneau | Programme |\n| --- | --- | --- |\n"
-            "| lundi | matin | engineering |\n| monday | afternoon | applied-ai |\n| dimanche | léger | — |\n",
-        )
-
-        entries, problems = weekly.read(self.workspace)
-
-        self.assertEqual(problems, [])
-        self.assertEqual(len(entries), 3)
-        monday_morning = weekly.expected(entries, datetime(2026, 9, 21, 9, 30))
-        monday_afternoon = weekly.expected(entries, datetime(2026, 9, 21, 15, 0))
-        sunday = weekly.expected(entries, datetime(2026, 9, 20, 10, 0))
-        self.assertEqual(monday_morning["program"], "engineering")
-        self.assertEqual(monday_afternoon["program"], "applied-ai")
-        self.assertEqual((sunday["slot"], sunday["program"]), ("light", None))
-
-    def test_an_unreadable_schedule_row_is_reported(self):
-        weekly.write(self.workspace, "| Day | Slot | Program |\n| --- | --- | --- |\n| someday | morning | engineering |\n")
-
-        entries, problems = weekly.read(self.workspace)
-
-        self.assertEqual(entries, [])
-        self.assertTrue(any("someday" in problem for problem in problems))
-        self.assertTrue(any("SCHEDULE.md" in error for error in validator.validate(self.workspace / ".techne")))
-
-    def test_working_elsewhere_is_obeyed_and_recorded_as_drift(self):
-        state_script.enroll(self.state, self.workspace, "engineering")
-        state_script.enroll(self.state, self.workspace, "applied-ai")
-        store.save(self.workspace, self.state)
-        weekly.write(self.workspace, weekly.propose(["engineering", "applied-ai"]))
-
-        self.assertEqual(self.run_cli("switch", "applied-ai"), 0)
-
-        after = self.reload()
-        self.assertEqual(after["day"]["active_block"], "applied-ai")
-        drift = after.get("schedule_drift", [])
-        expected_now = weekly.expected(weekly.read(self.workspace)[0], datetime.now().astimezone())
-        if expected_now and (expected_now["program"] or "light") != "applied-ai":
-            self.assertEqual(drift[-1]["opened"], "applied-ai")
-            self.assertEqual(drift[-1]["expected"], expected_now["program"] or "light")
-        else:
-            self.assertEqual(drift, [])
-
-    def test_a_proposed_schedule_gives_each_program_a_slot_and_keeps_a_light_day(self):
-        text = weekly.propose(["engineering", "applied-ai"], light_day="sunday")
-        entries, problems = weekly.parse(text)
-
-        self.assertEqual(problems, [])
-        self.assertEqual(sum(1 for entry in entries if entry["slot"] == "light"), 1)
-        self.assertEqual(sum(1 for entry in entries if entry["program"] == "engineering"), 6)
-        self.assertEqual(sum(1 for entry in entries if entry["program"] == "applied-ai"), 6)
-
-    def test_drifting_needs_a_fortnight_of_deviations(self):
-        now = datetime(2026, 9, 20, 10, 0)
-        state = {}
-        planned = {"day": "monday", "slot": "morning", "program": "engineering"}
-        state["schedule_drift"] = [
-            weekly.deviation(planned, "applied-ai", datetime(2026, 9, 15 + index % 5, 9, 0)) for index in range(5)
-        ]
-        self.assertFalse(weekly.drifting(state, now))
-        self.assertIsNone(weekly.deviation(planned, "engineering", now), "following the schedule is not drift")
-
-        state["schedule_drift"].append(weekly.deviation(planned, "applied-ai", datetime(2026, 9, 19, 9, 0)))
-        self.assertTrue(weekly.drifting(state, now))
 
     def test_evidence_survives_a_subject_leaving_a_program(self):
         write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
@@ -373,44 +386,6 @@ class StateTransitionTests(unittest.TestCase):
         self.assertEqual(state_script.off_programme(self.state, self.workspace), ["int.first"])
         self.assertEqual(self.state["mastery"]["int.first"]["state"], "independent")
 
-    def test_an_unscheduled_program_is_named_with_the_one_to_propose(self):
-        state_script.enroll(self.state, self.workspace, "engineering")
-        state_script.enroll(self.state, self.workspace, "applied-ai")
-        state_script.switch_block(self.state, "engineering")
-        store.save(self.workspace, self.state)
-        weekly.write(
-            self.workspace,
-            "| Day | Slot | Program |\n| --- | --- | --- |\n| monday | morning | engineering |\n",
-        )
-
-        with redirect_stdout(io.StringIO()) as printed:
-            self.assertEqual(self.run_cli("schedule"), 0)
-        reported = json.loads(printed.getvalue())
-
-        self.assertEqual(reported["unscheduled"], ["applied-ai"])
-        self.assertEqual(reported["least_recent"], "applied-ai", "the one worked on longest ago")
-
-    def test_a_proposal_never_overwrites_a_schedule_without_being_told(self):
-        state_script.enroll(self.state, self.workspace, "engineering")
-        store.save(self.workspace, self.state)
-        weekly.write(self.workspace, "| Day | Slot | Program |\n| --- | --- | --- |\n| monday | morning | engineering |\n")
-        mine = weekly.schedule_path(self.workspace).read_text(encoding="utf-8")
-
-        with redirect_stdout(io.StringIO()):
-            self.assertEqual(self.run_cli("schedule", "--propose"), 1)
-        self.assertEqual(weekly.schedule_path(self.workspace).read_text(encoding="utf-8"), mine)
-
-        with redirect_stdout(io.StringIO()):
-            self.assertEqual(self.run_cli("schedule", "--propose", "--replace"), 0)
-        self.assertNotEqual(weekly.schedule_path(self.workspace).read_text(encoding="utf-8"), mine)
-
-    def test_a_proposal_follows_each_programs_cadence(self):
-        text = weekly.propose(["sprint"], cadences={"sprint": "three-times-weekly"})
-        entries, _ = weekly.parse(text)
-
-        days = sorted({entry["day"] for entry in entries if entry["program"] == "sprint"})
-        self.assertEqual(days, ["friday", "monday", "wednesday"])
-
     def test_reading_the_state_never_changes_it(self):
         write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
         state_script.enroll(self.state, self.workspace, "sprint")
@@ -422,7 +397,7 @@ class StateTransitionTests(unittest.TestCase):
         before = database.read_bytes()
 
         with redirect_stdout(io.StringIO()):
-            for command in (["programs"], ["show"], ["schedule"]):
+            for command in (["programs"], ["show"]):
                 self.assertEqual(self.run_cli(*command), 0)
 
         self.assertEqual(database.read_bytes(), before, "listing must not end a program")
@@ -634,11 +609,7 @@ class StateTransitionTests(unittest.TestCase):
         self.assertEqual(state_script.enrolled(migrated), ["engineering", "applied-ai"])
         self.assertEqual([entry["id"] for entry in journal.entries(migrated)], ["f1"])
         self.assertTrue((root / "feedback.jsonl.imported").is_file(), "the learner's journal is kept, not deleted")
-        self.assertTrue(weekly.schedule_path(self.workspace).is_file(), "migration writes a first schedule")
-        entries, problems = weekly.read(self.workspace)
-        self.assertEqual(problems, [])
-        morning = [entry["program"] for entry in entries if entry["slot"] == "morning"]
-        self.assertEqual(set(morning), {"engineering"}, "mornings stay what they were")
+        self.assertFalse((self.workspace / ".techne" / "SCHEDULE.md").exists(), "Techne keeps no schedule")
 
     def test_warns_when_another_session_wrote_recently(self):
         self.assertIsNone(state_script.note_session(self.state, "session-a"))

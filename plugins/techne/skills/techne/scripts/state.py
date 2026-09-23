@@ -14,14 +14,12 @@ from pathlib import Path
 
 import issues as journal
 import programs
-import schedule as weekly
 import store
 from workspace_registry import default_config_path, resolve_workspace
 
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 FORMAT_VERSION = 3
-DRIFT_KEPT = 60
 RECENT_SESSION_HOURS = 12
 STATES = ("not_started", "discovered", "assisted", "independent", "transferred", "blocked")
 LADDER = ("not_started", "discovered", "assisted", "independent", "transferred")
@@ -241,8 +239,21 @@ def record_failure(state: dict, subject: str, known: set[str]) -> dict:
     return entry
 
 
-def due_reviews(state: dict, limit: int | None) -> tuple[list[dict], list[dict]]:
-    """Return (due, dropped). Reviews overdue by more than twice their interval are dropped."""
+def program_subjects(state: dict, workspace: Path, identifier: str | None) -> set[str] | None:
+    """The subjects of one program, or None when no program is open."""
+    if not identifier:
+        return None
+    return programs.subjects(SKILL_ROOT, workspace, [identifier])
+
+
+def due_reviews(state: dict, limit: int | None, here: set[str] | None = None) -> tuple[list[dict], list[dict]]:
+    """Return (due, dropped), for the open program when `here` names its subjects.
+
+    Programs are isolated (ADR 0020), so the learner is only ever offered the
+    reviews of the program they have open. Staleness is not: a review left
+    behind in another program still goes stale, and its subject still steps
+    down, because forgetting does not wait for the learner to come back.
+    """
     current = today()
     due, kept, dropped = [], [], []
     for item in queue(state, "reviews_due"):
@@ -261,12 +272,18 @@ def due_reviews(state: dict, limit: int | None) -> tuple[list[dict], list[dict]]
         # One step down per subject, however many of its reviews went stale.
         step_down(state, subject, "review dropped (too overdue)")
     state["reviews_due"] = kept + due
-    return (due if limit is None else due[:limit]), dropped
+    # The queue keeps every program's reviews; only what is offered is narrowed.
+    offered = [item for item in due if here is None or item["subject"] in here]
+    return (offered if limit is None else offered[:limit]), dropped
 
 
-def due_transfers(state: dict) -> list[dict]:
+def due_transfers(state: dict, here: set[str] | None = None) -> list[dict]:
     current = today()
-    return [item for item in queue(state, "transfers_due") if date.fromisoformat(item["due_on"]) <= current]
+    return [
+        item
+        for item in queue(state, "transfers_due")
+        if date.fromisoformat(item["due_on"]) <= current and (here is None or item["subject"] in here)
+    ]
 
 
 def record_review(state: dict, subject: str, passed: bool, known: set[str]) -> dict:
@@ -323,6 +340,11 @@ def switch_block(state: dict, program: str) -> dict:
     return day
 
 
+def open_program(state: dict) -> str | None:
+    """The program the learner has open, which is the only one they are offered work in."""
+    return state.get("day", {}).get("active_block")
+
+
 def enrolled(state: dict) -> list[str]:
     return [item["program"] for item in state.get("enrolments", []) if item.get("status") == "active"]
 
@@ -334,12 +356,11 @@ def known_subjects(state: dict, workspace: Path) -> set[str]:
 
 
 DEMONSTRATED = ("independent", "transferred")
-SURVEY_PREFIX = "survey"
 
 
-def is_covered(subject: str, name: str, ceiling: str) -> bool:
+def is_covered(name: str, ceiling: str, survey: bool) -> bool:
     """A core subject is covered once demonstrated; a survey one once at its ceiling."""
-    if subject.partition(".")[0] == SURVEY_PREFIX:
+    if survey:
         return name in LADDER and LADDER.index(name) >= LADDER.index(ceiling)
     return name in DEMONSTRATED
 
@@ -369,18 +390,19 @@ def coverage(state: dict, program: programs.Program) -> dict:
     """
     mastery = state.get("mastery", {})
     ceiling = program.settings.get("survey_ceiling", "discovered")
+    survey = programs.survey_prefixes(program)
     counted = {"not_started": 0, "discovered": 0, "assisted": 0, "independent": 0, "transferred": 0, "blocked": 0}
     covered = 0
     for subject in program.subjects:
         name = mastery.get(subject, {}).get("state", "not_started")
         counted[name] = counted.get(name, 0) + 1
-        covered += is_covered(subject, name, ceiling)
+        covered += is_covered(name, ceiling, subject.partition(".")[0] in survey)
     total = len(program.subjects)
     started = total - counted["not_started"]
     demonstrated = sum(
         1
         for subject in program.subjects
-        if subject.partition(".")[0] != SURVEY_PREFIX
+        if subject.partition(".")[0] not in survey
         and mastery.get(subject, {}).get("state", "not_started") in DEMONSTRATED
     )
     return {
@@ -425,12 +447,12 @@ def enroll(state: dict, workspace: Path, identifier: str) -> dict:
 
     program = found[identifier]
     # Check against every program they have followed, not only the active ones:
-    # a subject demonstrated under a program they left still means something.
+    # the evidence of a program they left is still stored under its prefixes.
     ever = [item["program"] for item in state.get("enrolments", [])]
     others = [found[other] for other in ever if other in found and other != identifier]
-    disagreements = programs.contradictions(program, others)
-    if disagreements:
-        raise StateError(f"{identifier} disagrees with a program you follow: {'; '.join(disagreements)}")
+    shared = programs.overlaps(program, others)
+    if shared:
+        raise StateError(f"{identifier} shares a domain with a program you follow: {'; '.join(shared)}")
 
     enrolments = state.setdefault("enrolments", [])
     for item in enrolments:
@@ -496,9 +518,11 @@ def build_parser() -> argparse.ArgumentParser:
     review.add_argument("--limit", type=int, default=3)
     review.add_argument("--record", metavar="SUBJECT")
     review.add_argument("--result", choices=("pass", "fail"))
+    review.add_argument("--everywhere", action="store_true", help="Include the programs that are not open")
 
     transfer = sub.add_parser("transfer", help="List subjects due for transfer into a project")
     transfer.add_argument("--due", action="store_true")
+    transfer.add_argument("--everywhere", action="store_true", help="Include the programs that are not open")
 
     check = sub.add_parser("checkpoint", help="Checkpoint the current activity")
     check.add_argument("--note")
@@ -510,12 +534,8 @@ def build_parser() -> argparse.ArgumentParser:
     switch = sub.add_parser("switch", help="Open an enrolled program")
     switch.add_argument("program")
 
-    planning = sub.add_parser("schedule", help="Show the weekly schedule, or propose one")
-    planning.add_argument("--propose", action="store_true", help="Write a schedule from the learner's enrolments")
-    planning.add_argument("--replace", action="store_true", help="Overwrite a schedule the learner already has")
-    planning.add_argument("--light-day", default="sunday", help="Day kept light in a proposal")
 
-    enrolling = sub.add_parser("enroll", help="Enrol in a program")
+    enrolling = sub.add_parser("enroll", help="Enrol in a program and open it")
     enrolling.add_argument("program")
 
     leaving = sub.add_parser("leave", help="Leave a program without losing its evidence")
@@ -553,28 +573,9 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def least_recent(state: dict) -> str | None:
-    """The enrolled program worked on longest ago, to propose when nothing is scheduled."""
-    following = enrolled(state)
-    if not following:
-        return None
-    blocks = state.get("day", {}).get("blocks", {})
-    seen = {item["program"]: item.get("last_opened_at", "") for item in state.get("enrolments", [])}
-    return sorted(following, key=lambda program: (seen.get(program, ""), blocks.get(program, "")))[0]
-
-
-def proposal(workspace: Path, program_ids: list[str], light_day: str = "sunday") -> str:
-    """A schedule proposal that respects each program's declared cadence."""
-    found, _ = programs.discover(SKILL_ROOT, workspace)
-    cadences = {identifier: found[identifier].cadence for identifier in program_ids if identifier in found}
-    return weekly.propose(program_ids, light_day, cadences)
-
-
 def read_only(args: argparse.Namespace) -> bool:
     """Commands that only look at the state, and so must leave it alone."""
-    if args.command in ("programs", "show"):
-        return True
-    return args.command == "schedule" and not args.propose
+    return args.command in ("programs", "show")
 
 
 def days_line(summary: dict) -> str:
@@ -629,45 +630,26 @@ def main(argv: list[str] | None = None) -> int:
                     raise StateError("--record requires --result pass|fail")
                 result = record_review(state, args.record, args.result == "pass", known)
             else:
-                due, dropped = due_reviews(state, args.limit)
-                result = {"due": due, "dropped": dropped}
+                here = None if args.everywhere else program_subjects(state, workspace, open_program(state))
+                due, dropped = due_reviews(state, args.limit, here)
+                result = {"due": due, "dropped": dropped, "program": open_program(state)}
         elif args.command == "transfer":
-            result = {"due": due_transfers(state)}
+            here = None if args.everywhere else program_subjects(state, workspace, open_program(state))
+            result = {"due": due_transfers(state, here), "program": open_program(state)}
         elif args.command == "checkpoint":
             result = checkpoint(state, args.note, args.help_level, "checkpointed")
         elif args.command == "close":
             result = checkpoint(state, args.note, None, "closed")
         elif args.command == "switch":
-            entries, _ = weekly.read(workspace)
-            planned = weekly.expected(entries, datetime.now().astimezone())
             checkpoint(state, f"switching to {args.program}", None, "checkpointed")
             result = switch_block(state, args.program)
-            deviation = weekly.deviation(planned, args.program, datetime.now().astimezone())
-            if deviation:
-                drift = state.setdefault("schedule_drift", [])
-                drift.append(deviation)
-                del drift[:-DRIFT_KEPT]  # a fortnight of deviations is all drifting() looks at
-        elif args.command == "schedule":
-            now = datetime.now().astimezone()
-            if args.propose:
-                if weekly.schedule_path(workspace).is_file() and not args.replace:
-                    raise StateError(
-                        "There is already a schedule. Show it to the learner and pass --replace only once they agree."
-                    )
-                weekly.write(workspace, proposal(workspace, enrolled(state), args.light_day))
-            entries, problems = weekly.read(workspace)
-            planned = weekly.expected(entries, now)
-            result = {
-                "path": str(weekly.schedule_path(workspace)),
-                "entries": entries,
-                "problems": problems,
-                "expected_now": planned,
-                "unscheduled": [program for program in enrolled(state) if program not in {entry["program"] for entry in entries}],
-                "least_recent": least_recent(state),
-                "drifting": weekly.drifting(state, now),
-            }
         elif args.command == "enroll":
+            # Enrol, then start: the learner organises their own time, so a new
+            # program opens at once rather than waiting for a slot.
             result = enroll(state, workspace, args.program)
+            if state.get("current", {}).get("id"):
+                checkpoint(state, f"enrolling in {args.program}", None, "checkpointed")
+            switch_block(state, args.program)
         elif args.command == "leave":
             result = leave(state, args.program)
         elif args.command == "issue":
@@ -710,9 +692,6 @@ def main(argv: list[str] | None = None) -> int:
             }
         elif args.command == "migrate":
             applied = migrate(state)
-            if not weekly.schedule_path(workspace).is_file() and enrolled(state):
-                weekly.write(workspace, proposal(workspace, enrolled(state)))
-                applied.append("wrote a weekly schedule from your enrolments")
             legacy, unreadable = journal.read_legacy_journal(workspace / ".techne")
             if legacy:
                 state["issues"] = [*journal.entries(state), *legacy]

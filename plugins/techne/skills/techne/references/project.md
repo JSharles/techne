@@ -2,7 +2,7 @@
 
 Read this before any work on the red-thread project of a program whose settings say `red_thread: yes`: the `project` command, ideation, the roadmap, tickets, or starting the project over. The program's own file sets the frame (stack, duration, which weeks teach what); this file is the method.
 
-The learner is building a real product, not following a tutorial. They choose it slowly, from what drives them, and they know what it is, who it is for, and what each part will teach them before any code. The project goes through two phases: **ideation**, which finds the idea and has no deadline, then **building the roadmap**, which turns that idea into a committed plan and takes three project mornings at most.
+The learner is building a real product, not following a tutorial. They choose it slowly, from what drives them, and they know what it is, who it is for, and what each part will teach them before any code. The project goes through two phases: **ideation**, which finds the idea and has no deadline, then **building the roadmap**, which turns that idea into a committed plan and takes three project sessions at most.
 
 ## The `project` command
 
@@ -12,7 +12,7 @@ The learner is building a real product, not following a tutorial. They choose it
 - while building the roadmap, say which step they are on out of four and what must be settled to move on, then continue it;
 - once the roadmap is committed, name its current phase and the next ticket.
 
-The learner can run `project` whenever they want, outside the schedule. Ideation sessions are theirs to start.
+The learner runs `project` whenever they want; ideation sessions are theirs to start.
 
 ## Ideation
 
@@ -70,7 +70,7 @@ Four steps, announced as "step N of 4" when each opens and whenever the learner 
 3. **Teaching value.** Each major part of the product placed at the weeks where the program teaches what it needs. *Settled:* every project line of the program's sequence is met by a part of the product.
 4. **Architecture and roadmap.** The data model, the main technical decisions with their reasons, what will make the project hold up in production, and the roadmap. *Settled:* the learner commits to the roadmap.
 
-This phase is bounded to three project mornings. At the end of the third, the learner commits to what is written; a question still open becomes a stated assumption in the roadmap. Exploring without end is a comfortable way not to start.
+This phase is bounded to three project sessions. At the end of the third, the learner commits to what is written; a question still open becomes a stated assumption in the roadmap. Exploring without end is a comfortable way not to start.
 
 Throughout, build the domain's language as you go: when the learner uses a vague or overloaded word, propose a precise term, and test it on a concrete scenario at the edge of the domain. Write the decisions down the moment they are made, and have the learner read and approve each document. They go in the project's repository, in the language the learner chose for it:
 

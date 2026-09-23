@@ -16,16 +16,12 @@ _Avoid_: curriculum, track, course
 The learner's commitment to a program. Several run at once, each progressing on its own evidence.
 _Avoid_: subscription
 
-**Schedule**:
-The learner's weekly intention: which program each slot belongs to. A suggestion Techne follows and offers to rewrite when reality drifts, never a rule it enforces.
-_Avoid_: calendar, planning
-
 **Coverage**:
 How much of a program's catalogue has been taught and demonstrated. Reaching full coverage is what ends a program; time never does.
 
-**Block**:
-One stretch of work on one program, opened from the schedule. A logical unit selected from persisted state, not a clock range.
-_Avoid_: session, slot
+**Session**:
+One stretch of work on one program, whenever and for however long the learner chooses; the state script calls it a block. Techne keeps no schedule: the learner organises their own time, and a program advances in sessions, not in calendar days.
+_Avoid_: slot, morning, afternoon, working day
 
 **Activity**:
 One unit of learner work inside a block: a lesson, an exercise, a review, or a placement probe. At most one evaluated activity is open at a time.
@@ -58,16 +54,12 @@ The first phase of the red-thread project: finding, from what drives the learner
 _Avoid_: brainstorm, discovery
 
 **Building the roadmap**:
-The second phase of the red-thread project, three project mornings at most: problem, scope, teaching value, architecture and roadmap, ending in the learner's commitment to the roadmap.
+The second phase of the red-thread project, three project sessions at most: problem, scope, teaching value, architecture and roadmap, ending in the learner's commitment to the roadmap.
 _Avoid_: exploration
 
 **Roadmap**:
 The red-thread project's `docs/ROADMAP.md`, written while building the roadmap: the single reference from which tickets and the lessons that prepare them derive. It changes only by an explicit, recorded decision.
 _Avoid_: backlog, plan
-
-**Working day**:
-The unit the programme advances in: sixty morning and sixty afternoon blocks, whatever the calendar says. Reviews follow calendar days instead, because forgetting does.
-_Avoid_: week (as a date), day off
 
 **Core**:
 The set of subjects a program takes to demonstrated independence, for the T-shaped Product Engineer program: TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL and data modelling, DSA up to graphs, tests and debugging, applied architecture, and the delivery flow (Git, pull requests, review, CI).
@@ -85,7 +77,7 @@ _Avoid_: score, progress percentage
 The conversation that changes how Techne teaches. A preference — lesson length, more theory, pace — is applied at once and kept in the learner profile; a change touching evidence, the programme, or assessment goes through discussion, approval, and a recorded decision.
 
 **Weekly assessment**:
-The blunt review written every six working days, during the light day: what moved, what stalled, what is fragile, and the learner's real pace. On working days 20, 40 and 60 it also compares the mastery map to what a senior React/Node developer is expected to know.
+The blunt review written after every six sessions of a program: what moved, what stalled, what is fragile, and the learner's real pace. After sessions 20, 40 and 60 it also compares the mastery map to what a senior React/Node developer is expected to know.
 _Avoid_: progress report, recap
 
 **Issue**:
@@ -96,8 +88,8 @@ _Avoid_: bug report, complaint
 What the learner tells Techne about the programme in progress: a preference, applied at once and kept in the profile, or a request to change the method, which goes through calibration.
 _Avoid_: issue, report
 
-**Light day**:
-The seventh day of the week: about ninety minutes of review and reading, with no new subject. Techne may impose another when results degrade.
+**Light session**:
+A session of reviews and reading only, with no new subject, which Techne proposes, never imposes, when results degrade.
 _Avoid_: rest day, day off
 
 **AI lab**:

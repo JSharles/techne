@@ -1,6 +1,6 @@
 ---
 name: techne
-description: Run Techne's intensive bootcamp, teaching the programs the learner follows. Use when the learner invokes Techne, asks to initialize or resume, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, wants to create, list or switch programs, works on their red-thread project, requests a change to the teaching method or content, or uses a Techne command (init, resume, hint, ask, status, programs, switch, enroll, leave, new, schedule, project, pause, end, feedback, issue, extract-issues, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
+description: Run Techne's intensive bootcamp, teaching the programs the learner follows. Use when the learner invokes Techne, asks to initialize or resume, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, wants to create, list or switch programs, works on their red-thread project, requests a change to the teaching method or content, or uses a Techne command (init, resume, hint, ask, status, programs, switch, enroll, leave, new, project, pause, end, feedback, issue, extract-issues, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
 metadata:
   short-description: Adaptive Senior Engineer and Applied AI academy
 ---
@@ -18,7 +18,7 @@ Run `python3 <this-skill-directory>/scripts/resolve_workspace.py .` without chan
 3. `.techne/PROFILE.md`, including the learner's recorded preferences;
 4. `.techne/DECISIONS.md`, the method changes approved with this learner, which take precedence over this skill's defaults;
 5. the latest entry in `.techne/SESSION_LOG.md`;
-6. due reviews and transfers, with `python3 <this-skill-directory>/scripts/state.py review --due` and `state.py transfer --due`;
+6. the open program's due reviews and transfers, with `python3 <this-skill-directory>/scripts/state.py review --due` and `state.py transfer --due`;
 7. new browser evidence, with `state.py ingest-events`.
 
 If the host sandbox cannot write to the resolved workspace, request access scoped to that workspace. Keep using the registered state; never create a second curriculum merely because the current agent session started elsewhere.
@@ -30,10 +30,10 @@ If no workspace exists, the learner is starting Techne. Whatever command they us
 If a workspace exists and the learner asks for `init`, do not initialize again. Say where they stand, then offer, in this order:
 
 - **resume** what is open;
-- **learn something else**: that is a program, not a second Techne — `new` writes one, `enroll` adds it, and it runs beside the others with one shared mastery map;
+- **learn something else**: that is a program, not a second Techne — `new` writes one, `enroll` adds it, and it runs beside the others, keeping its own evidence;
 - **reset**, only if they want to start over and lose nothing else will do.
 
-Never present `reset` as the way to learn a new subject. One workspace holds every program, so evidence is never split in two.
+Never present `reset` as the way to learn a new subject. One workspace holds every program, each with its own evidence.
 
 ## Route the request
 
@@ -41,7 +41,7 @@ Never present `reset` as the way to learn a new subject. One workspace holds eve
 - Before listing, creating, or changing a program, read [programs.md](references/programs.md).
 - Before any lesson, exercise, recall, review, assessment, or feedback, read [pedagogy.md](references/pedagogy.md) and [exercises.md](references/exercises.md), then the open program's own file in `programs/` — the shipped ones are [engineering.md](programs/engineering.md) and [applied-ai.md](programs/applied-ai.md), and the learner's own live in their workspace. Do not load another program while one is open.
 - Before any work on a red-thread project — the `project` command, ideation, its roadmap, a ticket, or starting it over — read [project.md](references/project.md).
-- When the learner comments on or asks to change Techne's method, curriculum, schedule, assessment, or content, checkpoint the activity and read [calibration.md](references/calibration.md).
+- When the learner comments on or asks to change Techne's method, curriculum, assessment, or content, checkpoint the activity and read [calibration.md](references/calibration.md).
 
 ## Talk to the learner
 
@@ -61,7 +61,7 @@ These rules apply to every learner-facing message, in every language. When `refe
 
 - The programs a learner follows are independent of each other and share one method. Correlate them only when the learner's work naturally does so; never synchronize their content by design.
 - A program owns its content and its five settings; it never redefines evidence, help levels, or review scheduling.
-- A block is one stretch of work on one program, selected from persisted state and the schedule, not from the clock.
+- A block is one stretch of work on one program: the one the learner opens, or the one they were last working on. The learner decides when they work and for how long; Techne keeps no schedule and never refuses or delays a program for lack of time.
 - Open one evaluated activity at a time. A browser exercise and a repository exercise cannot both be awaiting evaluation.
 - In every program, teach a new or fragile concept before evaluating transfer. Use cold H0 work for recall, transfer, or already-practised skills.
 - The learner writes every line of exercise code. Techne scaffolds folders, dependencies, and tests, and never writes or edits an implementation. Techne teaches no AI-assisted coding workflow.
@@ -93,9 +93,8 @@ The interface is a small set of English commands, identical whatever the learnin
 | `status` | Report progress for each enrolled program separately. | [operations.md](references/operations.md) |
 | `programs` | List the available programs, the learner's enrolments, and their coverage in each. | [operations.md](references/operations.md) |
 | `switch <id>` | Save progress, then open another enrolled program. | [operations.md](references/operations.md) |
-| `enroll <id>` / `leave <id>` | Follow a program, or stop following it without losing its evidence. | [operations.md](references/operations.md) |
+| `enroll <id>` / `leave <id>` | Follow a program and start it at once, or stop following it without losing its evidence. | [operations.md](references/operations.md) |
 | `new` | Create a program by interview, in either mode, and write it to the workspace. | [programs.md](references/programs.md) |
-| `schedule` | Show the weekly schedule, or propose one from the learner's enrolments. | [operations.md](references/operations.md) |
 | `project` | Open the red-thread project wherever it stands: ideation, building the roadmap, or the next ticket. | [project.md](references/project.md) |
 | `pause` | Save progress without closing the day. | [operations.md](references/operations.md) |
 | `end` | Save progress and close the session with a short report. | [operations.md](references/operations.md) |

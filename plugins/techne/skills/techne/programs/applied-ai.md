@@ -2,7 +2,6 @@
 id: applied-ai
 title: Applied AI
 version: 1
-cadence: daily
 activity_kinds: code, browser
 lesson_to_practice: balanced
 timeboxes: lesson=10, exercise=45, review=5, project=90, placement=15
@@ -14,7 +13,7 @@ survey_ceiling: discovered
 
 ## Outcome and boundary
 
-The afternoon is a guided twelve-week curriculum that takes an experienced TypeScript developer to building, evaluating, and shipping LLM applications in Python. It is independent from the morning Senior Engineer curriculum in content, pace, evidence, and scheduling; both follow the same method ([pedagogy.md](../references/pedagogy.md), [exercises.md](../references/exercises.md)): a short lesson, then practice, easy first.
+This program is a guided twelve-week curriculum that takes an experienced TypeScript developer to building, evaluating, and shipping LLM applications in Python. It is independent from the Senior Engineer curriculum in content, pace, evidence, and scheduling; both follow the same method ([pedagogy.md](../references/pedagogy.md), [exercises.md](../references/exercises.md)): a short lesson, then practice, easy first.
 
 The target is operational competence: the learner can design, build, evaluate, and operate a realistic LLM application and explain its trade-offs. It is not research-level machine learning; model training and fine-tuning stay out of scope.
 
@@ -28,7 +27,7 @@ Priority lanes:
 
 ## The AI lab
 
-All afternoon practice happens in one Python repository, `ai-lab/` inside the learning workspace, that grows week after week. Each unit adds a feature or a small service to it, so later units reuse earlier work and the capstone starts from real code. Record its path and the provider setup in `.techne/AI_LAB.md`.
+All practice happens in one Python repository, `ai-lab/` inside the learning workspace, that grows week after week. Each unit adds a feature or a small service to it, so later units reuse earlier work and the capstone starts from real code. Record its path and the provider setup in `.techne/AI_LAB.md`.
 
 Guidance fades over the twelve weeks:
 
@@ -38,7 +37,7 @@ Guidance fades over the twelve weeks:
 
 ## Start of the track
 
-On the first afternoon:
+In the program's first session:
 
 1. Check Python 3.12+, `uv`, and Docker; name anything missing and install it only with the learner's consent.
 2. Set up model access. Ask which provider the learner wants to use (for example Anthropic or OpenAI) and have them put the API key in `ai-lab/.env` themselves; make sure `.env` is git-ignored, and never print, log, or store the key elsewhere. Offer a local model through Ollama when the learner has no key or wants zero cost, and state the quality trade-off. Tell the learner that exercises make paid API calls and keep them cheap: small models by default, short inputs.
@@ -110,7 +109,7 @@ Exit evidence: a change accepted or rejected on evaluation results; a prompt-inj
 
 A small but real LLM application, built autonomously in the lab from the previous units.
 
-- Choose the problem in one or two afternoons: a recurring problem the learner has or can observe directly, with real or naturally available data. Reject ideas where AI would be decorative.
+- Choose the problem in one or two sessions: a recurring problem the learner has or can observe directly, with real or naturally available data. Reject ideas where AI would be decorative.
 - Scope it to ship within the two weeks: FastAPI backend, at least one LangChain or LangGraph workflow justified by the problem, LangSmith evaluation, and a React or Next.js interface.
 - Run it through milestones, not daily instructions.
 
@@ -118,7 +117,7 @@ Exit evidence: a working application, an evaluation report, and a short case stu
 
 ## Subject catalogue
 
-Stable identifiers for the mastery map, used exactly like the morning catalogue in [Engineering](engineering.md#subject-catalogue).
+Stable identifiers for the mastery map, used exactly like the catalogue of [Engineering](engineering.md#subject-catalogue).
 
 ### Python — `py.*`
 
@@ -158,4 +157,4 @@ LangChain, LangGraph, LangSmith, and provider SDKs change quickly. Before writin
 
 ## Adaptation rules
 
-Apply the morning rules in [Engineering](engineering.md#adaptation-rules): every topic starts easy, difficulty moves one step at a time from observed results, and demonstrated material may be compressed while prerequisite order is preserved.
+Apply the rules of [Engineering](engineering.md#adaptation-rules): every topic starts easy, difficulty moves one step at a time from observed results, and demonstrated material may be compressed while prerequisite order is preserved.

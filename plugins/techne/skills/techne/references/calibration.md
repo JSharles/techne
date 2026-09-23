@@ -1,6 +1,6 @@
 # Calibration mode
 
-`feedback <text>` is about the teaching, never about the tool: a preference, a difficulty, a request to change the method, the programme, the schedule, assessment, exercise design, or content. A defect in Techne itself goes to `issue` instead (see [operations.md](operations.md#issues-and-feedback)).
+`feedback <text>` is about the teaching, never about the tool: a preference, a difficulty, a request to change the method, the programme, assessment, exercise design, or content. A defect in Techne itself goes to `issue` instead (see [operations.md](operations.md#issues-and-feedback)).
 
 What happens next depends on the scale:
 

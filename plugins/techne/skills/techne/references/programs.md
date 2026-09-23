@@ -18,7 +18,7 @@ A header declares exactly these, and nothing else:
 | `lesson_to_practice` | `lesson-heavy`, `balanced`, `practice-heavy` | how much teaching precedes practice |
 | `timeboxes` | `lesson=`, `exercise=`, `review=`, `project=`, `placement=`, in minutes | the bounds announced before work |
 | `red_thread` | `yes`, `no` | whether the program carries a running project |
-| `survey_ceiling` | a mastery state | how far a survey subject — any under the `survey.*` prefix — may go |
+| `survey_ceiling` | a mastery state | how far a survey subject — any in a catalogue domain titled `Survey` — may go |
 
 A sixth setting is refused, so a program cannot quietly invent its own rules.
 
@@ -29,7 +29,6 @@ A sixth setting is refused, so a program cannot quietly invent its own rules.
 id: frontend-interviews
 title: Frontend interviews
 version: 1
-cadence: three-times-weekly
 activity_kinds: code, oral
 lesson_to_practice: practice-heavy
 timeboxes: lesson=10, exercise=20, review=5, placement=15
@@ -70,9 +69,7 @@ This is not negotiable, and it overrides any wish to avoid repetition:
 - never fold a new program into an existing one, or present it as an extension of it;
 - never let another program's content decide what this one contains.
 
-Subjects are still global: `dsa.bfs` is the same subject wherever it is taught, and carries one mastery entry. Reuse an identifier when it is genuinely the same skill demonstrated the same way — the learner then starts this program with real coverage instead of zero. When a program trains the same theme in a different mode — under time, out loud, at interview pace — that is not the same subject: mint an identifier under this program's own prefix.
-
-Shared evidence is a consequence, never a reason to cut content. Two programs that give the same prefix different meanings are refused at enrolment.
+A program keeps its own evidence. Its domain prefixes belong to it alone, so nothing demonstrated in one program counts in another, even when both teach the same notion: the learner proves it again, in this program's context. Enrolment refuses a program that shares a domain prefix with one the learner follows or has followed (`docs/adr/0020-programs-are-isolated.md`). Pick prefixes no other program uses — for example `fejs.*` rather than `js.*` for a frontend program's JavaScript.
 
 ## The wizard
 
@@ -84,7 +81,7 @@ Run it as rounds of numbered questions, each with your recommended answer, and w
 
 1. Collect their list as given, without adding to it and without removing anything that exists elsewhere.
 2. Group it into units and propose the grouping.
-3. Mint the identifiers: this program's own prefix for what it trains its own way, an existing identifier only where the skill and the way it is demonstrated are genuinely the same.
+3. Mint the identifiers under prefixes of this program's own, used by no other program.
 4. Name the prerequisites their list implies but does not contain, and ask whether to add them to this program or leave them out. Never add one silently, and never leave one out merely because another program teaches it — a stranger following this program would then hit a hole.
 5. Propose an order, from what depends on what, inside this program alone.
 6. Propose the five settings from how they described working.

@@ -2,6 +2,14 @@
 
 Learner-visible changes, newest first. Versions match `plugins/techne/.claude-plugin/plugin.json`.
 
+## 0.13.0
+
+- Each program keeps its own evidence: what you prove in one never counts in another, even when both teach the same notion. Enrolling in a program that shares a domain with one you follow is refused.
+- A survey domain is any catalogue domain titled `Survey`, so each program can have its own.
+- Reviews and transfers stay inside the program you have open: opening one never brings you another program's recall. A review left behind still goes stale, because forgetting does not wait.
+- No more timetable: enrol in a program and it opens at once, open any program whenever you want, for as long as you want. Techne picks up where you left off and never says you lack the time. The `schedule` command and `SCHEDULE.md` are gone, and programs advance in sessions rather than mornings and afternoons.
+- The first start asks which program you want to begin with, instead of enrolling you in every shipped program.
+
 ## 0.12.1
 
 - The T-shaped Product Engineer program no longer counts three phantom subjects read from a sentence of its catalogue, which kept it from ever being covered.

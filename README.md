@@ -4,10 +4,10 @@ Techne is an intensive, adaptive bootcamp delivered as one Agent Skill for Codex
 
 Techne teaches **programs**: Markdown files describing what to learn. Two ship with it, and you can write or generate your own — a program never changes the method, only the content.
 
-- **T-shaped Product Engineer:** a core taken to independence (TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL, algorithms up to graphs, tests and debugging, architecture, and the delivery flow: Git, pull requests, review, CI), plus a red-thread Next.js/NestJS application built two mornings a week and presentable at the end;
+- **T-shaped Product Engineer:** a core taken to independence (TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL, algorithms up to graphs, tests and debugging, architecture, and the delivery flow: Git, pull requests, review, CI), plus a red-thread Next.js/NestJS application built alongside and presentable at the end;
 - **Applied AI:** Python, FastAPI, LLM applications, RAG with LangChain, agents with LangGraph, evaluation with LangSmith, and a final capstone.
 
-You follow as many programs as you like, and a weekly schedule you own says which one each slot of your week belongs to.
+You follow as many programs as you like, and organise your time as you wish: enrol in a program and start it at once, open any of them whenever you want, for as long as you want.
 
 You write every line of every exercise: Techne scaffolds and reviews, but never writes your implementation, and never teaches you to delegate it to an AI.
 
@@ -82,7 +82,7 @@ Techne then:
 - asks which language you want to learn in (English, French, or any other language); commands and technical terms stay in English;
 - proposes a dedicated folder for your work and progress (`~/techne` by default), creates `.techne/` there, and remembers it so you can resume from anywhere;
 - checks your tools (and asks before installing anything missing);
-- enrols you in the two shipped programs and writes a first weekly schedule you can edit;
+- asks which program you want to start with, and enrols you in it;
 - runs a short **placement test**, about an hour: each area starts with an easy exercise and gets harder only while you succeed, so teaching starts at the right level;
 - starts teaching, where each exercise is preceded by a short lesson in your browser.
 
@@ -92,9 +92,9 @@ The whole start takes two questions and under five minutes before the first exer
 
 Anywhere Claude Code runs, but a terminal inside your editor (VS Code, or iTerm next to it) is the smoothest: the code, the tests, and Techne share one window, and Techne resolves your workspace from the current folder. Run one Techne session at a time; concurrent sessions are detected and warned about, not merged.
 
-The rhythm is six full days and one light day per week, and progress counts in working days, so missing a day delays nothing. A program ends when its subjects are covered, never after a fixed number of weeks. Your progress is tracked subject by subject — not started, discovered, with help, independent, transferred, blocked — and shown on the "My progress" page in your browser.
+There is no timetable: you work when you want and for as long as you want, and Techne picks up wherever you left off, starting each session with your due reviews. A program ends when its subjects are covered, never after a fixed number of weeks. Your progress is tracked subject by subject — not started, discovered, with help, independent, transferred, blocked — and shown on the "My progress" page in your browser.
 
-Techne does not flatter: it names what you demonstrated and what you did not, gives a blunt assessment every six working days, and compares your map to what is expected of a senior React/Node developer on working days 20, 40 and 60.
+Techne does not flatter: it names what you demonstrated and what you did not, and gives a blunt assessment after every six sessions of a program.
 
 Techne refuses to start a second curriculum while one is in progress; use `reset` to start over.
 
@@ -124,9 +124,8 @@ Techne decides what comes next: the subject, due reviews, difficulty, and activi
 | `status` | Shows the current activity, your mastery map subject by subject, due reviews, and Applied AI progress, with the two curricula kept separate. | When you want to know where you stand. |
 | `programs` | Lists the programs you can follow, the ones you are enrolled in, and your coverage in each. | To see what you are carrying. |
 | `switch <id>` | Saves your progress and opens another program you follow. | Whenever you want to change course. |
-| `schedule` | Shows your weekly schedule and offers to change it, or writes a first one from your enrolments. | When your week changes shape. |
-| `project` | Opens your red-thread project where it stands: finding the idea from what drives you, building its roadmap, or the next ticket. | Whenever you want to think about your project, even outside the schedule. |
-| `enroll <id>` / `leave <id>` | Follow a program, or stop following it without losing what you proved. | When your goals change. |
+| `project` | Opens your red-thread project where it stands: finding the idea from what drives you, building its roadmap, or the next ticket. | Whenever you want to think about your project. |
+| `enroll <id>` / `leave <id>` | Follow a program and start it at once, or stop following it without losing what you proved. | When your goals change. |
 | `new` | Creates a program with you, by interview: you bring the subjects and Techne structures them, or you give an objective and Techne designs the course. | When you want to learn something Techne does not ship. |
 | `pause` | Saves your progress and keeps the day open; `resume` continues exactly where you stopped. | Before a short break. |
 | `end` | Saves your progress, closes the session, and gives you four closing lines. | At the end of your working session. |
@@ -142,7 +141,7 @@ You can also just talk to the agent, in any language: "on reprend", "I'm stuck",
 
 ## Learning something else
 
-A new subject is a **program**, not a second Techne: `new` writes one with you, `enroll` adds it beside the ones you already follow, and `switch` opens it. Everything stays in one workspace, so a subject you proved in one program counts in every other.
+A new subject is a **program**, not a second Techne: `new` writes one with you, `enroll` adds it beside the ones you already follow, and `switch` opens it. Everything stays in one workspace, and each program keeps its own evidence: what you proved in one never counts in another.
 
 One workspace holds your whole learning life, and `reset` is only for starting that life over. To try Techne out without touching it — a new version, a program you are unsure about — give the session its own registry:
 
@@ -274,4 +273,4 @@ For local `skills` discovery without publishing to GitHub:
 npx skills@latest add . --skill techne --agent codex
 ```
 
-Python, FastAPI, LangChain, LangGraph, and LangSmith are taught in the afternoon Applied AI curriculum. They are not runtime dependencies of the Techne skill itself. The Applied AI track makes model API calls with the learner's own key (or a local model), so it can incur small provider costs.
+Python, FastAPI, LangChain, LangGraph, and LangSmith are taught in the Applied AI program. They are not runtime dependencies of the Techne skill itself. The Applied AI track makes model API calls with the learner's own key (or a local model), so it can incur small provider costs.

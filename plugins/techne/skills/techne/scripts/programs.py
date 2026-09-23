@@ -22,6 +22,7 @@ BALANCES = ("lesson-heavy", "balanced", "practice-heavy")
 TIMEBOX_KEYS = ("lesson", "exercise", "review", "project", "placement")
 CEILINGS = ("discovered", "assisted", "independent", "transferred")
 SETTING_KEYS = ("activity_kinds", "lesson_to_practice", "timeboxes", "red_thread", "survey_ceiling")
+# `cadence` fed a weekly schedule Techne no longer keeps; older files that declare it still load.
 HEADER_KEYS = ("id", "title", "version", "cadence", *SETTING_KEYS)
 
 IDENTIFIER = re.compile(r"^[a-z][a-z0-9-]*$")
@@ -44,7 +45,6 @@ class Program:
     version: int
     path: Path
     source: str
-    cadence: str = "daily"
     settings: dict = field(default_factory=dict)
     units: list[str] = field(default_factory=list)
     subjects: set[str] = field(default_factory=set)
@@ -180,7 +180,6 @@ def read(path: Path, source: str = "workspace") -> Program:
         version=int(header["version"]),
         path=path,
         source=source,
-        cadence=header.get("cadence", "daily"),
         settings=settings,
         units=units,
         subjects=subjects,
@@ -228,19 +227,22 @@ def subjects(skill_root: Path, workspace: Path | None = None, identifiers: list[
     return known
 
 
-def contradictions(program: Program, others: list[Program]) -> list[str]:
-    """Where this program disagrees with another about what a domain prefix means.
+def overlaps(program: Program, others: list[Program]) -> list[str]:
+    """The domain prefixes this program shares with others.
 
-    Programs are meant to share subjects: `dsa.bfs` is one subject wherever it
-    is taught. They disagree when the same prefix stands for different things,
-    which would silently merge two unrelated subjects into one mastery entry.
+    Programs are isolated: each keeps its own evidence, so a domain prefix
+    belongs to one program alone. A shared prefix would let evidence earned in
+    one program count in another (ADR 0020).
     """
     problems = []
     for other in others:
         if other.identifier == program.identifier:
             continue
-        for prefix, title in sorted(program.domains.items()):
-            theirs = other.domains.get(prefix)
-            if theirs is not None and theirs.casefold() != title.casefold():
-                problems.append(f"`{prefix}.*` is {title!r} here but {theirs!r} in {other.identifier}")
+        for prefix in sorted(set(program.domains) & set(other.domains)):
+            problems.append(f"`{prefix}.*` is also a domain of {other.identifier}")
     return problems
+
+
+def survey_prefixes(program: Program) -> set[str]:
+    """The prefixes of the domains titled Survey, whose subjects stop at the survey ceiling."""
+    return {prefix for prefix, title in program.domains.items() if title.casefold() == "survey"}

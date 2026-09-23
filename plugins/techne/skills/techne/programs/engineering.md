@@ -2,7 +2,6 @@
 id: engineering
 title: T-shaped Product Engineer
 version: 2
-cadence: daily
 activity_kinds: code, browser
 lesson_to_practice: balanced
 timeboxes: lesson=10, exercise=30, review=5, project=90, placement=15
@@ -21,17 +20,16 @@ The name is the shape: a deep core carried to independence, and a broad survey o
 - **Core**, taken to demonstrated independence: TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL and data modelling, DSA up to graphs, tests and debugging, applied architecture, and the delivery flow — Git, pull requests, review, CI (see `docs/adr/0014-the-delivery-flow-joins-the-programme.md`).
 - **Survey**, covered for working literacy only and grafted onto core exercises: security, performance, observability, delivery. Distributed systems and large-scale system design get a lesson and a quiz, nothing more.
 
-Out of the programme: maths for engineering, dynamic programming and advanced DSA patterns, Product and communication as separate lanes. Python and the Applied AI frameworks belong to the afternoon curriculum in [Applied AI](applied-ai.md).
+Out of the programme: maths for engineering, dynamic programming and advanced DSA patterns, Product and communication as separate lanes. Python and the Applied AI frameworks belong to the [Applied AI](applied-ai.md) program.
 
 Techne controls the order from observed evidence. It may compress demonstrated material or repeat fragile material, but it preserves core coverage and prerequisite order.
 
-## Shape of a week
+## Shape of the work
 
-Six full mornings and one light day (see [pedagogy.md](../references/pedagogy.md#rhythm)):
+Isolated work and the red-thread project alternate, about two isolated sessions for each project session:
 
-- **four mornings** of isolated work: one web activity (TypeScript, JavaScript, React, Next.js, or NestJS), one DSA activity, and due reviews;
-- **two mornings** on the red-thread project;
-- **the light day**: reviews and reading only.
+- **isolated sessions**: one web activity (TypeScript, JavaScript, React, Next.js, or NestJS), one DSA activity, and due reviews;
+- **project sessions**: the red-thread project.
 
 A subject is first learned on an isolated exercise, then reinvested in the red-thread project one or two weeks later. That reinvestment is what earns `transferred` in the mastery map.
 
@@ -40,14 +38,14 @@ A subject is first learned on an isolated exercise, then reinvested in the red-t
 One Next.js + NestJS + database application, built across the twelve weeks and presentable at the end (see `docs/adr/0003-red-thread-project-as-the-place-of-transfer.md`).
 
 - The learner chooses the product and builds its roadmap following [project.md](../references/project.md). Its frame, stated there as not open to discussion: this stack, the program's twelve weeks, working alone, the hard problems timed to the weeks of the sequence below, and no dependency on the Applied AI program.
-- Until the project is chosen, the two project mornings run as isolated practice, and transfers wait for the project. Ideation happens in sessions of its own, through `project`.
+- Until the project is chosen, project sessions run as isolated practice, and transfers wait for the project. Ideation happens in sessions of its own, through `project`.
 - Keep the business rules small: the product earns its weight from the hard technical problems at its core, not from the domain's complexity.
 - Project work comes as tickets, one per milestone, derived from the roadmap. Techne writes them one or two ahead, never the whole backlog, because each depends on what the previous pull request showed.
 - A ticket, written in the learning language, says:
   - the expected result, the acceptance criteria, and what the review will check;
   - why the ticket exists, and why each imposed choice — a technology, the repository layout, a tool — with the alternative set aside, in one sentence;
   - what the learner has already practised, and what is new, each new subject with the lesson that teaches it first ([exercises.md](../references/exercises.md#before-a-project-ticket));
-  - its size in project mornings, which is not the length of one morning;
+  - its size in project sessions, which is not the length of one session;
   - what is already decided, and what is the learner's to decide;
   - what is out of scope, each exclusion as a full sentence: "No CI in this ticket: the pipeline comes in weeks 5–6."
 - A ticket holds no implementation step. The learner designs and writes the implementation, starting with a slicing Techne reviews ([operations.md](../references/operations.md#reviewing-a-tickets-slicing)).
@@ -125,7 +123,7 @@ Exit evidence: a bottleneck measured before and after; a threat modelled and mit
 - Mixed DSA under interview-like time constraints.
 - Cross-layer debugging across browser, frontend, API, and database.
 - Survey: bounded system design exercises, defended orally.
-- About half of these mornings: mock interviews (timed DSA, technical questions, explaining an architecture decision) and portfolio work on both projects, with a written account of choices and trade-offs.
+- About half of these sessions: mock interviews (timed DSA, technical questions, explaining an architecture decision) and portfolio work on both projects, with a written account of choices and trade-offs.
 - Red thread: finished, deployed, documented, and presented.
 
 Exit evidence: an independent problem-solving loop; a design defended orally; an honest mastery map and a prioritized plan for what comes next.
@@ -204,7 +202,7 @@ Free LeetCode problems to base DSA exercises on, at `https://leetcode.com/proble
 
 Every new subject starts easy. Raise the difficulty one step after an unassisted success; lower it one step after a failure, with a short explanation first. Never start a subject at Medium because of job tenure or declared experience.
 
-- Failed recall or repeated assisted work: reduce novelty and schedule a smaller attempt within two mornings.
+- Failed recall or repeated assisted work: reduce novelty and schedule a smaller attempt within two sessions.
 - Independent success: schedule transfer into the red-thread project.
 - Transferred subject: compress explanation and increase constraints, design, and teaching-back.
 - Two activities without usable evidence: reduce scope and improve instrumentation.

@@ -8,7 +8,7 @@ This is always a fresh start. Never read or reuse `.techne-archive-*` folders le
 
 Keep the start short: two questions — the language, then the folder — and under five minutes before the first placement exercise. Check the environment silently while asking. The learner should never see a shell command, a file path they must act on, or internal vocabulary.
 
-Everything else waits until it is useful: the learner profile fills itself from observed work, the red-thread project domain is chosen in week 1, and the AI lab is set up on the first afternoon.
+Everything else waits until it is useful: the learner profile fills itself from observed work, the red-thread project is chosen through `project`, and the AI lab is set up in the first Applied AI session.
 
 ## Choose the learning language
 
@@ -34,7 +34,7 @@ If a valid existing workspace needs to become active again, run `python3 scripts
 
 Techne ships a fixed twelve-week program and measures the learner's level by observation. After the language and folder, ask nothing else: no subjects, order, session duration, availability, deadline, experience, stack, or weaknesses.
 
-Then enrol them in the shipped programs with `state.py enroll engineering` and `state.py enroll applied-ai`, and say the rhythm in one sentence: about three hours on each, one in the morning and one in the afternoon, six days a week with a light seventh. Mention that `new` creates a program of their own whenever they want one, and write a first schedule with `state.py schedule --propose`.
+Then show the programs they can follow, with `state.py programs`, and ask which one they want to start with. Enrol them with `state.py enroll <id>`, which opens it at once. Say in one sentence that they can enrol in others whenever they like, that `new` creates a program of their own, and that they organise their time as they wish: Techne picks up wherever they left off.
 
 Check the environment yourself: Node.js, a package manager, Git, VS Code, a browser, and Python for the lesson server. When something is missing, say what and why, and install it only after the learner agrees.
 
@@ -51,7 +51,7 @@ The baseline is presented to the learner as a **placement test** (translated nat
 
 Label every placement exercise with its area and position ("Placement test — algorithms, exercise 2"). Do not teach before a placement exercise; it measures prior knowledge. After the last one, give a two- or three-line summary and announce the first curriculum lesson.
 
-Run short, production-oriented probes across the morning domains. The Applied AI track has its own short placement test on its first afternoon. Prefer debugging, explanation, small implementation, and trade-off questions over trivia.
+Run short, production-oriented probes across the domains of the program they start with. Every other program runs its own short placement test in its first session. Prefer debugging, explanation, small implementation, and trade-off questions over trivia.
 
 For each area, climb a difficulty ladder:
 
@@ -77,9 +77,9 @@ Never guess a state: a subject nobody probed stays `not_started`. Record every p
 
 Initialization is complete when:
 
-- the environment needed for the first morning activity works;
+- the environment needed for the first activity works;
 - the subjects probed carry a mastery state from the catalogue, and every other subject stays `not_started`;
-- `CURRENT.md` contains exactly one ready morning action;
+- `CURRENT.md` contains exactly one ready action;
 - the Applied AI track is marked `not_started`;
 - due-review scheduling can begin after the first successful evidence.
 

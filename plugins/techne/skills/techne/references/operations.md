@@ -7,7 +7,7 @@ Use the state store through `scripts/state.py` for machine-readable state, and `
 The durable records are written in English, whatever the learning language (see [Writing for the learner](pedagogy.md#writing-for-the-learner)):
 
 - `PROFILE.md`: declared context and verified constraints;
-- the state store, a database in the workspace: block state, the mastery map, review and transfer queues, working days, enrolments, and the issues journal. Read and written only through `scripts/state.py`;
+- the state store, a database in the workspace: block state, the mastery map, review and transfer queues, sessions worked per program, enrolments, and the issues journal. Read and written only through `scripts/state.py`;
 - `CURRENT.md`: one ready or in-progress activity;
 - `SESSION_LOG.md`: append-only narrative evidence;
 - `DECISIONS.md`: approved calibration decisions, read at the start of every turn;
@@ -23,11 +23,11 @@ The durable records are written in English, whatever the learning language (see 
 | --- | --- |
 | `state.py mastery <subject> <state> --evidence "…" --help-level H0..H4` | Record what an activity demonstrated. Reaching `independent` schedules J+2, J+7 and J+21 reviews and a transfer deadline one week out. |
 | `state.py fail <subject>` | Record a failed attempt. The third failure marks the subject `blocked` and schedules a retry in two weeks. |
-| `state.py review --due [--limit 3]` | Get the due reviews, already prioritized, with stale ones dropped and their subject stepped down. |
+| `state.py review --due [--limit 3]` | Get the due reviews of the open program, already prioritized, with stale ones dropped and their subject stepped down. `--everywhere` looks past it. |
 | `state.py review --record <subject> --result pass\|fail` | Close a review. A failure steps the subject down and schedules a smaller attempt at J+2. |
-| `state.py transfer --due` | Get the subjects waiting to be reinvested in the red-thread project or the AI lab. |
+| `state.py transfer --due` | Get the open program's subjects waiting to be reinvested in its project or lab. `--everywhere` looks past it. |
 | `state.py checkpoint --note "…" [--help-level H2]` | Save the current activity. |
-| `state.py close --note "…"` | Close the block and count one working day. |
+| `state.py close --note "…"` | Close the block and count one session of work on its program. |
 | `state.py brief` | The short state to read at the start of a turn. |
 | `state.py show` | The whole state, when the brief is not enough. |
 | `state.py export [--out FILE]` | A JSON backup of everything. |
@@ -51,30 +51,18 @@ The learner follows one or more programs, each a file Techne reads (see `docs/ad
 | Command | Use |
 | --- | --- |
 | `state.py programs` | What is available, what the learner follows, their coverage in each, and why any program was rejected. |
-| `state.py enroll <id>` | Follow a program. Refuses an unusable one, and one that disagrees with a program already followed, with the reason. |
+| `state.py enroll <id>` | Follow a program and open it at once. Refuses an unusable one, and one that shares a domain prefix with a program already followed, with the reason. |
 | `state.py leave <id>` | Stop following it. Evidence is untouched, and re-enrolling resumes where they stopped. |
 | `state.py switch <id>` | Checkpoint what is open and open that program. |
 
 Choosing what to open:
 
 1. Resume an explicitly in-progress activity unless the learner requests a checkpoint or switch.
-2. Otherwise open what the schedule expects for now.
-3. When the schedule expects nothing — an evening, a day it does not cover, a program with no slot yet — ask which program to open, and propose the one least recently worked on. Never pick silently.
-4. A `switch` (or the equivalent natural-language request) overrides all of this, without comment.
+2. Otherwise open the program the learner was last working on.
+3. When nothing is open yet — a fresh workspace, or every program just closed — ask which program to open. Never pick silently.
+4. A `switch`, an `enroll`, or the equivalent natural-language request overrides all of this, without comment.
 
-## The weekly schedule
-
-`SCHEDULE.md` in the workspace says which program each slot of the week belongs to. It is the learner's file: they can dictate it in one sentence, edit it by hand, or ask for a proposal with `state.py schedule --propose`, which gives each enrolled program a slot, follows the cadence each program declares, and keeps one day light. `state.py schedule` shows it, what it expects now, and anything it could not read.
-
-The script writes the table only — the column names are what the parser reads, and days and slots are understood in English or French. Any sentence around it is yours to write, in the learner's language. A schedule already exists? `--propose` refuses; show them the current one and pass `--replace` only once they agree.
-
-It is an intention, never a rule:
-
-- open what it expects, and say so in one line when the learner arrives;
-- if they want another program, obey without comment; the script records the deviation;
-- never call a missed slot lateness. Progress counts in working days, so nothing is late.
-
-When `state.py schedule` reports drifting — the schedule has been wrong for a fortnight — offer once to rewrite it around what actually happens, and write the new table only if the learner agrees.
+The learner organises their own time: they work when they want, for as long as they want, on the program they want. Never tell them they lack the time for a program, never refer to a timetable, and never call a gap lateness.
 
 Subjects are measured against the catalogues of the programs the learner follows; a subject outside them cannot be recorded.
 
@@ -84,8 +72,8 @@ Before resuming:
 
 - ingest new browser events;
 - inspect files and test results relevant to `CURRENT.md`;
-- open at most three due reviews from `state.py review --due`, bounded to ten minutes total;
-- check `state.py transfer --due`, and on a project morning pick a milestone that exercises those subjects;
+- open at most three due reviews from `state.py review --due`, bounded to ten minutes total; they belong to the open program, and another program's reviews are never brought into this one;
+- check `state.py transfer --due`, and in a project session pick a milestone that exercises those subjects;
 - give exactly one next observable action.
 
 Name the active block at the top of the learning response, translated into the learning language:
@@ -170,10 +158,10 @@ Announce a bound before starting, and say it is an estimate, not a deadline:
 - lesson: 10 minutes;
 - isolated coding exercise: 30 minutes;
 - review: 5 minutes;
-- red-thread morning: 90 minutes; a ticket may take several mornings, and says how many;
+- red-thread project session: 90 minutes; a ticket may take several sessions, and says how many;
 - placement exercise: 15 minutes.
 
-At the bound, say so and let the learner choose to continue or stop. A repeated large overrun is a signal for a light day, never a penalty.
+At the bound, say so and let the learner choose to continue or stop. A repeated large overrun is a signal for a light session, never a penalty.
 
 ## Writing code
 
@@ -234,7 +222,7 @@ Tell the learner in plain words that their work is saved; do not name the files.
 
 Close a session (`end`) with a short paragraph of four sentences at most: what was demonstrated today and at which state, what stays open, what comes next, and the link to the progress page. No adjectives, no totals of hours.
 
-Every six working days, during the light day, write a blunt assessment in the chat and append it to `SESSION_LOG.md`: what moved, what stalled, what is fragile, and the learner's real pace against the sixty working days. On working days 20, 40 and 60, add how the mastery map compares to what is expected of a senior React/Node developer today.
+After every six sessions of work on a program, at the start of the next one, write a blunt assessment in the chat and append it to `SESSION_LOG.md`: what moved, what stalled, what is fragile, and the learner's real pace in sessions. After sessions 20, 40 and 60 of a program, add how the mastery map compares to what is expected of a senior React/Node developer today.
 
 Announce a state change soberly, one factual line: "`react.effects-and-alternatives` is now independent."
 
@@ -244,7 +232,7 @@ When the learner says they cannot do it, or the signals degrade, stop the activi
 
 ## Returning after an absence
 
-After two days or more without a session, open with a few sentences saying how long the gap was, where the learner stands in working days, what is due for review, and today's action. Never mention lateness: the programme advances in working days, so an absence delays nothing.
+After two days or more without a session, open with a few sentences saying how long the gap was, where the learner stands in each program they follow, what is due for review, and today's action. Never mention lateness: the learner organises their time, so an absence delays nothing.
 
 ## When a program is covered
 

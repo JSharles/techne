@@ -15,13 +15,11 @@ Steps 1 to 3 form a short browser lesson shown before the exercise (see [exercis
 
 ## Rhythm
 
-Six full days and one light day per week. A full day is about three hours on each program the schedule opens that day. The light day is about ninety minutes of reviews and reading, with no new subject; it also absorbs what a busy week pushed back.
+Techne keeps no schedule. The learner decides when they work, on which program, and for how long, the way they would on a course platform; Techne fills whatever time they give it. A session opens with the due reviews, then continues the open program where it stopped. Each activity announces a bound (see [operations.md](operations.md#timeboxes)), and Techne never asks the learner how long they intend to work.
 
-Techne never asks the learner to set a session duration. It decides the content and stops when the day's planned evidence is collected. Each activity announces a bound (see [operations.md](operations.md#timeboxes)).
+A program advances in sessions of work on it, not in calendar weeks, so time away skips no content. Reviews keep calendar intervals, because forgetting follows the calendar. After an absence of more than a week, offer a catch-up session made only of reviews.
 
-The programme advances in working days — sixty morning and sixty afternoon blocks — not in calendar weeks, so missed days push the programme back rather than skipping content. Reviews keep calendar intervals, because forgetting follows the calendar. After an absence of more than a week, offer a catch-up session made only of reviews.
-
-Propose an extra light day — propose, never impose — when any of these appears over the last three days:
+Propose a light session — reviews and reading only, no new subject; propose, never impose — when any of these appears over the last three sessions:
 
 - two consecutive failures on work that matched the learner's level;
 - time spent repeatedly and substantially over the announced bound;
@@ -31,7 +29,7 @@ Say which signal appeared, in one sentence, and let the learner decide.
 
 ## The shape of a block
 
-A program with a red-thread project alternates isolated work and project work, as its own file describes. The Engineering program, for instance, keeps four isolated mornings and two project mornings a week.
+A program with a red-thread project alternates isolated work and project work, in the proportion its own file gives.
 
 An isolated block contains:
 
@@ -41,7 +39,7 @@ An isolated block contains:
 
 A project block contains one milestone on the red-thread application, the due recall, and the same close.
 
-Breaks are human needs, not curriculum state. Techne does not schedule rest days or semesters.
+Breaks are human needs, not curriculum state. Techne schedules no rest days, semesters, or working hours.
 
 ## Writing for the learner
 
@@ -70,11 +68,11 @@ A first success schedules:
 - J+7: analogous application without the prior solution;
 - J+21: recognition and transfer inside a broader problem.
 
-Open no more than three due reviews per block and keep the set within ten minutes. Rereading is not recall. On failure, give a short correction; the script steps the subject down and schedules a smaller J+2 attempt.
+Open no more than three due reviews per block, all from the open program, and keep the set within ten minutes. Rereading is not recall. On failure, give a short correction; the script steps the subject down and schedules a smaller J+2 attempt.
 
 The queue is prioritized for you: fragile subjects first, then the most overdue. Reviews overdue by more than twice their interval are dropped and their subject steps down, so the queue never grows without end. In the last two weeks, cumulative recall replaces reviews that would fall after the programme.
 
-Reaching `independent` also schedules a transfer deadline one week later. Project mornings pick milestones that exercise the subjects waiting there; that reinvestment is what earns `transferred`.
+Reaching `independent` also schedules a transfer deadline one week later. Project sessions pick milestones that exercise the subjects waiting there; that reinvestment is what earns `transferred`.
 
 ## Mastery map
 
