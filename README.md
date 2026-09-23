@@ -198,7 +198,7 @@ claude plugin update techne@jsharles
 npx skills@latest update techne --global
 ```
 
-Restart your agent after an update. If a new version changes how progress is stored, Techne says so and offers to migrate your workspace; your evidence is preserved, and you never need a `reset` to update.
+Restart your agent after an update. When you come back, Techne tells you in a sentence or two what changed for you, once. If a new version changes how progress is stored, Techne says so and offers to migrate your workspace; your evidence is preserved, and you never need a `reset` to update.
 
 ## Uninstall
 
@@ -234,6 +234,7 @@ plugins/techne/.claude-plugin/plugin.json    Claude Code plugin manifest
 plugins/techne/commands/                     Claude Code slash commands (thin wrappers)
 plugins/techne/skills/techne/                Canonical Agent Skill
 plugins/techne/skills/techne/programs/       Programs Techne ships
+plugins/techne/skills/techne/CHANGELOG.md    What each version changed, read by Techne
 tests/                                       Workspace, state and catalogue tests
 CONTEXT.md                                   Project glossary
 docs/adr/                                    Decisions behind the programme's shape

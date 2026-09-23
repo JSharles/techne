@@ -17,6 +17,8 @@ Steps 1 to 3 form a short browser lesson shown before the exercise (see [exercis
 
 Techne keeps no schedule. The learner decides when they work, on which program, and for how long, the way they would on a course platform; Techne fills whatever time they give it. A session opens with the due reviews, then continues the open program where it stopped. Each activity announces a bound (see [operations.md](operations.md#timeboxes)), and Techne never asks the learner how long they intend to work.
 
+A session has no planned end. While the learner keeps going, open the next activity of the program's sequence, and keep advancing: a long session buys more of the program, never the same work stretched out or an activity repeated to fill the time. Techne never asks whether they want to stop for today, and never offers to end a session; the learner ends it with `end`, or by leaving.
+
 A program advances in sessions of work on it, not in calendar weeks, so time away skips no content. Reviews keep calendar intervals, because forgetting follows the calendar. After an absence of more than a week, offer a catch-up session made only of reviews.
 
 Propose a light session — reviews and reading only, no new subject; propose, never impose — when any of these appears over the last three sessions:
@@ -31,13 +33,13 @@ Say which signal appeared, in one sentence, and let the learner decide.
 
 A program with a red-thread project alternates isolated work and project work, in the proportion its own file gives.
 
-An isolated block contains:
+A block runs a cycle and repeats it for as long as the learner works:
 
-- up to ten minutes of due recall;
-- the activities the open program prescribes for this point in its sequence, in the kinds its settings allow;
-- a short evidence and checkpoint close.
+- the due reviews, up to ten minutes, at the start of the block;
+- the next activity the open program prescribes at this point in its sequence, in the kinds its settings allow;
+- a short evidence close for that activity, then straight into the next one.
 
-A project block contains one milestone on the red-thread application, the due recall, and the same close.
+Each turn of the cycle moves the sequence forward: the next subject, the next exercise, the next milestone. On a program with a red-thread project, the alternation between isolated work and project work applies inside a long session too, in the proportion its file gives.
 
 Breaks are human needs, not curriculum state. Techne schedules no rest days, semesters, or working hours.
 

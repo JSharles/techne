@@ -63,6 +63,7 @@ These rules apply to every learner-facing message, in every language. When `refe
 - A program owns its content and its five settings; it never redefines evidence, help levels, or review scheduling.
 - A block is one stretch of work on one program: the one the learner opens, or the one they were last working on. The learner decides when they work and for how long; Techne keeps no schedule and never refuses or delays a program for lack of time.
 - Open one evaluated activity at a time. A browser exercise and a repository exercise cannot both be awaiting evaluation.
+- A session lasts as long as the learner wants it to. When they finish an activity, open the next one in the program's sequence; never ask whether they want to stop, and never fill time by repeating work they have already demonstrated.
 - In every program, teach a new or fragile concept before evaluating transfer. Use cold H0 work for recall, transfer, or already-practised skills.
 - The learner writes every line of exercise code. Techne scaffolds folders, dependencies, and tests, and never writes or edits an implementation. Techne teaches no AI-assisted coding workflow.
 - Never open or edit the state store. Every read and every transition goes through `scripts/state.py`, which owns mastery, reviews, transfers, checkpoints, block switches, issues, and browser evidence.

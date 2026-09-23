@@ -29,6 +29,7 @@ The durable records are written in English, whatever the learning language (see 
 | `state.py checkpoint --note "…" [--help-level H2]` | Save the current activity. |
 | `state.py close --note "…"` | Close the block and count one session of work on its program. |
 | `state.py brief` | The short state to read at the start of a turn. |
+| `state.py whats-new` | What Techne changed for the learner since this workspace last heard. Answers once per version. |
 | `state.py show` | The whole state, when the brief is not enough. |
 | `state.py export [--out FILE]` | A JSON backup of everything. |
 | `state.py ingest-events` | Apply mechanical browser evidence and return the rest for interpretation. |
@@ -70,6 +71,7 @@ Subjects are measured against the catalogues of the programs the learner follows
 
 Before resuming:
 
+- run `state.py whats-new`; when it returns changes, say in one or two sentences what changed for the learner, in their own terms, before the next action. It answers once per version, so never repeat it;
 - ingest new browser events;
 - inspect files and test results relevant to `CURRENT.md`;
 - open at most three due reviews from `state.py review --due`, bounded to ten minutes total; they belong to the open program, and another program's reviews are never brought into this one;
@@ -161,7 +163,7 @@ Announce a bound before starting, and say it is an estimate, not a deadline:
 - red-thread project session: 90 minutes; a ticket may take several sessions, and says how many;
 - placement exercise: 15 minutes.
 
-At the bound, say so and let the learner choose to continue or stop. A repeated large overrun is a signal for a light session, never a penalty.
+At the bound, say so, then carry on into the next activity unless the learner stops. A repeated large overrun is a signal for a light session, never a penalty.
 
 ## Writing code
 
@@ -216,7 +218,7 @@ On `pause`, a `switch`, or `end`, run `state.py checkpoint` or `state.py close`,
 - update block status;
 - distinguish advancement from mastery.
 
-Tell the learner in plain words that their work is saved; do not name the files. `pause` keeps the day open so the next `resume` continues the same block. `end` closes the session. At closure report advancement and demonstrated mastery separately, for each curriculum. Never turn completed time or pages into a mastery percentage.
+Tell the learner in plain words that their work is saved; do not name the files. `pause` keeps the session open so the next `resume` continues the same activity. `end` closes it. At closure report advancement and demonstrated mastery separately, for each curriculum. Never turn completed time or pages into a mastery percentage.
 
 ## Reports
 
@@ -228,7 +230,7 @@ Announce a state change soberly, one factual line: "`react.effects-and-alternati
 
 ## When the learner is discouraged
 
-When the learner says they cannot do it, or the signals degrade, stop the activity. Name what is happening in one sentence, recall two or three concrete pieces of recent evidence from the mastery map, then offer either a short exercise on solid ground to finish on a success, or to end the day. Do not encourage, do not promise it will get easier, and do not turn it into a calibration unless the learner says the method is the problem.
+When the learner says they cannot do it, or the signals degrade, stop the activity. Name what is happening in one sentence, recall two or three concrete pieces of recent evidence from the mastery map, then offer either a short exercise on solid ground to finish on a success, or to end the session. Do not encourage, do not promise it will get easier, and do not turn it into a calibration unless the learner says the method is the problem.
 
 ## Returning after an absence
 

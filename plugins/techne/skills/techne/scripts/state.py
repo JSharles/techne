@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -130,6 +131,45 @@ def migrate(state: dict) -> list[str]:
         applied.append("migrated state from format 2 to 3")
     state["version"] = FORMAT_VERSION
     return applied
+
+
+CHANGELOG = SKILL_ROOT / "CHANGELOG.md"
+RELEASE = re.compile(r"^## (\d+\.\d+\.\d+)\s*$")
+
+
+def released() -> list[dict]:
+    """The changelog, newest first: what each version changed for the learner."""
+    entries: list[dict] = []
+    try:
+        lines = CHANGELOG.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return entries
+    for line in lines:
+        heading = RELEASE.match(line)
+        if heading:
+            entries.append({"version": heading.group(1), "changes": []})
+        elif line.startswith("- ") and entries:
+            entries[-1]["changes"].append(line[2:].strip())
+    return entries
+
+
+def whats_new(state: dict) -> dict:
+    """What changed since this workspace last heard, and remember that it heard.
+
+    A workspace that has never been told is brought up to date silently: the
+    learner opened Techne to learn, not to read a history of the tool.
+    """
+    entries = released()
+    current = entries[0]["version"] if entries else None
+    seen = state.setdefault("techne", {}).get("seen_version")
+    fresh = []
+    if seen and current:
+        for entry in entries:
+            if entry["version"] == seen:
+                break
+            fresh.append(entry)
+    state["techne"]["seen_version"] = current
+    return {"version": current, "changes": fresh}
 
 
 def note_session(state: dict, session: str | None) -> str | None:
@@ -567,6 +607,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("programs", help="List the programs available to this learner")
     sub.add_parser("brief", help="Print the short state an agent needs to start a turn, with the current time")
     sub.add_parser("now", help="Print the current date, time and UTC offset, to stamp a record")
+    sub.add_parser("whats-new", help="What Techne changed since this workspace last heard, once")
     export_state = sub.add_parser("export", help="Print the whole state as JSON, for backup")
     export_state.add_argument("--out", type=Path, help="Write to this file instead of standard output")
     sub.add_parser("show", help="Print the current state as JSON")
@@ -668,6 +709,8 @@ def main(argv: list[str] | None = None) -> int:
                 return 0
             else:
                 result = {"entries": journal.select(state, args.status, args.since)}
+        elif args.command == "whats-new":
+            result = whats_new(state)
         elif args.command == "ingest-events":
             result = ingest_events(state, workspace, known)
         elif args.command == "programs":

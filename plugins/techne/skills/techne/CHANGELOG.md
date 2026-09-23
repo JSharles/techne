@@ -2,6 +2,11 @@
 
 Learner-visible changes, newest first. Versions match `plugins/techne/.claude-plugin/plugin.json`.
 
+## 0.13.1
+
+- Techne tells you what changed after an update, once, when you come back.
+- A session lasts as long as you want it to. Techne no longer asks whether you want to stop for today: when you finish an activity, it opens the next one in the programme's sequence, so working longer takes you further instead of repeating the same work.
+
 ## 0.13.0
 
 - Each program keeps its own evidence: what you prove in one never counts in another, even when both teach the same notion. Enrolling in a program that shares a domain with one you follow is refused.

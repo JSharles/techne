@@ -12,7 +12,7 @@ Before changing the skill, read `plugins/techne/skills/techne/SKILL.md` and ever
 
 `store.py` is the only module that opens the state store, `state.py` the only one that applies transitions, `issues.py` the only writer of the issues journal, and `programs.py` the only reader of program files; keep it that way, and add a test in `tests/test_state.py` for every new transition.
 
-Every change that ships to learners (anything under `plugins/techne/`) must bump `version` in both `plugins/techne/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`. Claude Code caches installed plugins by version, so a change pushed without a bump never reaches existing installations.
+Every change that ships to learners (anything under `plugins/techne/`) must bump `version` in both `plugins/techne/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`, and add what it changes for the learner, in their terms, to `plugins/techne/skills/techne/CHANGELOG.md`. Techne reads that file to tell the learner what changed after an update, so it ships inside the skill rather than at the repository root. Claude Code caches installed plugins by version, so a change pushed without a bump never reaches existing installations.
 
 After changes, run:
 

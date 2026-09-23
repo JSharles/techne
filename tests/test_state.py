@@ -214,6 +214,29 @@ class StateTransitionTests(unittest.TestCase):
         # One step down, not one per dropped review.
         self.assertEqual(self.state["mastery"]["react.effects-and-alternatives"]["state"], "assisted")
 
+    def test_whats_new_reports_each_version_once(self):
+        store.save(self.workspace, self.state)
+        with redirect_stdout(io.StringIO()) as first:
+            self.assertEqual(self.run_cli("whats-new"), 0)
+        current = state_script.released()[0]["version"]
+
+        self.assertEqual(json.loads(first.getvalue()), {"version": current, "changes": []}, "a new workspace has nothing to catch up on")
+
+        state = state_script.load(self.workspace)
+        state["techne"]["seen_version"] = "0.0.1"
+        store.save(self.workspace, state)
+        with redirect_stdout(io.StringIO()) as second:
+            self.assertEqual(self.run_cli("whats-new"), 0)
+        reported = json.loads(second.getvalue())
+
+        self.assertEqual(reported["version"], current)
+        self.assertTrue(reported["changes"], "an updated workspace hears what changed")
+        self.assertTrue(all(entry["changes"] for entry in reported["changes"]))
+        with redirect_stdout(io.StringIO()) as third:
+            self.assertEqual(self.run_cli("whats-new"), 0)
+
+        self.assertEqual(json.loads(third.getvalue())["changes"], [], "and hears it only once")
+
     def test_due_work_stays_inside_the_open_program(self):
         write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
         for program in ("engineering", "sprint"):
