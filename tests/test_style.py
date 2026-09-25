@@ -26,7 +26,7 @@ STYLE_FR = SKILL_ROOT / "references" / "style-fr.md"
 # Rows whose pattern a regex can see; the others are left to the LLM grader.
 # « preuve » and « borne » also have plain meanings (« bornes incluses »), so a
 # regex would flag correct French: only the LLM grader judges them.
-DETECTABLE = ("Bold label", "Label", "Machinery word", "Anglicism")
+DETECTABLE = ("Bold label", "Label", "Machinery word", "Anglicism", "Translated")
 JUDGED_ONLY = ("« preuve »",)
 
 

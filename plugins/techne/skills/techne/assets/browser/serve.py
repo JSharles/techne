@@ -178,7 +178,7 @@ class Handler(SimpleHTTPRequestHandler):
         self.wfile.write(payload)
 
     def _progress(self):
-        """Render the mastery map from STATE.json, grouped by subject domain."""
+        """Render the mastery map from the progress view, grouped by subject domain."""
         progress = read_progress()
         mastery = progress.get("mastery")
         groups: dict[str, list[tuple[str, str, str]]] = {}

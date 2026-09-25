@@ -12,6 +12,9 @@ Before presenting an exercise, verify that:
 - the action, editable files, and completion evidence are explicit;
 - every provided command terminates and yields useful output;
 - the learner can run a single test, so their own output is not buried under the runner's;
+- every syntax form, identifier, type and domain word it shows is either already demonstrated in the open program or taught here on the spot; when an incidental form would need explaining, rewrite the activity rather than explain it — an untaught form in a signature reads as the difficulty, and the learner blames themselves for it;
+- every subject the exercise leans on stands at `assisted` or above in the mastery map; what is only `discovered` is taught or practised first, never assumed;
+- the editor is quiet on the starting files: the scaffolding ships the configuration the language needs — for TypeScript a `tsconfig.json` beside the files, with `lib` ES2022 and DOM, `strict`, and `allowImportingTsExtensions` — so no one debugs the setup instead of the exercise;
 - the scaffolding states what tooling is already set up, so no one wonders which environment they are in;
 - the normal browser, VS Code, test, and debugger loop works;
 - the difficulty follows the easy-first ladder and observed evidence, never years of experience;
@@ -57,6 +60,19 @@ Every quiz question, recall prompt and placement question follows [Writing for t
 - When a question turns on a contract, print the contract; the learner never infers it from a function's name.
 - Exactly one option is defensible against what the page prints. Before publishing, check each distractor against the snippet and the contract as written, not as intended.
 
+## Reread before opening
+
+Every lesson, exercise, brief, quiz question and written explanation is reread before the learner sees it. This is a check with six questions, in this order, not a formality:
+
+1. **Relevance.** Does every line serve the subject being taught? Cut what drags in a neighbouring notion, including realistic decor: a `increment: null` field nobody uses costs a question and teaches nothing.
+2. **Prerequisites.** Is every syntax form, identifier, type and domain word either already demonstrated in the open program or defined right here?
+3. **Names.** Does every technical concept carry its English name, with the prose around it in the learner's language, headings included?
+4. **Contract.** Does the learner hold everything needed to answer or to write the code, printed here, without reopening what they were told not to reopen?
+5. **Execution.** Has the code actually been run — the lesson's snippets, the expected outputs, the quiz answers, the exercise's starting state, and a reference solution kept out of the learner's folder? A demo that contradicts its lesson because it ran as a script instead of a module teaches the opposite of the lesson.
+6. **Teaching quality.** One idea per sentence, the gesture that failed rather than the neighbouring one, difficulty one step above the recorded evidence, and a single observable next action.
+
+A page that fails any of the six is rewritten before it is shown, never patched once the learner has stumbled. When they stumble on the material anyway, the activity is void — no help level, no evidence — and the defect goes to the issues journal, so the cause is fixed once (see [operations.md](operations.md#void-an-activity-techne-broke)).
+
 ## Brief outside the timebox
 
 Cover, in this order, in prose; in an exercise file these may be section headings, in the conversation they are sentences:
@@ -66,6 +82,8 @@ Cover, in this order, in prose; in an exercise file these may be section heading
 3. indispensable vocabulary;
 4. one distinct example;
 5. the exact mission and definition of done.
+
+When the learner designs the signature, state the calling contract, not only the outcome: how the function is called, what it gives back, and the edge case the tests check. "Adds the numbers it receives" leaves them free to write `sum(numbers: number[])` and fail every test; `sum(1, 2, 3)` returning `6`, and `sum()` returning `0`, is a contract.
 
 Clarification consumes neither time nor help level. Announce the bound (see [operations.md](operations.md#timeboxes)) and start it only after the learner confirms the context and action are clear.
 

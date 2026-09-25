@@ -65,6 +65,8 @@ Choosing what to open:
 
 The learner organises their own time: they work when they want, for as long as they want, on the program they want. Never tell them they lack the time for a program, never refer to a timetable, and never call a gap lateness.
 
+When the open program has nothing due, carry on with its sequence. Never go looking for work in another program, and never offer a switch to fill a session: the reviews, the transfers and the next activity all come from the program the learner has open (ADR 0020).
+
 Subjects are measured against the catalogues of the programs the learner follows; a subject outside them cannot be recorded.
 
 ## Resume

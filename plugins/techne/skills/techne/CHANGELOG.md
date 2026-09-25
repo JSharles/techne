@@ -2,6 +2,18 @@
 
 Learner-visible changes, newest first. Versions match `plugins/techne/.claude-plugin/plugin.json`.
 
+## 0.14.0
+
+- Every technical concept keeps its English name — `call stack`, `task queue`, `event loop`, `closure`, `scope`, `hoisting`, `rest parameter`, `click handler`, `strict mode` — and only the sentence around it is in your language, headings included. You learn the notion and the word you will need with an English-speaking colleague at the same time.
+- A lesson or an exercise never uses syntax the programme has not taught you yet. When it would have to, Techne rewrites the activity instead of explaining the accident.
+- When you design a function's signature, the brief prints how it is called and what it returns, including the edge case the tests check.
+- Exercise folders ship a working editor setup, so your editor does not report errors on code that runs.
+- After two explanations of the same notion that do not land, Techne changes support instead of rephrasing: first a file you run and watch, then an exercise where that notion is the only blank. It also prefers the shape you already work in — a class before a method in an object literal.
+- An exercise never leans on a subject you have only seen once; that subject is taught or practised first.
+- Words from the product or the browser — click handler, panel, strict mode — are defined the first time they appear, like the language ones.
+- When the programme you have open has nothing due, Techne carries on with it instead of offering another programme's reviews.
+- Every lesson, exercise, brief and question is reread before you see it, against five checks: relevance, prerequisites, contract, code actually run, and teaching quality. What fails is rewritten, not patched after you stumble.
+
 ## 0.13.1
 
 - Techne tells you what changed after an update, once, when you come back.

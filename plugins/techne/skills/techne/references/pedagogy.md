@@ -50,8 +50,10 @@ These rules govern every text the learner reads: lessons, questions and their op
 - One idea per sentence. Short comes from cutting ideas, never from packing several into one clause.
 - One meaning per technical term, for the whole programme.
 - Every convention shown in code before it is explained.
-- Every piece of jargon named before it is used, including the words that feel obvious.
+- Every piece of jargon named before it is used, including the words that feel obvious, and including the ones that come from the product or the browser rather than the language: click handler, panel, tab, strict mode.
 - Between shorter and clearer, clearer.
+- Never translate the name of a technical concept, in any language. `call stack`, `task queue`, `microtask queue`, `event loop`, `closure`, `scope`, `hoisting`, `rest parameter`, `spread`, `event handler`, `strict mode`, `render`, `hydration`: the concept keeps its English name and the sentence around it is written in the learner's language. This is not a style preference. The learner has to read English documentation, and to name the notion to an English-speaking colleague or interviewer; a French name they cannot translate back leaves them mute. "La pile d'appels contient ce qui s'exécute" teaches half the notion; "Le `call stack` contient ce qui s'exécute" teaches all of it.
+- When a concept first appears, say what it does in one sentence in the learner's language, and keep using its English name afterwards. Never introduce a translated name "to help", not even once, and never in a heading.
 - Compose in the learning language from the first word. This skill is written in English; its sentences are instructions to you, never a draft to translate.
 - Say literally what the code does: "`as` checks nothing at run time and produces no code", rather than a figure such as "`as` is a promise". A figure of speech earns its place only after the literal statement, and only if the learner would use it themselves.
 - Title each section of a lesson by what it teaches ("Why `as` checks nothing"). The problem, model, worked example and checks listed in this skill are roles a lesson fills, not headings to translate.
@@ -61,6 +63,15 @@ These rules govern every text the learner reads: lessons, questions and their op
 A lesson teaches the gesture that failed, not the neighbouring one: when the learner's error was in traversing a structure, the lesson covers traversal, whatever else the exercise touched.
 
 At any moment the learner can ask for a passage to be rephrased — the word "reformule" in French, "rephrase" in English, or any plain equivalent. Rewrite it, at no cost, with no help level and no trace, and correct the lesson page as well as the chat — the page is what they will reread. Tell the learner the word exists the first time a lesson opens.
+
+## When the same explanation fails twice
+
+After two rephrasings of one notion with no progress, stop rephrasing: the support is the problem, not the words. Change it, in this order:
+
+1. **Run it.** Give a file the learner executes, which prints what the notion does at each form it takes. Seeing `this` print `undefined`, then the object, then the bound object, settles in one run what three paragraphs did not.
+2. **Write it.** Open an exercise whose only blank is that notion, everything around it already written.
+
+Prefer the shape the learner already works in over the idiomatic one: a class with a constructor before a method in an object literal, a named function before a callback. Say plainly that you are changing approach, ask nothing, and record in the session log which support worked — it is the one to reach for next time.
 
 ## Spaced retrieval
 

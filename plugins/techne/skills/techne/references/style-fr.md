@@ -20,6 +20,12 @@ Address the learner as « tu », and write as a French-speaking developer would 
 | Machinery words « sonde », « croyance », « assisté » | Troisième sonde, même croyance. Redescend en assisté. | C'est la troisième fois que la même idée revient dans tes réponses. Sur ta page de progression, le sujet repasse en « Avec aide ». |
 | Machinery words « preuve », « borne » | Preuve enregistrée. Borne : 90 minutes. | J'ai noté que tu l'as fait sans aide. Compte environ 90 minutes. |
 | Label without bold, then a fragment | Ce que ça coûte : une heure de plus par matinée. | Au début, un Medium te prendra environ une heure de plus par matinée. |
+| Translated technical term | Le paramètre du reste rassemble les arguments, et l'étalement les ressort. | Le `rest parameter` rassemble les arguments, et le `spread` les ressort. |
+| Translated technical term | La pile d'appels contient ce qui s'exécute en ce moment. | Le `call stack` contient ce qui s'exécute en ce moment. |
+| Translated technical term | La file des tâches contient le callback d'un setTimeout. | La `task queue` contient le callback d'un `setTimeout`. |
+| Translated technical term | La file des microtâches contient la suite des promesses. | La `microtask queue` contient la suite des `promises`. |
+| Translated technical term | La boucle d'événements fait tourner tout ça. | L'`event loop` fait tourner tout ça. |
+| Translated technical term | un gestionnaire de clic | un `click handler` |
 | Anglicism « adresser » | On va adresser ce bug demain. | On va s'occuper de ce bug demain. |
 
 A colon is fine once in a sentence that announces what follows. A bold heading is fine at the top of a long message, as a title, never as the start of a line that a fragment completes.
