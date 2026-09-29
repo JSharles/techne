@@ -1,6 +1,6 @@
 # The red-thread project
 
-Read this before any work on the red-thread project of a program whose settings say `red_thread: yes`: the `project` command, ideation, the roadmap, tickets, or starting the project over. The program's own file sets the frame (stack, duration, which weeks teach what); this file is the method.
+Read this before any work on the red-thread project of a program whose settings say `red_thread: yes`: the `project` command, ideation, the roadmap, tickets, or starting the project over. Each such program has its own project, kept under its own identifier, and `project` always means the project of the program the learner has open. The program's own file sets the frame (stack, duration, which weeks teach what); this file is the method.
 
 The learner is building a real product, not following a tutorial. They choose it slowly, from what drives them, and they know what it is, who it is for, and what each part will teach them before any code. The project goes through two phases: **ideation**, which finds the idea and has no deadline, then **building the roadmap**, which turns that idea into a committed plan and takes three project sessions at most.
 
@@ -20,11 +20,11 @@ Ideation finds an idea the learner wants to build for the whole program. It can 
 
 ### The map
 
-Keep ideation in `.techne/project/MAP.md`, a working record Techne writes and rereads at the start of each ideation session:
+Keep ideation in `.techne/project/<program>/MAP.md`, a working record Techne writes and rereads at the start of each ideation session:
 
 - **Destination**: one idea the learner has chosen to build, against the criteria below.
 - **What drives the learner**: what they have said about themselves, in their own words.
-- **Decisions so far**: one line per settled question, stamped with `state.py now`, with its answer in brief. The full question and answer go in `.techne/project/decisions/<number>-<slug>.md`.
+- **Decisions so far**: one line per settled question, stamped with `state.py now`, with its answer in brief. The full question and answer go in `.techne/project/<program>/decisions/<number>-<slug>.md`.
 - **Open questions**: the questions that can be asked now, because nothing they depend on is still open.
 - **Not yet specified**: what you can tell is coming but cannot yet phrase as a precise question. When a decision makes it sharp, turn it into an open question and remove it from here.
 - **Ruled out**: ideas and directions the learner set aside, each with the reason in one line. They are never proposed again unless the learner brings them back.
@@ -89,14 +89,14 @@ A change to the roadmap is an explicit decision, taken with the learner and reco
 
 When the learner asks to start the project over from nothing, every idea and every choice already recorded must leave what Techne rereads, or it steers the new ideation. Set them aside in one move:
 
-- move `.techne/project/`, the `DECISIONS.md` entries about the project (cut, not copied), and any ticket or note kept for the old idea into `.techne/archive/<timestamp>-project/`;
+- move `.techne/project/<program>/`, the `DECISIONS.md` entries about that project (cut, not copied), and any ticket or note kept for the old idea into `.techne/archive/<timestamp>-project/`;
 - rewrite `CURRENT.md`, and any `PROFILE.md` preference that names the old idea, keeping the preference and dropping the name;
 - append a `SESSION_LOG.md` entry saying the project restarted, without naming the old ideas;
 - leave any repository created for an old idea as it is: it belongs to the learner.
 
 Then open ideation from its first questions. Never mention or suggest an archived idea unless the learner brings it back.
 
-A workspace from Techne 0.11 may hold an ideation in progress in `.techne/DISCOVERY.md`. It is the learner's current work, not an old idea: carry it into the map — what drives the learner, the decisions settled with their timestamps, the ideas on the table, the directions ruled out — tell the learner it moved, then move the file to `.techne/archive/<timestamp>-discovery-format/`.
+A workspace from Techne 0.11 may hold an ideation in progress in `.techne/DISCOVERY.md`. It is the learner's current work, not an old idea: carry it into the map of the program it belongs to — what drives the learner, the decisions settled with their timestamps, the ideas on the table, the directions ruled out — tell the learner it moved, then move the file to `.techne/archive/<timestamp>-discovery-format/`.
 
 A learner whose project started without ideation and a roadmap is offered them, once: pause the tickets in progress, run both phases, then rewrite those tickets from the roadmap. If they decline, record it in `.techne/DECISIONS.md` and do not offer again.
 

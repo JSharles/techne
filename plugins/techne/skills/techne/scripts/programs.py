@@ -18,7 +18,7 @@ SHIPPED_DIR = "programs"
 WORKSPACE_DIR = (".techne", "programs")
 
 ACTIVITY_KINDS = ("code", "browser", "oral", "writing")
-BALANCES = ("lesson-heavy", "balanced", "practice-heavy")
+BALANCES = ("lesson-heavy", "balanced", "practice-heavy", "on-demand")
 TIMEBOX_KEYS = ("lesson", "exercise", "review", "project", "placement")
 CEILINGS = ("discovered", "assisted", "independent", "transferred")
 SETTING_KEYS = ("activity_kinds", "lesson_to_practice", "timeboxes", "red_thread", "survey_ceiling")

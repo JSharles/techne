@@ -15,8 +15,8 @@ A header declares exactly these, and nothing else:
 | Setting | Values | What it changes |
 | --- | --- | --- |
 | `activity_kinds` | `code`, `browser`, `oral`, `writing` | what an activity may be |
-| `lesson_to_practice` | `lesson-heavy`, `balanced`, `practice-heavy` | how much teaching precedes practice |
-| `timeboxes` | `lesson=`, `exercise=`, `review=`, `project=`, `placement=`, in minutes | the bounds announced before work |
+| `lesson_to_practice` | `lesson-heavy`, `balanced`, `practice-heavy`, `on-demand` | how much teaching precedes practice; `on-demand` teaches only when the learner asks |
+| `timeboxes` | `lesson=`, `exercise=`, `review=`, `project=`, `placement=`, in minutes | the bounds announced before work; `placement=0` means the program runs no placement test |
 | `red_thread` | `yes`, `no` | whether the program carries a running project |
 | `survey_ceiling` | a mastery state | how far a survey subject — any in a catalogue domain titled `Survey` — may go |
 

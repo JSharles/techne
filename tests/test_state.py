@@ -101,6 +101,23 @@ class ProgramTests(unittest.TestCase):
             self.assertIn("subject catalogue", rejected["no-catalogue"])
             self.assertIn("unknown activity kind: telepathy", rejected["bad-kind"])
 
+    def test_a_program_may_teach_on_demand_and_skip_its_placement(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            write_program(
+                programs.workspace_dir(workspace),
+                "led",
+                prefix="led",
+                domain_title="Leading",
+                replace=[("timeboxes: exercise=20", "lesson_to_practice: on-demand\ntimeboxes: exercise=20, placement=0")],
+            )
+
+            found, rejected = programs.discover(SKILL_ROOT, workspace)
+
+            self.assertEqual(rejected, {})
+            self.assertEqual(found["led"].settings["lesson_to_practice"], "on-demand")
+            self.assertEqual(found["led"].settings["timeboxes"]["placement"], 0)
+
     def test_a_domain_prefix_may_contain_digits(self):
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)

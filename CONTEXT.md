@@ -93,5 +93,5 @@ A session of reviews and reading only, with no new subject, which Techne propose
 _Avoid_: rest day, day off
 
 **AI lab**:
-The single Python repository that grows through the Applied AI track and becomes the capstone.
-_Avoid_: project, studio
+The repository of the Applied AI program's project, and the record (`.techne/AI_LAB.md`) of its path, its model provider and where the work stands.
+_Avoid_: studio

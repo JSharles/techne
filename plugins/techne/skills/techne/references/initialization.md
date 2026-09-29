@@ -51,7 +51,7 @@ The baseline is presented to the learner as a **placement test** (translated nat
 
 Label every placement exercise with its area and position ("Placement test — algorithms, exercise 2"). Do not teach before a placement exercise; it measures prior knowledge. After the last one, give a two- or three-line summary and announce the first curriculum lesson.
 
-Run short, production-oriented probes across the domains of the program they start with. Every other program runs its own short placement test in its first session. Prefer debugging, explanation, small implementation, and trade-off questions over trivia.
+Run short, production-oriented probes across the domains of the program they start with. Every other program runs its own short placement test in its first session, unless its `placement` timebox is `0`, which means it measures the learner on real work instead. Prefer debugging, explanation, small implementation, and trade-off questions over trivia.
 
 For each area, climb a difficulty ladder:
 

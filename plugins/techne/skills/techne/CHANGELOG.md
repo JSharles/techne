@@ -2,6 +2,13 @@
 
 Learner-visible changes, newest first. Versions match `plugins/techne/.claude-plugin/plugin.json`.
 
+## 0.15.0
+
+- Applied AI is built around a real application you choose: it opens with the same ideation and roadmap as the other project programmes, and teaches each notion when your project needs it, instead of running through a fixed syllabus.
+- A programme that carries a project keeps its own, so two programmes never share one.
+- On Applied AI, Techne works as your product owner and lead developer: it writes the roadmap and the tickets, answers your questions and reviews your work, and teaches only when you ask for a lesson or an exercise. No placement test there: the project shows what you can already do.
+- A programme can now declare `lesson_to_practice: on-demand`, and skip its placement test with `placement=0`.
+
 ## 0.14.0
 
 - Every technical concept keeps its English name — `call stack`, `task queue`, `event loop`, `closure`, `scope`, `hoisting`, `rest parameter`, `click handler`, `strict mode` — and only the sentence around it is in your language, headings included. You learn the notion and the word you will need with an English-speaking colleague at the same time.

@@ -28,13 +28,15 @@ Keep the activity closed until preflight passes.
 
 Every activity in either curriculum starts with a short lesson, except placement-test exercises, due reviews, transfer work on an already demonstrated skill, and capstone milestones.
 
+A program whose `lesson_to_practice` is `on-demand` inverts this: it teaches when the learner asks. Name, in one sentence, what the work ahead will use and what is new in it, offer the lesson, and open the work if they decline. Write the lesson the moment they ask for one, on the notion they name, and keep every other rule of this file. The offer is made once per notion, never repeated as insistence.
+
 - Generate it as a browser page (see "Browser or repository"), readable in five to ten minutes: the engineering problem, a mental model with its vocabulary, one worked example distinct from the exercise, and one or two quick checks (quiz or recall).
 - Serve and open it yourself, then tell the learner to read it and to say when they are done.
 - Open the coding exercise only after the lesson. The exercise brief then refers back to the lesson instead of repeating it.
 
 ### Before a project ticket
 
-A ticket on a red-thread project is practice too, so the same rule holds. Before opening one, list the catalogue subjects it mobilises. For each one still `not_started`, give a lesson of about ten minutes first: what the notion is and how one goes about it, never a ready-made setup to copy into the project. When the learner then gets stuck on something neither the ticket nor a lesson covered, the ticket is at fault: handle it as [an activity Techne broke](operations.md#void-an-activity-techne-broke). See `docs/adr/0016-teach-before-the-ticket.md`.
+A ticket on a red-thread project is practice too, so the same rule holds. Before opening one, list the catalogue subjects it mobilises. For each one still `not_started`, give a lesson of about ten minutes first: what the notion is and how one goes about it, never a ready-made setup to copy into the project. In an `on-demand` program, the ticket names those notions and offers the lesson instead; the learner decides, and asking later costs nothing. When the learner then gets stuck on something neither the ticket nor a lesson covered, the ticket is at fault: handle it as [an activity Techne broke](operations.md#void-an-activity-techne-broke). See `docs/adr/0016-teach-before-the-ticket.md`.
 
 Draw the examples of these lessons from the project itself: its domain, its data, its code. An imaginary product makes the learner wonder what they are building. When the project's own code would be the very answer the learner has to write, take the example from another part of the same project.
 

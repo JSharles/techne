@@ -11,7 +11,7 @@ The durable records are written in English, whatever the learning language (see 
 - `CURRENT.md`: one ready or in-progress activity;
 - `SESSION_LOG.md`: append-only narrative evidence;
 - `DECISIONS.md`: approved calibration decisions, read at the start of every turn;
-- `project/`: the red-thread project's ideation map and its decisions (see [project.md](project.md));
+- `project/<program>/`: that program's red-thread project — its ideation map and its decisions (see [project.md](project.md));
 - `AI_LAB.md`: Applied AI lab repository, model provider, and capstone facts;
 - `events/browser.jsonl`: browser interactions recorded locally.
 
