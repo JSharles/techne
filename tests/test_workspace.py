@@ -196,6 +196,12 @@ class WorkspaceTests(unittest.TestCase):
             f"plugin files changed ({', '.join(changed)}) without a version bump",
         )
 
+    def test_the_recall_box_behaves_like_an_editor(self):
+        recall = (SKILL_ROOT / "assets" / "browser" / "assets" / "recall.js").read_text(encoding="utf-8")
+
+        self.assertIn('event.key !== "Tab"', recall, "Tab must indent instead of leaving the field")
+        self.assertIn("scrollHeight", recall, "the box must grow with the answer")
+
     def test_the_radar_leaves_room_for_its_longest_label(self):
         drawing = load_module("techne_serve", SKILL_ROOT / "assets" / "browser" / "serve.py")
         axes = [

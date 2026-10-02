@@ -2,6 +2,11 @@
 
 Learner-visible changes, newest first. Versions match `plugins/techne/.claude-plugin/plugin.json`.
 
+## 0.16.2
+
+- Writing code in a recall is bearable: the box indents with Tab, grows with your answer, and leaves your spelling alone.
+- A recall longer than a few lines is no longer asked for in the browser at all. Techne scaffolds a file in your exercise folder, opens it in your editor, and reads your answer from there.
+
 ## 0.16.1
 
 - The skills radar is drawn as wide as its longest domain name needs, and grows with the number of axes, so no label is cut off any more.

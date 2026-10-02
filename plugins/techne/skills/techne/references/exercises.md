@@ -122,7 +122,7 @@ When Techne's wording causes confusion, stop the timebox, consume no help level,
 
 ## Browser or repository
 
-Use the browser for lessons, short recall, mental tracing, and quizzes. Generate the lesson under `.techne/browser/lessons/` from `.techne/browser/lesson-template.html`, which already carries the learning language, use the bundled assets, start `.techne/browser/serve.py`, and inspect the local event log before feedback.
+Use the browser for lessons, quizzes, mental tracing, and recall short enough to stay a few lines. A longer recall is a file in the editor, like any other code the learner writes. Generate the lesson under `.techne/browser/lessons/` from `.techne/browser/lesson-template.html`, which already carries the learning language, use the bundled assets, start `.techne/browser/serve.py`, and inspect the local event log before feedback.
 
 Use a local exercise folder or real repository for coding: the Applied AI lab, DSA, TypeScript, React, Next.js, NestJS and backend, multi-file debugging, architecture, performance, and production work. Scaffold only what removes irrelevant setup; leave the reasoning and target implementation to the learner.
 
