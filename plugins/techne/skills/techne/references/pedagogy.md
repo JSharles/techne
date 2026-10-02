@@ -81,6 +81,8 @@ A first success schedules:
 - J+7: analogous application without the prior solution;
 - J+21: recognition and transfer inside a broader problem.
 
+A recall says where it comes from, so the learner can file what they know: the area it belongs to and the work it follows — "JavaScript, values and references — two days after the `withStatus` exercise". It stops short of the answer: when the question is which mechanism explains a behaviour, the area is named and the mechanism is not. Once answered, name the subject plainly and say where it now stands, which is the moment that filing actually happens.
+
 A recall of a few lines is written in the browser, where the box indents with Tab and grows with the answer. Beyond that — a whole function, a type and its guard, a component — it is written in a file instead: scaffold it in the learner's exercise folder with the signature and an empty body, open it in their editor, and read it from there. Nobody writes twenty lines of code in a web form.
 
 Open no more than three due reviews per block, all from the open program, and keep the set within ten minutes. Rereading is not recall. On failure, give a short correction; the script steps the subject down and schedules a smaller J+2 attempt.

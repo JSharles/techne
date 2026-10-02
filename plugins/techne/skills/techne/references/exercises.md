@@ -58,6 +58,7 @@ When an exercise expects a shape — a trace table, an output line, a data struc
 
 Every quiz question, recall prompt and placement question follows [Writing for the learner](pedagogy.md#writing-for-the-learner), and three more rules:
 
+- The page says which area it comes from and which work it follows, never the answer itself.
 - The page carries everything the question depends on: every signature, contract and identifier is printed there. A from-memory page is self-contained, since the learner is told not to reopen the exercise.
 - When a question turns on a contract, print the contract; the learner never infers it from a function's name.
 - Exactly one option is defensible against what the page prints. Before publishing, check each distractor against the snippet and the contract as written, not as intended.

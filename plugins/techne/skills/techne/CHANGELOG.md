@@ -2,6 +2,10 @@
 
 Learner-visible changes, newest first. Versions match `plugins/techne/.claude-plugin/plugin.json`.
 
+## 0.16.3
+
+- A recall now says where it comes from — the area and the work it follows — without naming the mechanism when that is what you are asked to find. Once you have answered, Techne names the subject and says where it now stands, so you can file it.
+
 ## 0.16.2
 
 - Writing code in a recall is bearable: the box indents with Tab, grows with your answer, and leaves your spelling alone.
