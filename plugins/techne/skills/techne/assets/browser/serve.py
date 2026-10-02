@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import html
 import json
+import math
 import os
 import sys
 from datetime import datetime, timezone
@@ -37,6 +38,8 @@ MESSAGES = {
         "independent": "Independent",
         "transferred": "Transferred",
         "blocked": "Blocked",
+        "radar_heading": "Skills",
+        "radar_all": "every programme",
         "due_reviews": "Due reviews",
         "due_on": "due",
         "domain.ts": "TypeScript", "domain.js": "JavaScript", "domain.react": "React",
@@ -67,6 +70,8 @@ MESSAGES = {
         "independent": "Autonome",
         "transferred": "Transféré",
         "blocked": "Bloqué",
+        "radar_heading": "Compétences",
+        "radar_all": "tous parcours confondus",
         "due_reviews": "Révisions à faire",
         "due_on": "pour le",
         "domain.ts": "TypeScript", "domain.js": "JavaScript", "domain.react": "React",
@@ -90,6 +95,49 @@ DOMAIN_ORDER = (
     "py", "svc", "llm", "rag", "agent", "eval",
 )
 STATE_ORDER = ("transferred", "independent", "assisted", "blocked", "discovered", "not_started")
+RADAR_SIZE = 460
+RADAR_RINGS = 4
+
+
+def radar(axes: list[dict]) -> str:
+    """Draw the assessment as a radar, one axis per domain, in plain SVG.
+
+    `state.py assessment` computes the axes; this only draws them, so the page
+    stays a view and never reasons about mastery.
+    """
+    axes = [axis for axis in axes if isinstance(axis, dict) and axis.get("subjects")]
+    if len(axes) < 3:
+        return ""
+    middle = RADAR_SIZE / 2
+    radius = middle - 70
+    step = 2 * math.pi / len(axes)
+
+    def point(index: int, share: float) -> tuple[float, float]:
+        angle = index * step - math.pi / 2
+        return middle + math.cos(angle) * radius * share, middle + math.sin(angle) * radius * share
+
+    rings = "".join(
+        f'<circle cx="{middle}" cy="{middle}" r="{radius * (ring + 1) / RADAR_RINGS:.1f}" fill="none" '
+        f'stroke="currentColor" stroke-opacity="0.18" />'
+        for ring in range(RADAR_RINGS)
+    )
+    spokes = labels = ""
+    for index, axis in enumerate(axes):
+        edge = point(index, 1.0)
+        spokes += f'<line x1="{middle}" y1="{middle}" x2="{edge[0]:.1f}" y2="{edge[1]:.1f}" stroke="currentColor" stroke-opacity="0.18" />'
+        text = point(index, 1.16)
+        anchor = "middle" if abs(text[0] - middle) < 12 else ("start" if text[0] > middle else "end")
+        share = round(axis.get("share", 0) * 100)
+        labels += (
+            f'<text x="{text[0]:.1f}" y="{text[1]:.1f}" text-anchor="{anchor}" dominant-baseline="middle" '
+            f'font-size="12">{html.escape(str(axis.get("title") or axis.get("domain")))} {share}%</text>'
+        )
+    shape = " ".join(f"{x:.1f},{y:.1f}" for x, y in (point(index, max(axis.get("share", 0), 0.02)) for index, axis in enumerate(axes)))
+    return (
+        f'<svg viewBox="0 0 {RADAR_SIZE} {RADAR_SIZE}" width="100%" role="img" class="radar">{rings}{spokes}'
+        f'<polygon points="{shape}" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="2" />'
+        f"{labels}</svg>"
+    )
 
 
 def read_progress() -> dict:
@@ -215,6 +263,10 @@ class Handler(SimpleHTTPRequestHandler):
             )
             sections.insert(0, f"<h2>{html.escape(TEXT['due_reviews'])}</h2><ul>{items}</ul>")
 
+        drawn = radar((progress.get("radar") or {}).get("axes") or [])
+        if drawn:
+            scope = (progress.get("radar") or {}).get("program") or TEXT["radar_all"]
+            sections.insert(0, f"<h2>{html.escape(TEXT['radar_heading'])} — {html.escape(scope)}</h2>{drawn}")
         content = "".join(sections) or f"<p>{html.escape(TEXT['progress_empty'])}</p>"
         document = f"""<!doctype html>
 <html lang="{html.escape(LANGUAGE, quote=True)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">

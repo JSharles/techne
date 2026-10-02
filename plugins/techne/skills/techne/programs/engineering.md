@@ -38,7 +38,7 @@ A subject is first learned on an isolated exercise, then reinvested in the red-t
 One Next.js + NestJS + database application, built across the twelve weeks and presentable at the end (see `docs/adr/0003-red-thread-project-as-the-place-of-transfer.md`).
 
 - The learner chooses the product and builds its roadmap following [project.md](../references/project.md). Its frame, stated there as not open to discussion: this stack, the program's twelve weeks, working alone, the hard problems timed to the weeks of the sequence below, and no dependency on the Applied AI program.
-- Until the project is chosen, project sessions run as isolated practice, and transfers wait for the project. Ideation happens in sessions of its own, through `project`.
+- Until the project is chosen, project sessions run as isolated practice, and transfers wait for the project. Ideation happens in sessions of its own, whenever the learner asks for the project.
 - Keep the business rules small: the product earns its weight from the hard technical problems at its core, not from the domain's complexity.
 - Project work comes as tickets, one per milestone, derived from the roadmap. Techne writes them one or two ahead, never the whole backlog, because each depends on what the previous pull request showed.
 - A ticket, written in the learning language, says:

@@ -27,5 +27,27 @@ Address the learner as « tu », and write as a French-speaking developer would 
 | Translated technical term | La boucle d'événements fait tourner tout ça. | L'`event loop` fait tourner tout ça. |
 | Translated technical term | un gestionnaire de clic | un `click handler` |
 | Anglicism « adresser » | On va adresser ce bug demain. | On va s'occuper de ce bug demain. |
+| Groupe participial en tête ou en série | En entrée et sortie montrées, exécutées avant de te les donner. | Je te montre l'appel, puis le résultat. J'exécute le code avant de te l'écrire. |
+| Groupe participial en tête | Mesuré sous `jsdom`, 129 ms pour la première boucle. | J'ai mesuré les deux boucles sous `jsdom`. La première prend 129 ms. |
+| Nominalisation d'une action | Ne pas chercher un élément dans une boucle quand on peut le chercher une fois avant. | Cherche l'élément une fois, avant la boucle. |
+| Nominalisation d'une action | Construire une sous-arborescence en mémoire avant de l'insérer d'un coup. | Crée tes éléments hors de la page. Insère-les ensuite, en une fois. |
+| Jugement au lieu du fait | `closest` est celui qu'on oublie. | `closest` remonte l'arbre jusqu'au premier ancêtre qui correspond. |
+| Jugement au lieu du fait | Le piège est que `0` et `""` sont souvent des valeurs légitimes. | `0` et `""` comptent pour faux. Pourtant, un stock à 0 est une vraie valeur. |
+| Jugement au lieu du fait | C'est le premier piège du `DOM`. | `childNodes` compte aussi les sauts de ligne. `children` ne garde que les balises. |
+| « il suffit de », « simplement », « évidemment » | Il suffit de ne pas lire dans une liste qui n'existe pas. | Avant de parcourir la liste, vérifie qu'elle existe. |
+| Contrat écrit en étapes | Vide la liste, puis ajoute un `li` par libellé. | `renderItems(doc, ["a"])` laisse la liste ainsi : `<ul id="list"><li class="item" data-id="0">a</li></ul>` |
+| Référent implicite | Après ton appel, la liste contient un `li` par libellé. | Après `renderItems(doc, ["a", "b"])`, la liste contient deux `li`. |
+| Renvoi non résoluble | C'est l'arbre de l'unité 4, et tu le reverras à l'unité 11. | C'est le même arbre que dans `countLeaves`. |
+| Renvoi à une page fermée | La fonction est dans la leçon, sous « Une fonction récursive a deux parties ». | Voici la fonction de la leçon : (code recopié ici). Je te rouvre la page : (URL). |
+| Terme non défini | Regarde ce que `peek` donne dans chaque cas. | `peek` regarde le prochain élément à sortir sans le retirer. En JavaScript, c'est un accès par index. |
+| Terme non défini | Un gestionnaire de clic qui lit tous la même valeur. | Un `click handler` est une fonction que le navigateur exécute à chaque clic. |
+| Phrase sans verbe conjugué | Deux réflexes : sortir la recherche de la boucle, et insérer une fois. | Sors la recherche de la boucle. Puis insère tout en une fois. |
+| Deux idées dans une phrase | Une `comprehension` produit une nouvelle collection à partir d'une source, ce n'est donc pas le bon outil quand tu accumules par clé. | Une `comprehension` calcule chaque élément séparément. Une accumulation par clé a besoin du total déjà rangé sous cette clé. Elle demande donc une boucle. |
 
 A colon is fine once in a sentence that announces what follows. A bold heading is fine at the top of a long message, as a title, never as the start of a line that a fragment completes.
+
+Three hard constraints, checkable on a reread:
+
+- one conjugated verb per sentence, and the sentence opens with its subject or an imperative;
+- no appreciative adjective about the code or the difficulty (« piège », « classique », « élégant », « simple », « évident », « compliqué »): state the observable behaviour instead;
+- an exercise contract is shown as a call and its result, never as steps to follow.

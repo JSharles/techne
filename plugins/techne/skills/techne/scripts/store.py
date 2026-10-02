@@ -16,11 +16,12 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from contextlib import closing
+from contextlib import closing, contextmanager
 from pathlib import Path
 
 
 DATABASE = "techne.db"
+LOCKFILE = "state.lock"
 SEED_FILE = "STATE.json"
 PROGRESS_VIEW = ("browser", "progress.json")
 
@@ -67,6 +68,28 @@ CREATE TABLE IF NOT EXISTS issues (
 
 class StoreError(Exception):
     """The store is missing or unreadable."""
+
+
+@contextmanager
+def held(root: Path):
+    """Hold the workspace for the length of one command.
+
+    Several conversations work in parallel, each on its own program, and each
+    command reads the whole state and writes it back. Without this lock the
+    last writer would drop what another conversation had just recorded.
+    """
+    try:
+        import fcntl
+    except ImportError:  # a platform without flock: one conversation at a time
+        yield None
+        return
+    root.mkdir(parents=True, exist_ok=True)
+    with (root / LOCKFILE).open("w") as handle:
+        fcntl.flock(handle, fcntl.LOCK_EX)
+        try:
+            yield handle
+        finally:
+            fcntl.flock(handle, fcntl.LOCK_UN)
 
 
 def state_root(workspace: Path) -> Path:
@@ -317,6 +340,7 @@ def write_progress_view(root: Path, state: dict) -> None:
         "language": state.get("language"),
         "mastery": state.get("mastery", {}),
         "reviews_due": state.get("reviews_due", []),
+        "radar": state.get("radar", {}),
     }
     path.write_text(json.dumps(view, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 

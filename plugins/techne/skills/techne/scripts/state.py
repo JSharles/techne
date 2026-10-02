@@ -172,22 +172,45 @@ def whats_new(state: dict) -> dict:
     return {"version": current, "changes": fresh}
 
 
-def note_session(state: dict, session: str | None) -> str | None:
-    """Record which agent session is writing, and warn when another one was active."""
+def note_session(state: dict, session: str | None, program: str | None = None) -> str | None:
+    """Remember what this conversation has open, and warn only on a real clash.
+
+    Conversations run in parallel, one program each, so another conversation
+    being active is normal. What is not: two of them open on the same program,
+    where both would record evidence for the same subjects.
+    """
     if not session:
         return None
-    previous = state.get("session") or {}
+    sessions = state.setdefault("sessions", {})
+    mine = sessions.setdefault(session, {})
+    if program:
+        mine["program"] = program
+    mine["seen_at"] = now_stamp()
     warning = None
-    if previous.get("id") and previous["id"] != session:
+    for other, entry in sessions.items():
+        if other == session or not entry.get("program") or entry["program"] != mine.get("program"):
+            continue
         try:
-            seen = datetime.fromisoformat(previous["seen_at"])
-            hours = (datetime.now().astimezone() - seen).total_seconds() / 3600
+            hours = (datetime.now().astimezone() - datetime.fromisoformat(entry["seen_at"])).total_seconds() / 3600
         except (KeyError, ValueError):
-            hours = None
-        if hours is not None and hours < RECENT_SESSION_HOURS:
-            warning = "Another Techne session wrote this workspace recently; re-read the state before continuing."
-    state["session"] = {"id": session, "seen_at": now_stamp()}
+            continue
+        if hours < RECENT_SESSION_HOURS:
+            warning = (
+                f"Another conversation has {mine['program']} open and wrote it recently. "
+                "Re-read the state before continuing, or work on another program here."
+            )
     return warning
+
+
+def open_program(state: dict, session: str | None = None) -> str | None:
+    """The program this conversation has open, and nothing else.
+
+    A conversation that has opened none gets none: it asks the learner rather
+    than inheriting what another conversation is working on.
+    """
+    if session:
+        return state.get("sessions", {}).get(session, {}).get("program")
+    return state.get("day", {}).get("active_block")
 
 
 def entry_for(state: dict, subject: str) -> dict:
@@ -346,7 +369,7 @@ def record_review(state: dict, subject: str, passed: bool, known: set[str]) -> d
     return entry
 
 
-def checkpoint(state: dict, note: str | None, help_level: str | None, status: str) -> dict:
+def checkpoint(state: dict, note: str | None, help_level: str | None, status: str, session: str | None = None) -> dict:
     current = state.setdefault("current", {})
     current["status"] = status
     current["checkpointed_at"] = now_stamp()
@@ -357,7 +380,7 @@ def checkpoint(state: dict, note: str | None, help_level: str | None, status: st
     if note:
         current["checkpoint_note"] = note
     if status == "closed":
-        block = state.get("day", {}).get("active_block")
+        block = open_program(state, session)
         if block:
             days = state.setdefault("progress", {}).setdefault("days", {})
             days[block] = int(days.get(block, 0)) + 1
@@ -365,12 +388,14 @@ def checkpoint(state: dict, note: str | None, help_level: str | None, status: st
     return current
 
 
-def switch_block(state: dict, program: str) -> dict:
+def switch_block(state: dict, program: str, session: str | None = None) -> dict:
     if program not in enrolled(state):
         following = ", ".join(enrolled(state)) or "none"
         raise StateError(f"You are not enrolled in {program}. You follow: {following}.")
     day = state.setdefault("day", {})
     day["active_block"] = program
+    if session:
+        state.setdefault("sessions", {}).setdefault(session, {})["program"] = program
     for item in state.get("enrolments", []):
         if item["program"] == program:
             item["last_opened_at"] = now_stamp()
@@ -378,11 +403,6 @@ def switch_block(state: dict, program: str) -> dict:
     if blocks.get(program) in (None, "pending", "closed"):
         blocks[program] = "in_progress"
     return day
-
-
-def open_program(state: dict) -> str | None:
-    """The program the learner has open, which is the only one they are offered work in."""
-    return state.get("day", {}).get("active_block")
 
 
 def enrolled(state: dict) -> list[str]:
@@ -456,6 +476,42 @@ def coverage(state: dict, program: programs.Program) -> dict:
     }
 
 
+SCORE = {"not_started": 0.0, "discovered": 0.35, "assisted": 0.6, "independent": 0.9, "transferred": 1.0, "blocked": 0.1}
+
+
+def assessment(state: dict, workspace: Path, identifier: str | None) -> dict:
+    """One axis per catalogue domain, for the radar the learner reads.
+
+    A domain's share is the mean of its subjects' levels, so an axis grows as
+    subjects are demonstrated rather than merely met. With no program named, it
+    spans every program the learner follows, which is their whole skill map.
+    """
+    found, _ = programs.discover(SKILL_ROOT, workspace)
+    chosen = [found[identifier]] if identifier and identifier in found else [
+        found[name] for name in enrolled(state) if name in found
+    ]
+    mastery = state.get("mastery", {})
+    axes: dict[str, dict] = {}
+    for program in chosen:
+        for subject in sorted(program.subjects):
+            prefix = subject.partition(".")[0]
+            axis = axes.setdefault(
+                prefix,
+                {"domain": prefix, "title": program.domains.get(prefix, prefix), "subjects": 0, "score": 0.0, "states": {}},
+            )
+            name = mastery.get(subject, {}).get("state", "not_started")
+            axis["subjects"] += 1
+            axis["score"] += SCORE.get(name, 0.0)
+            axis["states"][name] = axis["states"].get(name, 0) + 1
+    for axis in axes.values():
+        axis["share"] = round(axis.pop("score") / axis["subjects"], 3) if axis["subjects"] else 0.0
+    return {
+        "program": identifier,
+        "programs": [program.identifier for program in chosen],
+        "axes": sorted(axes.values(), key=lambda axis: axis["domain"]),
+    }
+
+
 def settle_completions(state: dict, workspace: Path) -> list[str]:
     """Move a program to maintenance once its catalogue is covered.
 
@@ -502,15 +558,6 @@ def enroll(state: dict, workspace: Path, identifier: str) -> dict:
     entry = {"program": identifier, "enrolled_at": now_stamp(), "status": "active"}
     enrolments.append(entry)
     return entry
-
-
-def leave(state: dict, identifier: str) -> dict:
-    for item in state.get("enrolments", []):
-        if item["program"] == identifier:
-            item["status"] = "left"
-            item["left_at"] = now_stamp()
-            return item
-    raise StateError(f"You are not enrolled in {identifier}.")
 
 
 def ingest_events(state: dict, workspace: Path, known: set[str]) -> dict:
@@ -575,11 +622,11 @@ def build_parser() -> argparse.ArgumentParser:
     switch.add_argument("program")
 
 
-    enrolling = sub.add_parser("enroll", help="Enrol in a program and open it")
-    enrolling.add_argument("program")
+    starting = sub.add_parser("start", help="Enrol in a program if needed, then open it in this conversation")
+    starting.add_argument("program")
 
-    leaving = sub.add_parser("leave", help="Leave a program without losing its evidence")
-    leaving.add_argument("program")
+    scoring = sub.add_parser("assessment", help="Score each domain of the open program, for the radar")
+    scoring.add_argument("--all", action="store_true", dest="everything", help="Span every program followed")
 
     issues = sub.add_parser("issue", help="Record, list, resolve or export reported issues")
     actions = issues.add_subparsers(dest="action", required=True)
@@ -650,15 +697,18 @@ def readable(state: dict) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv or sys.argv[1:])
+    lock = None
     if args.command == "now":
         # The system clock, never the conversation, dates what Techne records.
         print(now_stamp())
         return 0
     try:
         workspace = args.workspace.expanduser().resolve() if args.workspace else resolve_workspace(Path("."), args.config)
+        lock = store.held(store.state_root(workspace))
+        lock.__enter__()
         state = load(workspace, allow_old_format=args.command == "migrate")
         known = known_subjects(state, workspace)
-        warning = note_session(state, args.session)
+        warning = note_session(state, args.session, open_program(state, args.session))
         result: object = None
 
         if args.command == "mastery":
@@ -671,28 +721,31 @@ def main(argv: list[str] | None = None) -> int:
                     raise StateError("--record requires --result pass|fail")
                 result = record_review(state, args.record, args.result == "pass", known)
             else:
-                here = None if args.everywhere else program_subjects(state, workspace, open_program(state))
+                mine = open_program(state, args.session)
+                here = None if args.everywhere else program_subjects(state, workspace, mine)
                 due, dropped = due_reviews(state, args.limit, here)
-                result = {"due": due, "dropped": dropped, "program": open_program(state)}
+                result = {"due": due, "dropped": dropped, "program": mine}
         elif args.command == "transfer":
-            here = None if args.everywhere else program_subjects(state, workspace, open_program(state))
-            result = {"due": due_transfers(state, here), "program": open_program(state)}
+            mine = open_program(state, args.session)
+            here = None if args.everywhere else program_subjects(state, workspace, mine)
+            result = {"due": due_transfers(state, here), "program": mine}
         elif args.command == "checkpoint":
             result = checkpoint(state, args.note, args.help_level, "checkpointed")
         elif args.command == "close":
-            result = checkpoint(state, args.note, None, "closed")
+            result = checkpoint(state, args.note, None, "closed", args.session)
         elif args.command == "switch":
             checkpoint(state, f"switching to {args.program}", None, "checkpointed")
-            result = switch_block(state, args.program)
-        elif args.command == "enroll":
-            # Enrol, then start: the learner organises their own time, so a new
-            # program opens at once rather than waiting for a slot.
+            result = switch_block(state, args.program, args.session)
+        elif args.command == "start":
+            # Enrol, then start: the learner organises their own time, so a
+            # program opens at once rather than waiting for anything.
             result = enroll(state, workspace, args.program)
             if state.get("current", {}).get("id"):
-                checkpoint(state, f"enrolling in {args.program}", None, "checkpointed")
-            switch_block(state, args.program)
-        elif args.command == "leave":
-            result = leave(state, args.program)
+                checkpoint(state, f"starting {args.program}", None, "checkpointed")
+            switch_block(state, args.program, args.session)
+        elif args.command == "assessment":
+            mine = None if args.everything else open_program(state, args.session)
+            result = state["radar"] = assessment(state, workspace, mine)
         elif args.command == "issue":
             if args.action == "add":
                 current = state.get("current", {})
@@ -743,7 +796,8 @@ def main(argv: list[str] | None = None) -> int:
                 print(problem, file=sys.stderr)
             result = {"applied": applied, "version": state["version"]}
         elif args.command == "brief":
-            print(json.dumps({**store.brief(state), "now": now_stamp()}, ensure_ascii=False, indent=2))
+            summary = {**store.brief(state), "now": now_stamp(), "program": open_program(state, args.session)}
+            print(json.dumps(summary, ensure_ascii=False, indent=2))
             return 0
         elif args.command == "export":
             document = json.dumps(state, ensure_ascii=False, indent=2) + "\n"
@@ -776,6 +830,9 @@ def main(argv: list[str] | None = None) -> int:
     except (StateError, journal.IssueError, programs.ProgramError, FileNotFoundError, OSError, ValueError) as exc:
         print(f"Techne state transition failed: {exc}", file=sys.stderr)
         return 1
+    finally:
+        if lock is not None:
+            lock.__exit__(None, None, None)
 
 
 if __name__ == "__main__":

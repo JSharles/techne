@@ -13,8 +13,12 @@ A Markdown file that defines what is taught: its units, its subject catalogue, a
 _Avoid_: curriculum, track, course
 
 **Enrolment**:
-The learner's commitment to a program. Several run at once, each progressing on its own evidence.
+The learner's commitment to a program, made by starting it. Several run at once, each progressing on its own evidence, and a program once followed is never left.
 _Avoid_: subscription
+
+**Conversation**:
+One window of the host agent, working on one program. Several run in parallel, each with its own open program, its own activity and its own due reviews; the state store is locked for the length of each command so none overwrites another.
+_Avoid_: instance, tab
 
 **Coverage**:
 How much of a program's catalogue has been taught and demonstrated. Reaching full coverage is what ends a program; time never does.
@@ -76,8 +80,8 @@ _Avoid_: score, progress percentage
 **Calibration**:
 The conversation that changes how Techne teaches. A preference — lesson length, more theory, pace — is applied at once and kept in the learner profile; a change touching evidence, the programme, or assessment goes through discussion, approval, and a recorded decision.
 
-**Weekly assessment**:
-The blunt review written after every six sessions of a program: what moved, what stalled, what is fragile, and the learner's real pace. After sessions 20, 40 and 60 it also compares the mastery map to what a senior React/Node developer is expected to know.
+**Assessment**:
+The blunt review of where the learner stands, which `assessment` writes for the open program or for every program followed, with a radar of one axis per catalogue domain drawn on the progress page. Written after every six sessions of a program: what moved, what stalled, what is fragile, and the learner's real pace. After sessions 20, 40 and 60 it also compares the mastery map to what a senior React/Node developer is expected to know.
 _Avoid_: progress report, recap
 
 **Issue**:

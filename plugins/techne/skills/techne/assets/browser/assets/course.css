@@ -46,3 +46,10 @@ code { border-radius: 5px; background: #eef1ed; padding: .15em .35em; }
 .state.independent { background: var(--accent-soft); color: var(--accent); }
 .state.transferred { background: var(--accent); color: #fff; }
 .state.blocked { background: #fae9e7; color: var(--danger); }
+
+.radar {
+  display: block;
+  max-width: 460px;
+  margin: 1.5rem auto 2rem;
+  color: var(--accent, currentColor);
+}

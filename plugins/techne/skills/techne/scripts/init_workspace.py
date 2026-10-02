@@ -7,6 +7,7 @@ import argparse
 import json
 import re
 import shutil
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -96,10 +97,39 @@ def initialize(
         stream.write(f"- Learning language: {language}\n")
         stream.write("- Next action: collect learner facts and open the first baseline probe.\n")
 
+    start_repository(workspace)
+
     if registry_path is not None:
         register_workspace(workspace, registry_path)
 
     return state_root
+
+
+IGNORED = ".techne/\n.techne-archive-*/\n"
+
+
+def start_repository(workspace: Path) -> bool:
+    """Make the learning folder a Git repository, with progress left out of it.
+
+    The learner's exercises and projects are code, so they are versioned from
+    the first day; `.techne/` is their private record and stays untracked.
+    Returns False when Git is absent or the folder is already a repository.
+    """
+    ignore = workspace / ".gitignore"
+    if not ignore.is_file():
+        ignore.write_text(IGNORED, encoding="utf-8")
+    elif ".techne/" not in ignore.read_text(encoding="utf-8"):
+        with ignore.open("a", encoding="utf-8") as stream:
+            stream.write(IGNORED)
+    if (workspace / ".git").exists():
+        return False
+    try:
+        subprocess.run(
+            ["git", "init", "--quiet"], cwd=workspace, check=True, capture_output=True, timeout=30
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return True
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:

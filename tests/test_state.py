@@ -254,6 +254,61 @@ class StateTransitionTests(unittest.TestCase):
 
         self.assertEqual(json.loads(third.getvalue())["changes"], [], "and hears it only once")
 
+    def test_assessment_scores_each_domain_of_the_open_program(self):
+        state_script.enroll(self.state, self.workspace, "engineering")
+        state_script.switch_block(self.state, "engineering", "one")
+        state_script.set_mastery(self.state, "dsa.hashing", "independent", "two-sum", "H0", self.known)
+        state_script.set_mastery(self.state, "dsa.arrays", "discovered", "lu", "H0", self.known)
+
+        scored = state_script.assessment(self.state, self.workspace, "engineering")
+
+        self.assertEqual(scored["program"], "engineering")
+        axes = {axis["domain"]: axis for axis in scored["axes"]}
+        self.assertEqual(axes["dsa"]["subjects"], 21)
+        self.assertGreater(axes["dsa"]["share"], 0)
+        self.assertEqual(axes["ts"]["share"], 0.0)
+        self.assertEqual(axes["dsa"]["title"], "DSA")
+
+    def test_assessment_can_span_every_program_followed(self):
+        write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
+        for program in ("engineering", "sprint"):
+            state_script.enroll(self.state, self.workspace, program)
+
+        scored = state_script.assessment(self.state, self.workspace, None)
+
+        self.assertIsNone(scored["program"])
+        self.assertIn("int", {axis["domain"] for axis in scored["axes"]})
+        self.assertIn("dsa", {axis["domain"] for axis in scored["axes"]})
+
+    def test_two_conversations_work_on_two_programs_at_once(self):
+        write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
+        store.save(self.workspace, self.state)
+        with redirect_stdout(io.StringIO()):
+            self.assertEqual(self.run_cli("--session", "one", "start", "engineering"), 0)
+            self.assertEqual(self.run_cli("--session", "two", "start", "sprint"), 0)
+
+        after = self.reload()
+        self.assertEqual(state_script.open_program(after, "one"), "engineering")
+        self.assertEqual(state_script.open_program(after, "two"), "sprint")
+        self.assertEqual(sorted(state_script.enrolled(after)), ["engineering", "sprint"])
+
+        with redirect_stdout(io.StringIO()) as printed:
+            self.assertEqual(self.run_cli("--session", "one", "brief"), 0)
+        self.assertEqual(json.loads(printed.getvalue())["program"], "engineering", "each conversation keeps its own")
+
+    def test_a_write_from_one_conversation_keeps_the_others_evidence(self):
+        write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
+        store.save(self.workspace, self.state)
+        with redirect_stdout(io.StringIO()):
+            for session, program in (("one", "engineering"), ("two", "sprint")):
+                self.assertEqual(self.run_cli("--session", session, "start", program), 0)
+            self.assertEqual(self.run_cli("--session", "one", "mastery", "dsa.hashing", "independent", "--evidence", "two-sum", "--help-level", "H0"), 0)
+            self.assertEqual(self.run_cli("--session", "two", "mastery", "int.first", "independent", "--evidence", "done", "--help-level", "H0"), 0)
+
+        mastery = self.reload()["mastery"]
+        self.assertEqual(mastery["dsa.hashing"]["state"], "independent")
+        self.assertEqual(mastery["int.first"]["state"], "independent", "the second write kept the first")
+
     def test_due_work_stays_inside_the_open_program(self):
         write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
         for program in ("engineering", "sprint"):
@@ -323,23 +378,21 @@ class StateTransitionTests(unittest.TestCase):
         self.assertEqual(self.state["progress"]["days"]["engineering"], 1)
         self.assertEqual(self.state["day"]["blocks"]["engineering"], "closed")
 
-    def test_enrolment_gates_switching_and_keeps_evidence_on_leaving(self):
+    def test_only_an_enrolled_program_can_be_opened(self):
         with self.assertRaises(state_script.StateError):
             state_script.switch_block(self.state, "engineering")
 
         state_script.enroll(self.state, self.workspace, "engineering")
         state_script.set_mastery(self.state, "dsa.hashing", "independent", "two-sum", "H0", self.known)
-        state_script.leave(self.state, "engineering")
+        state_script.switch_block(self.state, "engineering", "one")
 
-        self.assertEqual(state_script.enrolled(self.state), [])
-        self.assertEqual(self.state["mastery"]["dsa.hashing"]["state"], "independent")
-        state_script.enroll(self.state, self.workspace, "engineering")
         self.assertEqual(state_script.enrolled(self.state), ["engineering"])
+        self.assertEqual(self.state["mastery"]["dsa.hashing"]["state"], "independent")
 
     def test_enrolling_opens_the_program_at_once(self):
         store.save(self.workspace, self.state)
         with redirect_stdout(io.StringIO()):
-            self.assertEqual(self.run_cli("enroll", "applied-ai"), 0)
+            self.assertEqual(self.run_cli("start", "applied-ai"), 0)
 
         after = self.reload()
         self.assertEqual(after["day"]["active_block"], "applied-ai", "enrol, then start")
@@ -348,7 +401,7 @@ class StateTransitionTests(unittest.TestCase):
     def test_any_enrolled_program_opens_whenever_the_learner_wants(self):
         store.save(self.workspace, self.state)
         with redirect_stdout(io.StringIO()):
-            for command in (["enroll", "engineering"], ["enroll", "applied-ai"], ["switch", "engineering"]):
+            for command in (["start", "engineering"], ["start", "applied-ai"], ["switch", "engineering"]):
                 self.assertEqual(self.run_cli(*command), 0)
 
         after = self.reload()
@@ -651,13 +704,14 @@ class StateTransitionTests(unittest.TestCase):
         self.assertTrue((root / "feedback.jsonl.imported").is_file(), "the learner's journal is kept, not deleted")
         self.assertFalse((self.workspace / ".techne" / "SCHEDULE.md").exists(), "Techne keeps no schedule")
 
-    def test_warns_when_another_session_wrote_recently(self):
-        self.assertIsNone(state_script.note_session(self.state, "session-a"))
-        self.assertIsNone(state_script.note_session(self.state, "session-a"))
-        warning = state_script.note_session(self.state, "session-b")
+    def test_warns_only_when_two_conversations_open_the_same_program(self):
+        self.assertIsNone(state_script.note_session(self.state, "session-a", "engineering"))
+        self.assertIsNone(state_script.note_session(self.state, "session-a", "engineering"))
+        self.assertIsNone(state_script.note_session(self.state, "session-b", "applied-ai"), "two programs at once is normal")
+        warning = state_script.note_session(self.state, "session-b", "engineering")
 
         self.assertIsNotNone(warning)
-        self.assertEqual(self.state["session"]["id"], "session-b")
+        self.assertEqual(self.state["sessions"]["session-b"]["program"], "engineering")
 
     def test_the_browser_reads_a_rendered_view_not_the_store(self):
         view_path = store.progress_path(self.workspace / ".techne")

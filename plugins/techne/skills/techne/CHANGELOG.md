@@ -2,6 +2,16 @@
 
 Learner-visible changes, newest first. Versions match `plugins/techne/.claude-plugin/plugin.json`.
 
+## 0.16.0
+
+- Several programmes advance in parallel: each Claude Code window keeps its own open programme, its own activity and its own due reviews. Only one window writes at a time, so nothing is lost, and Techne warns you only when two windows open the same programme.
+- The interface drops from eighteen commands to eleven. `start <programme>` replaces `enroll`, and `switch`, `hint`, `pause`, `end`, `feedback`, `leave`, `project` and `extract-issues` are gone: you ask for those in plain words.
+- `assessment` is new: a blunt review of what moved, what stalled and what is fragile, with a skills radar — one axis per domain — drawn on your progress page. `assessment all` spans everything you follow.
+- `status` now answers one question only: where the open programme stands, progress bar included.
+- `issue` becomes your single notebook, and `issue export` prints it.
+- `init` only sets Techne up on your machine — folder, language, tools, and a Git repository for your work with your progress left out of it. Starting a programme is `start`.
+- Techne saves your work as you go, so leaving a window without a word loses nothing.
+
 ## 0.15.0
 
 - Applied AI is built around a real application you choose: it opens with the same ideation and roadmap as the other project programmes, and teaches each notion when your project needs it, instead of running through a fixed syllabus.

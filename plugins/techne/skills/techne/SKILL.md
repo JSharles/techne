@@ -1,6 +1,6 @@
 ---
 name: techne
-description: Run Techne's intensive bootcamp, teaching the programs the learner follows. Use when the learner invokes Techne, asks to initialize or resume, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, wants to create, list or switch programs, works on their red-thread project, requests a change to the teaching method or content, or uses a Techne command (init, resume, hint, ask, status, programs, switch, enroll, leave, new, project, pause, end, feedback, issue, extract-issues, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
+description: Run Techne's intensive bootcamp, teaching the programs the learner follows. Use when the learner invokes Techne, asks to initialize or resume, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, wants to create, list or switch programs, works on their red-thread project, requests a change to the teaching method or content, or uses a Techne command (init, resume, start, ask, status, programs, assessment, new, issue, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
 metadata:
   short-description: Adaptive Senior Engineer and Applied AI academy
 ---
@@ -30,7 +30,7 @@ If no workspace exists, the learner is starting Techne. Whatever command they us
 If a workspace exists and the learner asks for `init`, do not initialize again. Say where they stand, then offer, in this order:
 
 - **resume** what is open;
-- **learn something else**: that is a program, not a second Techne — `new` writes one, `enroll` adds it, and it runs beside the others, keeping its own evidence;
+- **learn something else**: that is a program, not a second Techne — `new` writes one, `start` opens it, and it runs beside the others, keeping its own evidence;
 - **reset**, only if they want to start over and lose nothing else will do.
 
 Never present `reset` as the way to learn a new subject. One workspace holds every program, each with its own evidence.
@@ -40,7 +40,7 @@ Never present `reset` as the way to learn a new subject. One workspace holds eve
 - For a resume, session start, pause, completion, hint, browser answer, status, checkpoint, reset, or uninstall request, read [operations.md](references/operations.md).
 - Before listing, creating, or changing a program, read [programs.md](references/programs.md).
 - Before any lesson, exercise, recall, review, assessment, or feedback, read [pedagogy.md](references/pedagogy.md) and [exercises.md](references/exercises.md), then the open program's own file in `programs/` — the shipped ones are [engineering.md](programs/engineering.md) and [applied-ai.md](programs/applied-ai.md), and the learner's own live in their workspace. Do not load another program while one is open.
-- Before any work on a red-thread project — the `project` command, ideation, its roadmap, a ticket, or starting it over — read [project.md](references/project.md).
+- Before any work on a red-thread project — ideation, its roadmap, a ticket, or starting it over — read [project.md](references/project.md).
 - When the learner comments on or asks to change Techne's method, curriculum, assessment, or content, checkpoint the activity and read [calibration.md](references/calibration.md).
 
 ## Talk to the learner
@@ -87,23 +87,19 @@ The interface is a small set of English commands, identical whatever the learnin
 
 | Command | Operation | Reference |
 | --- | --- | --- |
-| `init` | Start Techne: ask the learning language, create and register the workspace, then run the placement test. | [initialization.md](references/initialization.md) |
-| *(none)* or `resume` | Resume from persisted state and give the single next action. | [operations.md](references/operations.md) |
-| `hint` | Give one more step of help on the current activity. | [operations.md](references/operations.md) |
+| `init` | Set Techne up on this machine: the learning folder, the learning language, the tools, and the folder's Git repository. It enrols in nothing. | [initialization.md](references/initialization.md) |
+| *(none)* or `resume` | Resume the program this conversation has open, and give the single next action. Ask which one when none is open. | [operations.md](references/operations.md) |
+| `start <id>` | Enrol in a program if needed, then open it in this conversation. | [operations.md](references/operations.md) |
 | `ask <question>` | Answer any learner question — orientation, vocabulary, tooling, the programme itself. Consumes no help level and records nothing. | [operations.md](references/operations.md) |
-| `status` | Report progress for each enrolled program separately. | [operations.md](references/operations.md) |
+| `status` | Where the open program stands: its progress, what is open, what is due. | [operations.md](references/operations.md) |
 | `programs` | List the available programs, the learner's enrolments, and their coverage in each. | [operations.md](references/operations.md) |
-| `switch <id>` | Save progress, then open another enrolled program. | [operations.md](references/operations.md) |
-| `enroll <id>` / `leave <id>` | Follow a program and start it at once, or stop following it without losing its evidence. | [operations.md](references/operations.md) |
-| `new` | Create a program by interview, in either mode, and write it to the workspace. | [programs.md](references/programs.md) |
-| `project` | Open the red-thread project wherever it stands: ideation, building the roadmap, or the next ticket. | [project.md](references/project.md) |
-| `pause` | Save progress without closing the day. | [operations.md](references/operations.md) |
-| `end` | Save progress and close the session with a short report. | [operations.md](references/operations.md) |
-| `feedback <text>` | Discuss the programme in progress: a preference is applied at once, a method change goes through calibration. | [calibration.md](references/calibration.md) |
-| `issue <text>` | Record a defect or an improvement in Techne itself, with the activity it came from. | [operations.md](references/operations.md) |
-| `extract-issues` | Export the recorded issues as Markdown for the Techne repository. | [operations.md](references/operations.md) |
+| `assessment [all]` | A blunt assessment and the skills radar, for the open program or for every program followed. | [operations.md](references/operations.md) |
+| `new` | Create a program by interview and write it to the workspace. | [programs.md](references/programs.md) |
+| `issue <text>` \| `issue export` | Note anything about Techne itself, or print the journal for its maintainer. | [operations.md](references/operations.md) |
 | `reset` | After explicit confirmation, archive the learner's progress so Techne can start again from `init`. | [operations.md](references/operations.md) |
 | `uninstall` | After explicit confirmation, remove Techne from the host agent, optionally after `reset`. | [operations.md](references/operations.md) |
+
+Everything else is asked in plain words, and Techne does it without a command: a step of help on the open exercise, opening the red-thread project, leaving a program aside, or changing the method (see [calibration.md](references/calibration.md)).
 
 Natural language in any language remains accepted: map a clear request such as "on reprend" or "can I get a hint?" to the matching command and run it exactly as if the command had been typed. When the intent is ambiguous, ask which command the learner means instead of guessing. `reset` and `uninstall` always require an explicit confirmation, even when typed as commands.
 

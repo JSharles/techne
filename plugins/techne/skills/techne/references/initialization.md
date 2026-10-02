@@ -8,7 +8,7 @@ This is always a fresh start. Never read or reuse `.techne-archive-*` folders le
 
 Keep the start short: two questions — the language, then the folder — and under five minutes before the first placement exercise. Check the environment silently while asking. The learner should never see a shell command, a file path they must act on, or internal vocabulary.
 
-Everything else waits until it is useful: the learner profile fills itself from observed work, the red-thread project is chosen through `project`, and the AI lab is set up in the first Applied AI session.
+Everything else waits until it is useful: the learner profile fills itself from observed work, the red-thread project is chosen when its program opens, and the AI lab is set up in the first Applied AI session.
 
 ## Choose the learning language
 
@@ -34,7 +34,9 @@ If a valid existing workspace needs to become active again, run `python3 scripts
 
 Techne ships a fixed twelve-week program and measures the learner's level by observation. After the language and folder, ask nothing else: no subjects, order, session duration, availability, deadline, experience, stack, or weaknesses.
 
-Then show the programs they can follow, with `state.py programs`, and ask which one they want to start with. Enrol them with `state.py enroll <id>`, which opens it at once. Say in one sentence that they can enrol in others whenever they like, that `new` creates a program of their own, and that they organise their time as they wish: Techne picks up wherever they left off.
+`init` sets Techne up and enrols in nothing: starting a program is `start <id>`, and the learner may run several conversations at once, one program each.
+
+Show what they can follow with `state.py programs`, say in one sentence that `start` opens one and `new` creates a program of their own, and that they organise their time as they wish. Then offer to start the one they name.
 
 Check the environment yourself: Node.js, a package manager, Git, VS Code, a browser, and Python for the lesson server. When something is missing, say what and why, and install it only after the learner agrees.
 

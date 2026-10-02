@@ -196,15 +196,24 @@ class WorkspaceTests(unittest.TestCase):
             f"plugin files changed ({', '.join(changed)}) without a version bump",
         )
 
+    def test_initialisation_makes_the_folder_a_git_repository(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory) / "learning"
+            initializer.initialize(workspace, "fr")
+
+            self.assertTrue((workspace / ".git").is_dir(), "the learner's work is versioned from the start")
+            ignored = (workspace / ".gitignore").read_text(encoding="utf-8")
+            self.assertIn(".techne/", ignored, "progress and evidence stay out of the repository")
+
     def test_every_documented_command_has_a_claude_slash_command(self):
         commands_dir = ROOT / "plugins" / "techne" / "commands"
         skill = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
-        for name in ("init", "resume", "hint", "ask", "issue", "extract-issues", "status", "programs", "switch", "enroll", "leave", "new", "project", "pause", "end", "feedback", "reset", "uninstall"):
+        for name in ("init", "resume", "ask", "issue", "status", "programs", "start", "new", "assessment", "reset", "uninstall"):
             self.assertIn(f"`{name}", skill)
             command = (commands_dir / f"{name}.md").read_text(encoding="utf-8")
             self.assertTrue(command.startswith("---\ndescription: "), name)
             self.assertIn(f"Techne `{name}` command", command)
-        for gone in ("lost", "report", "help", "engineering", "ai", "schedule"):
+        for gone in ("lost", "report", "help", "engineering", "ai", "schedule", "hint", "switch", "enroll", "leave", "project", "pause", "end", "feedback", "extract-issues"):
             self.assertFalse((commands_dir / f"{gone}.md").exists(), f"{gone} was removed from the interface")
             self.assertNotIn(f"| `{gone}`", skill, f"{gone} is still in the command table")
 

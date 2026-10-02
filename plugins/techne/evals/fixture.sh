@@ -10,8 +10,8 @@ skill="$(cd "$case_dir/../../skills/techne" && pwd)"
 state() { python3 "$skill/scripts/state.py" --workspace . "$@" >/dev/null; }
 
 python3 "$skill/scripts/init_workspace.py" . --language fr --registry "$HOME/.techne/config.json" >/dev/null
-state enroll engineering
-state enroll applied-ai
+state start engineering
+state start applied-ai
 state switch engineering
 if [ -d "$case_dir/workspace" ]; then
   (cd "$case_dir/workspace" && find . -path ./state -prune -o -type f -print) | while read -r file; do

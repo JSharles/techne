@@ -41,7 +41,7 @@ When Techne becomes available in the official marketplace, installation can beco
 claude plugin install techne
 ```
 
-Then start Techne with `/techne:init` (type `/techne:` to see every command). Natural language also works; Techne maps it to the matching command (see [Commands](#commands)).
+Then set Techne up with `/techne:init` (type `/techne:` to see every command). Natural language also works; Techne maps it to the matching command (see [Commands](#commands)).
 
 ### Codex
 
@@ -117,23 +117,23 @@ Techne decides what comes next: the subject, due reviews, difficulty, and activi
 
 | Command | What it does | When to use it |
 | --- | --- | --- |
-| `init` | Asks your learning language, sets up your learning folder, and runs the placement test. | Once, the first time you use Techne. |
-| `resume` | Picks up where you left off and gives you exactly one next action. Typing the entry point alone does the same. | To start the day or come back after a break, from any folder or a new conversation. |
-| `hint` | Gives one more step of help on the current exercise, from a guiding question up to the solution explained. | When you are stuck on the exercise itself. Each call gives a little more help; work done with help counts as practice, not as proof of mastery. |
-| `ask <question>` | Answers any question: where you are, why this subject, what a word means, how a tool works. Costs you nothing and leaves no trace. | Whenever you wonder anything. It declines only the answer to the exercise you have open — that is what `hint` is for. |
-| `status` | Shows the current activity, your mastery map subject by subject, due reviews, and Applied AI progress, with the two curricula kept separate. | When you want to know where you stand. |
+| `init` | Sets Techne up on this machine: your learning folder and its Git repository, your learning language, and a check of your tools. | Once, the first time you use Techne. |
+| `resume` | Picks up the program this conversation has open and gives you exactly one next action. Typing the entry point alone does the same. | To start working, or to come back after a break. |
+| `start <id>` | Opens a program in this conversation, enrolling you if you did not follow it yet. | To begin a program, or to work on another one in a second window. |
+| `ask <question>` | Answers any question: where you are, why this subject, what a word means, how a tool works. Costs you nothing and leaves no trace. | Whenever you wonder anything. It declines only the answer to the exercise you have open. |
+| `status` | Where the open program stands: its progress, what is open, what is due. | When you want to know where you are. |
 | `programs` | Lists the programs you can follow, the ones you are enrolled in, and your coverage in each. | To see what you are carrying. |
-| `switch <id>` | Saves your progress and opens another program you follow. | Whenever you want to change course. |
-| `project` | Opens your red-thread project where it stands: finding the idea from what drives you, building its roadmap, or the next ticket. | Whenever you want to think about your project. |
-| `enroll <id>` / `leave <id>` | Follow a program and start it at once, or stop following it without losing what you proved. | When your goals change. |
+| `assessment [all]` | A blunt assessment of what moved, what stalled and what is fragile, with your skills radar — for the open program, or for everything you follow. | Every week or two, and whenever you want the whole picture. |
 | `new` | Creates a program with you, by interview: you bring the subjects and Techne structures them, or you give an objective and Techne designs the course. | When you want to learn something Techne does not ship. |
-| `pause` | Saves your progress and keeps the day open; `resume` continues exactly where you stopped. | Before a short break. |
-| `end` | Saves your progress, closes the session, and gives you four closing lines. | At the end of your working session. |
-| `feedback <text>` | Talks about the teaching: a preference is applied at once, a bigger change is discussed and recorded. | When the method or the content does not suit you. |
-| `issue <text>` | Records a defect or an idea about Techne itself, with the activity it came from. | The moment the tool misbehaves, without losing your thread. |
-| `extract-issues` | Exports everything you reported, grouped and dated, ready to paste into the Techne repository. | When you sit down to improve Techne itself. |
-| `reset` | After you confirm, puts your progress aside (archived, not deleted unless you ask) so Techne starts again from `init`. Your exercise files stay unless you ask to remove them. | To start the whole curriculum over. Updating Techne never needs it: an older workspace is migrated, not reset. |
-| `uninstall` | After you confirm, removes Techne from your agent, optionally after a `reset`, and tells you how to reinstall. | When you no longer want Techne, or to retest installation. |
+| `issue <text>` or `issue export` | Notes anything about Techne itself, with the activity it came from; `export` prints everything you noted. | The moment the tool misbehaves, and when you sit down to improve it. |
+| `reset` | After you confirm, puts your progress aside (archived, not deleted unless you ask) so Techne starts again from `init`. | To start over. Updating Techne never needs it. |
+| `uninstall` | After you confirm, removes Techne from your agent, optionally after a `reset`, and tells you how to reinstall. | When you no longer want Techne. |
+
+Everything else you simply ask for, in plain words: a step of help on the exercise you have open, opening your project, setting a program aside, or changing how Techne teaches you.
+
+## Several programs at once
+
+Each Claude Code window works on one program. Open a second window, run `start` or `resume` there, and the two advance in parallel: each keeps its own program, its own activity and its own due reviews. Only one of them writes at a time, so nothing is lost. Techne warns you only if two windows open the same program, where both would record evidence for the same subjects.
 
 ### Natural language
 
@@ -141,7 +141,7 @@ You can also just talk to the agent, in any language: "on reprend", "I'm stuck",
 
 ## Learning something else
 
-A new subject is a **program**, not a second Techne: `new` writes one with you, `enroll` adds it beside the ones you already follow, and `switch` opens it. Everything stays in one workspace, and each program keeps its own evidence: what you proved in one never counts in another.
+A new subject is a **program**, not a second Techne: `new` writes one with you, and `start` opens it beside the ones you already follow. Everything stays in one workspace, and each program keeps its own evidence: what you proved in one never counts in another.
 
 One workspace holds your whole learning life, and `reset` is only for starting that life over. To try Techne out without touching it — a new version, a program you are unsure about — give the session its own registry:
 

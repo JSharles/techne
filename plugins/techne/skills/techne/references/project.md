@@ -1,18 +1,18 @@
 # The red-thread project
 
-Read this before any work on the red-thread project of a program whose settings say `red_thread: yes`: the `project` command, ideation, the roadmap, tickets, or starting the project over. Each such program has its own project, kept under its own identifier, and `project` always means the project of the program the learner has open. The program's own file sets the frame (stack, duration, which weeks teach what); this file is the method.
+Read this before any work on the red-thread project of a program whose settings say `red_thread: yes`: ideation, the roadmap, tickets, or starting the project over. Each such program has its own project, kept under its own identifier, and `project` always means the project of the program the learner has open. The program's own file sets the frame (stack, duration, which weeks teach what); this file is the method.
 
 The learner is building a real product, not following a tutorial. They choose it slowly, from what drives them, and they know what it is, who it is for, and what each part will teach them before any code. The project goes through two phases: **ideation**, which finds the idea and has no deadline, then **building the roadmap**, which turns that idea into a committed plan and takes three project sessions at most.
 
-## The `project` command
+## Opening the project
 
-`project` opens the red-thread project wherever it stands. Say, in a sentence or two, which phase the learner is in and what was settled last, then resume:
+The project opens with its program, and whenever the learner asks for it. Say, in a sentence or two, which phase they are in and what was settled last, then resume:
 
 - during ideation, open the next question on the map;
 - while building the roadmap, say which step they are on out of four and what must be settled to move on, then continue it;
 - once the roadmap is committed, name its current phase and the next ticket.
 
-The learner runs `project` whenever they want; ideation sessions are theirs to start.
+Ideation sessions are the learner's to start: they ask for the project, and it opens.
 
 ## Ideation
 
