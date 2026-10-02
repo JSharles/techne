@@ -2,6 +2,10 @@
 
 Learner-visible changes, newest first. Versions match `plugins/techne/.claude-plugin/plugin.json`.
 
+## 0.17.1
+
+- AI-native engineering, module 11: the review pass becomes a reviewer subagent you define yourself, with its own empty context and an allowlist of read-only tools, and two probes that show you where its limits actually hold.
+
 ## 0.17.0
 
 - Ten programmes ship with Techne, written for a senior frontend path and its neighbours: Frontend senior, Backend NestJS, DSA, System design, DevOps, Git, Design engineer, Product engineer, AI agent engineering and AI-native engineering. Each is a course of its own, with its own evidence; start the ones you want with `start`.

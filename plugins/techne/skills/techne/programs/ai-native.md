@@ -1,7 +1,7 @@
 ---
 id: ai-native
 title: AI-native software engineering
-version: 1
+version: 2
 activity_kinds: code, writing
 lesson_to_practice: practice-heavy
 timeboxes: lesson=10, exercise=45, review=5, project=90, placement=0
@@ -16,7 +16,7 @@ survey_ceiling: discovered
 For a TypeScript developer who wants to ship reliable software whose code is mostly written by coding agents,
 without losing control of what they produce. Modelled in spirit on aienhanced.dev (research → plan → first
 slice → worktrees → several agents → risk-based review → deploy → keep rules alive), on a different stack:
-Next.js 16 (App Router), TypeScript strict, Effect 4, Alchemy 2, Cloudflare, Claude Code. About 15 hours.
+Next.js 16 (App Router), TypeScript strict, Effect 4, Alchemy 2, Cloudflare, Claude Code. About 15 hours and a quarter.
 
 The learner learns three gestures an agent never does for them:
 
@@ -363,24 +363,31 @@ is evidence.
   duplicated utilities; a fourth agent "to go faster"; merging out of dependency order.
 - **Before moving on:** the limit of parallelism and where it comes from.
 
-### Module 11 — Risk-based review (60 min)
+### Module 11 — Risk-based review (75 min)
 
 - **Objective:** review without reading every line, and still catch what matters.
-- **Concepts:** gates first; an automated review pass (Claude Code in a separate session, or the Claude Code
-  GitHub Action) told the risks to look for; risk triage (auth, data, migrations, infra, secrets, money, deletion);
-  PR template with a risk section.
+- **Concepts:** gates first; a reviewer subagent defined in `.claude/agents/reviewer.md` (read-only tools, fresh
+  context, loads the rules but not the author's session), or the Claude Code GitHub Action in CI; risk triage
+  (auth, data, migrations, infra, secrets, money, deletion); PR template with a risk section.
 - **Theory:** reading effort follows risk, not diff size. A reviewer agent must not be the agent that wrote the
-  code, and receives the rules, not the author's reasoning.
-- **Exercise:** write `REVIEW.md` (risk categories and what to check in each) and the PR template. Then review
-  three Techne-prepared copies of the learner's own PRs, each with planted defects, in a file, unaided.
-- **Deliverable:** `REVIEW.md`, PR template, review files with findings.
+  code, and receives the rules, not the author's reasoning. A subagent turns that rule into configuration: its
+  context starts empty and its tools are an allowlist. Like any gate, it is proven only by trying to break it.
+- **Exercise:** write `REVIEW.md` (risk categories and what to check in each) and the PR template. Write
+  `.claude/agents/reviewer.md`: its description, its tool list, and a system prompt that points to `REVIEW.md`
+  and requires the output format below. Run two probes: ask it to fix one of its own findings, and ask it what
+  the author intended with a change. Record what stopped each one. Then review three Techne-prepared copies of
+  the learner's own PRs, each with planted defects, in a file, unaided.
+- **Deliverable:** `REVIEW.md`, PR template, `reviewer.md` and the probe log, review files with findings.
 - **Prompt skeleton (review):** "Review this diff against <AGENTS.md>, <architecture.md>, <REVIEW.md>. Report
-  only findings with a concrete failure scenario. No style comments. Rank by risk."
-- **Split:** human decides the risk categories and the final verdict; agent does the first pass; human reads
-  fully only the high-risk files.
-- **Validation:** planted defects found in high-risk areas; time spent per PR noted.
+  only findings with a concrete failure scenario. No style comments. Rank by risk." The subagent's output is
+  fixed: one line per finding with file, risk category, failure scenario. Nothing else.
+- **Split:** human decides the risk categories, the reviewer's tools and output format, and the final verdict;
+  the reviewer subagent does the first pass; human reads fully only the high-risk files.
+- **Validation:** planted defects found in high-risk areas; time spent per PR noted. Both probes stopped by the
+  subagent's configuration, not by its goodwill.
 - **Frequent mistakes with agents:** a reviewer flooding style nits; the author reviewing itself; approving
-  because the reviewer agent said "looks good".
+  because the reviewer agent said "looks good"; a reviewer given `Edit` or unrestricted `Bash` "to save time",
+  which then fixes instead of reporting.
 - **Before moving on:** what the learner always reads, and what they never read.
 
 ### Module 12 — Deploy, observe, debug (75 min)
@@ -455,7 +462,7 @@ is evidence.
 | 19 unit, 20 integration, 21 end-to-end tests | 8 |
 | 26 infrastructure as code (Queues, R2) | 1, 9 |
 | 12 branches and worktrees, 13 parallel agents, 25 merge | 10 |
-| 22 automated review, 23 risk-based human review, 24 fixing issues | 11 |
+| 22 automated review (reviewer subagent), 23 risk-based human review, 24 fixing issues | 11 |
 | 27 deployment, 28 observability, 29 debugging | 12 |
 | 30 refactoring | 13 |
 | 31 maintaining rules and docs, 32 new features without degrading | 14 |
@@ -502,7 +509,7 @@ is evidence.
 ### Review — `aireview.*`
 
 `automated-first-pass`, `risk-triage`, `review-checklist`, `pr-template`, `planted-defect-finding`,
-`independent-reviewer`
+`independent-reviewer`, `reviewer-subagent`
 
 ### Infrastructure and operations — `aiinfra.*`
 
