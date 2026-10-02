@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS issues (
     track TEXT,
     status TEXT NOT NULL DEFAULT 'open',
     resolved_at TEXT,
+    exported_at TEXT,
     version INTEGER NOT NULL DEFAULT 1
 );
 """
@@ -113,7 +114,10 @@ def exists(workspace: Path) -> bool:
 
 
 # Columns added after a database may already exist in the wild.
-ADDED_COLUMNS = (("enrolments", "position", "INTEGER NOT NULL DEFAULT 0"),)
+ADDED_COLUMNS = (
+    ("enrolments", "position", "INTEGER NOT NULL DEFAULT 0"),
+    ("issues", "exported_at", "TEXT"),
+)
 
 
 def connect(root: Path) -> sqlite3.Connection:
@@ -284,8 +288,8 @@ def write_tables(root: Path, state: dict) -> None:
 
             connection.execute("DELETE FROM issues")
             connection.executemany(
-                "INSERT INTO issues (id, at, type, text, activity, track, status, resolved_at, version)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO issues (id, at, type, text, activity, track, status, resolved_at, exported_at, version)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 [
                     (
                         item["id"],
@@ -296,6 +300,7 @@ def write_tables(root: Path, state: dict) -> None:
                         item.get("track"),
                         item.get("status", "open"),
                         item.get("resolved_at"),
+                        item.get("exported_at"),
                         int(item.get("version", 1)),
                     )
                     for item in state.get("issues", [])

@@ -254,6 +254,30 @@ class StateTransitionTests(unittest.TestCase):
 
         self.assertEqual(json.loads(third.getvalue())["changes"], [], "and hears it only once")
 
+    def test_exporting_marks_the_journal_and_clearing_archives_it(self):
+        for text in ("the lesson said ten tests", "the radar was cut off"):
+            journal.add(self.state, "bug", text, {})
+        store.save(self.workspace, self.state)
+
+        with redirect_stdout(io.StringIO()) as printed:
+            self.assertEqual(self.run_cli("issue", "export"), 0)
+        self.assertIn("ten tests", printed.getvalue())
+
+        exported = self.reload()["issues"]
+        self.assertTrue(all(entry.get("exported_at") for entry in exported), "export stamps what it printed")
+
+        journal.add(self.state, "idea", "written after the export", {})
+        self.state["issues"] = [*exported, self.state["issues"][-1]]
+        store.save(self.workspace, self.state)
+        with redirect_stdout(io.StringIO()):
+            self.assertEqual(self.run_cli("issue", "clear"), 0)
+
+        left = self.reload()["issues"]
+        self.assertEqual([entry["text"] for entry in left], ["written after the export"], "only exported notes go")
+        archives = sorted((self.workspace / ".techne" / "archive").glob("*-issues.md"))
+        self.assertEqual(len(archives), 1)
+        self.assertIn("ten tests", archives[0].read_text(encoding="utf-8"))
+
     def test_assessment_scores_each_domain_of_the_open_program(self):
         state_script.enroll(self.state, self.workspace, "engineering")
         state_script.switch_block(self.state, "engineering", "one")
@@ -761,13 +785,13 @@ class StateTransitionTests(unittest.TestCase):
         self.assertNotIn("## Ideas", export)
         self.assertIn("l04 · engineering", export)
 
-    def test_cli_export_leaves_the_store_untouched(self):
+    def test_cli_listing_the_journal_leaves_the_store_untouched(self):
         self.run_cli("issue", "add", "--type", "bug", "--text", "trace cassée")
         database = store.database_path(self.workspace / ".techne")
         before = database.read_bytes()
 
         with redirect_stdout(io.StringIO()):
-            self.assertEqual(self.run_cli("issue", "export"), 0)
+            self.assertEqual(self.run_cli("issue", "list"), 0)
 
         self.assertEqual(database.read_bytes(), before)
 

@@ -123,9 +123,11 @@ Techne decides what comes next: the subject, due reviews, difficulty, and activi
 | `ask <question>` | Answers any question: where you are, why this subject, what a word means, how a tool works. Costs you nothing and leaves no trace. | Whenever you wonder anything. It declines only the answer to the exercise you have open. |
 | `status` | Where the open program stands: its progress, what is open, what is due. | When you want to know where you are. |
 | `programs` | Lists the programs you can follow, the ones you are enrolled in, and your coverage in each. | To see what you are carrying. |
-| `assessment [all]` | A blunt assessment of what moved, what stalled and what is fragile, with your skills radar — for the open program, or for everything you follow. | Every week or two, and whenever you want the whole picture. |
+| `assessment` | A blunt assessment of what moved, what stalled and what is fragile in the open program, with your skills radar. | Every week or two. |
+| `assessment-all` | The same radar across every program you follow: the state of your skills as a whole. | When you want the whole picture. |
 | `new` | Creates a program with you, by interview: you bring the subjects and Techne structures them, or you give an objective and Techne designs the course. | When you want to learn something Techne does not ship. |
-| `issue <text>` or `issue export` | Notes anything about Techne itself, with the activity it came from; `export` prints everything you noted. | The moment the tool misbehaves, and when you sit down to improve it. |
+| `issue <text>` | Notes anything about Techne itself, with the activity it came from. | The moment the tool misbehaves. |
+| `issues-export` | Prints everything you noted, grouped and dated, then offers to empty the journal. | When you sit down to improve Techne. |
 | `reset` | After you confirm, puts your progress aside (archived, not deleted unless you ask) so Techne starts again from `init`. | To start over. Updating Techne never needs it. |
 | `uninstall` | After you confirm, removes Techne from your agent, optionally after a `reset`, and tells you how to reinstall. | When you no longer want Techne. |
 

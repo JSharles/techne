@@ -645,6 +645,8 @@ def build_parser() -> argparse.ArgumentParser:
     exporting.add_argument("--status", choices=journal.STATUSES, default="open")
     exporting.add_argument("--since", metavar="DATE")
 
+    actions.add_parser("clear", help="Take the exported notes out of the journal, into an archive file")
+
     resolving = actions.add_parser("resolve", help="Mark an entry applied or dismissed")
     resolving.add_argument("id")
     resolving.add_argument("--status", choices=journal.STATUSES, default="applied")
@@ -663,6 +665,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 def read_only(args: argparse.Namespace) -> bool:
     """Commands that only look at the state, and so must leave it alone."""
+    if args.command == "issue":
+        return args.action == "list"
     return args.command in ("programs", "show")
 
 
@@ -757,9 +761,14 @@ def main(argv: list[str] | None = None) -> int:
             elif args.action == "resolve":
                 result = journal.resolve(state, args.id, args.status)
             elif args.action == "export":
-                # An export reads; it never writes state.
-                print(journal.export(journal.select(state, args.status, args.since)), end="")
-                return 0
+                sent = journal.select(state, args.status, args.since)
+                print(journal.export(sent), end="")
+                journal.mark_exported(state, sent)
+                result = {"exported": [entry["id"] for entry in sent]}
+            elif args.action == "clear":
+                archive = workspace / ".techne" / "archive" / f"{now_stamp().replace(':', '')[:17]}-issues.md"
+                gone = journal.clear_exported(state, archive)
+                result = {"cleared": [entry["id"] for entry in gone], "archive": str(archive)}
             else:
                 result = {"entries": journal.select(state, args.status, args.since)}
         elif args.command == "whats-new":

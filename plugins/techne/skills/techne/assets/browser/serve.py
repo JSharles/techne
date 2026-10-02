@@ -95,46 +95,62 @@ DOMAIN_ORDER = (
     "py", "svc", "llm", "rag", "agent", "eval",
 )
 STATE_ORDER = ("transferred", "independent", "assisted", "blocked", "discovered", "not_started")
-RADAR_SIZE = 460
+RADAR_RADIUS = 150  # grows with the number of axes, so labels do not pile up
 RADAR_RINGS = 4
+RADAR_FONT = 11
+# Rough width of a character at RADAR_FONT, enough to keep a label inside the drawing.
+RADAR_CHARACTER = 6.4
 
 
 def radar(axes: list[dict]) -> str:
     """Draw the assessment as a radar, one axis per domain, in plain SVG.
 
     `state.py assessment` computes the axes; this only draws them, so the page
-    stays a view and never reasons about mastery.
+    stays a view and never reasons about mastery. The drawing is as wide as its
+    longest label needs, because a cropped domain name tells the learner nothing.
     """
     axes = [axis for axis in axes if isinstance(axis, dict) and axis.get("subjects")]
     if len(axes) < 3:
         return ""
-    middle = RADAR_SIZE / 2
-    radius = middle - 70
+    labelled = [
+        (axis, f"{axis.get('title') or axis.get('domain')} {round(axis.get('share', 0) * 100)}%")
+        for axis in axes
+    ]
+    radius = max(RADAR_RADIUS, len(axes) * 11)
+    margin = max(len(label) for _, label in labelled) * RADAR_CHARACTER + 16
+    width = 2 * (radius * 1.16 + margin)
+    height = 2 * (radius * 1.16 + 3 * RADAR_FONT)
+    middle_x, middle_y = width / 2, height / 2
     step = 2 * math.pi / len(axes)
 
     def point(index: int, share: float) -> tuple[float, float]:
         angle = index * step - math.pi / 2
-        return middle + math.cos(angle) * radius * share, middle + math.sin(angle) * radius * share
+        return middle_x + math.cos(angle) * radius * share, middle_y + math.sin(angle) * radius * share
 
     rings = "".join(
-        f'<circle cx="{middle}" cy="{middle}" r="{radius * (ring + 1) / RADAR_RINGS:.1f}" fill="none" '
-        f'stroke="currentColor" stroke-opacity="0.18" />'
+        f'<circle cx="{middle_x:.1f}" cy="{middle_y:.1f}" r="{radius * (ring + 1) / RADAR_RINGS:.1f}" '
+        f'fill="none" stroke="currentColor" stroke-opacity="0.18" />'
         for ring in range(RADAR_RINGS)
     )
     spokes = labels = ""
-    for index, axis in enumerate(axes):
+    for index, (axis, label) in enumerate(labelled):
         edge = point(index, 1.0)
-        spokes += f'<line x1="{middle}" y1="{middle}" x2="{edge[0]:.1f}" y2="{edge[1]:.1f}" stroke="currentColor" stroke-opacity="0.18" />'
+        spokes += (
+            f'<line x1="{middle_x:.1f}" y1="{middle_y:.1f}" x2="{edge[0]:.1f}" y2="{edge[1]:.1f}" '
+            f'stroke="currentColor" stroke-opacity="0.18" />'
+        )
         text = point(index, 1.16)
-        anchor = "middle" if abs(text[0] - middle) < 12 else ("start" if text[0] > middle else "end")
-        share = round(axis.get("share", 0) * 100)
+        anchor = "middle" if abs(text[0] - middle_x) < 12 else ("start" if text[0] > middle_x else "end")
         labels += (
             f'<text x="{text[0]:.1f}" y="{text[1]:.1f}" text-anchor="{anchor}" dominant-baseline="middle" '
-            f'font-size="12">{html.escape(str(axis.get("title") or axis.get("domain")))} {share}%</text>'
+            f'font-size="{RADAR_FONT}">{html.escape(label)}</text>'
         )
-    shape = " ".join(f"{x:.1f},{y:.1f}" for x, y in (point(index, max(axis.get("share", 0), 0.02)) for index, axis in enumerate(axes)))
+    shape = " ".join(
+        f"{x:.1f},{y:.1f}"
+        for x, y in (point(index, max(axis.get("share", 0), 0.02)) for index, (axis, _) in enumerate(labelled))
+    )
     return (
-        f'<svg viewBox="0 0 {RADAR_SIZE} {RADAR_SIZE}" width="100%" role="img" class="radar">{rings}{spokes}'
+        f'<svg viewBox="0 0 {width:.0f} {height:.0f}" width="100%" role="img" class="radar">{rings}{spokes}'
         f'<polygon points="{shape}" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="2" />'
         f"{labels}</svg>"
     )

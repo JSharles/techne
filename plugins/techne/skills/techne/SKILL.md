@@ -1,6 +1,6 @@
 ---
 name: techne
-description: Run Techne's intensive bootcamp, teaching the programs the learner follows. Use when the learner invokes Techne, asks to initialize or resume, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, wants to create, list or switch programs, works on their red-thread project, requests a change to the teaching method or content, or uses a Techne command (init, resume, start, ask, status, programs, assessment, new, issue, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
+description: Run Techne's intensive bootcamp, teaching the programs the learner follows. Use when the learner invokes Techne, asks to initialize or resume, requests the next lesson, submits or discusses an exercise, asks for a hint or progress report, wants to create, list or switch programs, works on their red-thread project, requests a change to the teaching method or content, or uses a Techne command (init, resume, start, ask, status, programs, assessment, assessment-all, new, issue, issues-export, reset, uninstall). Do not use for ordinary coding help outside a Techne learning workspace.
 metadata:
   short-description: Adaptive Senior Engineer and Applied AI academy
 ---
@@ -93,9 +93,11 @@ The interface is a small set of English commands, identical whatever the learnin
 | `ask <question>` | Answer any learner question — orientation, vocabulary, tooling, the programme itself. Consumes no help level and records nothing. | [operations.md](references/operations.md) |
 | `status` | Where the open program stands: its progress, what is open, what is due. | [operations.md](references/operations.md) |
 | `programs` | List the available programs, the learner's enrolments, and their coverage in each. | [operations.md](references/operations.md) |
-| `assessment [all]` | A blunt assessment and the skills radar, for the open program or for every program followed. | [operations.md](references/operations.md) |
+| `assessment` | A blunt assessment and the skills radar for the open program. | [operations.md](references/operations.md) |
+| `assessment-all` | The same, spanning every program the learner follows. | [operations.md](references/operations.md) |
 | `new` | Create a program by interview and write it to the workspace. | [programs.md](references/programs.md) |
-| `issue <text>` \| `issue export` | Note anything about Techne itself, or print the journal for its maintainer. | [operations.md](references/operations.md) |
+| `issue <text>` | Note anything about Techne itself, with the activity it came from. | [operations.md](references/operations.md) |
+| `issues-export` | Print the journal, grouped and dated, for whoever maintains Techne, then offer to empty it. | [operations.md](references/operations.md) |
 | `reset` | After explicit confirmation, archive the learner's progress so Techne can start again from `init`. | [operations.md](references/operations.md) |
 | `uninstall` | After explicit confirmation, remove Techne from the host agent, optionally after `reset`. | [operations.md](references/operations.md) |
 

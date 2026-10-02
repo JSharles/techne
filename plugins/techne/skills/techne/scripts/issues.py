@@ -115,6 +115,31 @@ def export(recorded: list[dict], exported_on: date | None = None) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
+def mark_exported(state: dict, exported: list[dict]) -> None:
+    """Stamp what an export printed, so clearing knows what has left the workspace."""
+    stamp = datetime.now().astimezone().isoformat(timespec="seconds")
+    sent = {entry.get("id") for entry in exported}
+    for entry in entries(state):
+        if entry.get("id") in sent:
+            entry["exported_at"] = stamp
+
+
+def clear_exported(state: dict, archive: Path) -> list[dict]:
+    """Take the exported notes out of the journal, keeping them in an archive file.
+
+    The learner asked for them to be handed over, not destroyed: they leave the
+    journal Techne rereads and stay on disk, where nothing looks at them again.
+    """
+    recorded = entries(state)
+    gone = [entry for entry in recorded if entry.get("exported_at")]
+    if not gone:
+        raise IssueError("Nothing has been exported yet, so there is nothing to clear.")
+    archive.parent.mkdir(parents=True, exist_ok=True)
+    archive.write_text(export(gone), encoding="utf-8")
+    state["issues"] = [entry for entry in recorded if not entry.get("exported_at")]
+    return gone
+
+
 def problems(state: dict) -> list[str]:
     """Validation errors in the journal, for validate_workspace.py."""
     errors, seen = [], set()

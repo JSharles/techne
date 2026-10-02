@@ -196,6 +196,21 @@ class WorkspaceTests(unittest.TestCase):
             f"plugin files changed ({', '.join(changed)}) without a version bump",
         )
 
+    def test_the_radar_leaves_room_for_its_longest_label(self):
+        drawing = load_module("techne_serve", SKILL_ROOT / "assets" / "browser" / "serve.py")
+        axes = [
+            {"domain": "codebase", "title": "Existing codebases and their conventions", "subjects": 5, "share": 0.4},
+            {"domain": "js", "title": "JavaScript", "subjects": 10, "share": 0.8},
+            {"domain": "css", "title": "CSS", "subjects": 10, "share": 0.1},
+        ]
+        svg = drawing.radar(axes)
+        width = float(svg.split('viewBox="0 0 ')[1].split(" ")[0])
+        anchors = [float(piece.split('"')[1]) for piece in svg.split("<text x=")[1:]]
+        rightmost = max(anchors)
+
+        self.assertLess(rightmost + len("Existing codebases and their conventions 40%") * 7, width)
+        self.assertGreater(min(anchors), 0)
+
     def test_initialisation_makes_the_folder_a_git_repository(self):
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory) / "learning"
@@ -208,7 +223,7 @@ class WorkspaceTests(unittest.TestCase):
     def test_every_documented_command_has_a_claude_slash_command(self):
         commands_dir = ROOT / "plugins" / "techne" / "commands"
         skill = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
-        for name in ("init", "resume", "ask", "issue", "status", "programs", "start", "new", "assessment", "reset", "uninstall"):
+        for name in ("init", "resume", "ask", "issue", "issues-export", "status", "programs", "start", "new", "assessment", "assessment-all", "reset", "uninstall"):
             self.assertIn(f"`{name}", skill)
             command = (commands_dir / f"{name}.md").read_text(encoding="utf-8")
             self.assertTrue(command.startswith("---\ndescription: "), name)

@@ -2,6 +2,12 @@
 
 Learner-visible changes, newest first. Versions match `plugins/techne/.claude-plugin/plugin.json`.
 
+## 0.16.1
+
+- The skills radar is drawn as wide as its longest domain name needs, and grows with the number of axes, so no label is cut off any more.
+- `assessment-all` and `issues-export` are commands of their own, so they show up when you type `/` instead of hiding behind an argument.
+- Once you have handed your notes over, Techne offers to empty the journal: the exported notes move to an archive file and stop coming back, while anything noted since the export stays.
+
 ## 0.16.0
 
 - Several programmes advance in parallel: each Claude Code window keeps its own open programme, its own activity and its own due reviews. Only one window writes at a time, so nothing is lost, and Techne warns you only when two windows open the same programme.
