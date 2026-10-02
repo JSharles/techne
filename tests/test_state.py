@@ -57,21 +57,80 @@ def write_program(directory: Path, identifier: str, **overrides) -> Path:
     return path
 
 
+CORE_PROGRAM = """---
+id: core
+title: Core
+version: 1
+activity_kinds: code, browser
+lesson_to_practice: balanced
+timeboxes: lesson=10, exercise=30, review=5, project=90, placement=15
+red_thread: yes
+survey_ceiling: discovered
+---
+
+# Core
+
+## Sequence
+
+### Week 1 — Foundations
+
+- what is taught here.
+
+## Subject catalogue
+
+### DSA — `dsa.*`
+
+`iteration`, `arrays`, `hashing`, `bfs`
+
+### TypeScript — `ts.*`
+
+`narrowing`, `generics`
+
+### React — `react.*`
+
+`effects-and-alternatives`, `forms`
+
+### SQL and data — `sql.*`
+
+`indexes`
+
+### Survey — `survey.*`
+
+`logs`
+"""
+
+
+def write_core(workspace: Path) -> Path:
+    """The program the state tests measure against: their own, never a shipped one."""
+    folder = programs.workspace_dir(workspace)
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / "core.md"
+    path.write_text(CORE_PROGRAM, encoding="utf-8")
+    return path
+
+
 class ProgramTests(unittest.TestCase):
     def test_reads_the_shipped_programs(self):
         found, rejected = programs.discover(SKILL_ROOT)
 
         self.assertEqual(rejected, {})
-        self.assertEqual(sorted(found), ["applied-ai", "engineering"])
-        self.assertTrue(found["engineering"].settings["red_thread"])
-        self.assertEqual(found["engineering"].settings["timeboxes"]["exercise"], 30)
-        self.assertGreater(len(found["engineering"].units), 3)
+        self.assertIn("applied-ai", found)
+        self.assertTrue(found["applied-ai"].settings["red_thread"])
+        self.assertEqual(found["applied-ai"].settings["lesson_to_practice"], "on-demand")
+        self.assertGreater(len(found["applied-ai"].units), 3)
 
         subjects = programs.subjects(SKILL_ROOT)
-        self.assertIn("ts.narrowing", subjects)
         self.assertIn("agent.checkpointers", subjects)
-        self.assertNotIn("ts.bogus", subjects)
-        self.assertGreater(len(subjects), 150)
+        self.assertNotIn("agent.bogus", subjects)
+        self.assertGreater(len(subjects), 70)
+
+    def test_no_two_shipped_programs_share_a_domain(self):
+        found, rejected = programs.discover(SKILL_ROOT)
+
+        self.assertEqual(rejected, {}, "a shipped program is always usable")
+        for identifier, program in found.items():
+            others = [other for name, other in found.items() if name != identifier]
+            self.assertEqual(programs.overlaps(program, others), [], f"{identifier} shares a domain")
 
     def test_the_learners_program_wins_an_identifier_clash(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -143,9 +202,6 @@ class ProgramTests(unittest.TestCase):
             self.assertIn("Styling", rejected["blurred"])
 
     def test_prose_under_a_domain_mints_no_subject(self):
-        found, _ = programs.discover(SKILL_ROOT)
-
-        self.assertNotIn("survey.discovered", found["engineering"].subjects)
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)
             write_program(
@@ -172,10 +228,13 @@ class ProgramTests(unittest.TestCase):
             self.assertEqual(programs.overlaps(found["gardening"], [found["interviews"]]), [])
             self.assertEqual(programs.overlaps(found["interviews"], [found["interviews"]]), [])
 
-    def test_the_shipped_programs_share_no_domain(self):
-        found, _ = programs.discover(SKILL_ROOT)
+    def test_the_shipped_program_shares_no_domain_with_a_learners_own(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            write_core(workspace)
+            found, _ = programs.discover(SKILL_ROOT, workspace)
 
-        self.assertEqual(programs.overlaps(found["engineering"], [found["applied-ai"]]), [])
+            self.assertEqual(programs.overlaps(found["applied-ai"], [found["core"]]), [])
 
 
 class StateTransitionTests(unittest.TestCase):
@@ -184,6 +243,7 @@ class StateTransitionTests(unittest.TestCase):
         self.addCleanup(self.directory.cleanup)
         self.workspace = Path(self.directory.name)
         initializer.initialize(self.workspace, "fr")
+        write_core(self.workspace)
         self.state = state_script.load(self.workspace)
         self.known = programs.subjects(SKILL_ROOT, self.workspace)
 
@@ -279,23 +339,23 @@ class StateTransitionTests(unittest.TestCase):
         self.assertIn("ten tests", archives[0].read_text(encoding="utf-8"))
 
     def test_assessment_scores_each_domain_of_the_open_program(self):
-        state_script.enroll(self.state, self.workspace, "engineering")
-        state_script.switch_block(self.state, "engineering", "one")
+        state_script.enroll(self.state, self.workspace, "core")
+        state_script.switch_block(self.state, "core", "one")
         state_script.set_mastery(self.state, "dsa.hashing", "independent", "two-sum", "H0", self.known)
         state_script.set_mastery(self.state, "dsa.arrays", "discovered", "lu", "H0", self.known)
 
-        scored = state_script.assessment(self.state, self.workspace, "engineering")
+        scored = state_script.assessment(self.state, self.workspace, "core")
 
-        self.assertEqual(scored["program"], "engineering")
+        self.assertEqual(scored["program"], "core")
         axes = {axis["domain"]: axis for axis in scored["axes"]}
-        self.assertEqual(axes["dsa"]["subjects"], 21)
+        self.assertEqual(axes["dsa"]["subjects"], 4)
         self.assertGreater(axes["dsa"]["share"], 0)
         self.assertEqual(axes["ts"]["share"], 0.0)
         self.assertEqual(axes["dsa"]["title"], "DSA")
 
     def test_assessment_can_span_every_program_followed(self):
         write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
-        for program in ("engineering", "sprint"):
+        for program in ("core", "sprint"):
             state_script.enroll(self.state, self.workspace, program)
 
         scored = state_script.assessment(self.state, self.workspace, None)
@@ -308,23 +368,23 @@ class StateTransitionTests(unittest.TestCase):
         write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
         store.save(self.workspace, self.state)
         with redirect_stdout(io.StringIO()):
-            self.assertEqual(self.run_cli("--session", "one", "start", "engineering"), 0)
+            self.assertEqual(self.run_cli("--session", "one", "start", "core"), 0)
             self.assertEqual(self.run_cli("--session", "two", "start", "sprint"), 0)
 
         after = self.reload()
-        self.assertEqual(state_script.open_program(after, "one"), "engineering")
+        self.assertEqual(state_script.open_program(after, "one"), "core")
         self.assertEqual(state_script.open_program(after, "two"), "sprint")
-        self.assertEqual(sorted(state_script.enrolled(after)), ["engineering", "sprint"])
+        self.assertEqual(sorted(state_script.enrolled(after)), ["core", "sprint"])
 
         with redirect_stdout(io.StringIO()) as printed:
             self.assertEqual(self.run_cli("--session", "one", "brief"), 0)
-        self.assertEqual(json.loads(printed.getvalue())["program"], "engineering", "each conversation keeps its own")
+        self.assertEqual(json.loads(printed.getvalue())["program"], "core", "each conversation keeps its own")
 
     def test_a_write_from_one_conversation_keeps_the_others_evidence(self):
         write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
         store.save(self.workspace, self.state)
         with redirect_stdout(io.StringIO()):
-            for session, program in (("one", "engineering"), ("two", "sprint")):
+            for session, program in (("one", "core"), ("two", "sprint")):
                 self.assertEqual(self.run_cli("--session", session, "start", program), 0)
             self.assertEqual(self.run_cli("--session", "one", "mastery", "dsa.hashing", "independent", "--evidence", "two-sum", "--help-level", "H0"), 0)
             self.assertEqual(self.run_cli("--session", "two", "mastery", "int.first", "independent", "--evidence", "done", "--help-level", "H0"), 0)
@@ -335,7 +395,7 @@ class StateTransitionTests(unittest.TestCase):
 
     def test_due_work_stays_inside_the_open_program(self):
         write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
-        for program in ("engineering", "sprint"):
+        for program in ("core", "sprint"):
             state_script.enroll(self.state, self.workspace, program)
         known = state_script.known_subjects(self.state, self.workspace)
         state_script.set_mastery(self.state, "dsa.hashing", "independent", "two-sum", "H0", known)
@@ -355,7 +415,7 @@ class StateTransitionTests(unittest.TestCase):
 
     def test_the_cli_proposes_only_the_open_programs_reviews(self):
         write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
-        for program in ("engineering", "sprint"):
+        for program in ("core", "sprint"):
             state_script.enroll(self.state, self.workspace, program)
         known = state_script.known_subjects(self.state, self.workspace)
         state_script.set_mastery(self.state, "dsa.hashing", "independent", "two-sum", "H0", known)
@@ -395,22 +455,22 @@ class StateTransitionTests(unittest.TestCase):
         )
 
     def test_closing_a_block_counts_one_working_day(self):
-        state_script.enroll(self.state, self.workspace, "engineering")
-        state_script.switch_block(self.state, "engineering")
+        state_script.enroll(self.state, self.workspace, "core")
+        state_script.switch_block(self.state, "core")
         state_script.checkpoint(self.state, "done", None, "closed")
 
-        self.assertEqual(self.state["progress"]["days"]["engineering"], 1)
-        self.assertEqual(self.state["day"]["blocks"]["engineering"], "closed")
+        self.assertEqual(self.state["progress"]["days"]["core"], 1)
+        self.assertEqual(self.state["day"]["blocks"]["core"], "closed")
 
     def test_only_an_enrolled_program_can_be_opened(self):
         with self.assertRaises(state_script.StateError):
-            state_script.switch_block(self.state, "engineering")
+            state_script.switch_block(self.state, "core")
 
-        state_script.enroll(self.state, self.workspace, "engineering")
+        state_script.enroll(self.state, self.workspace, "core")
         state_script.set_mastery(self.state, "dsa.hashing", "independent", "two-sum", "H0", self.known)
-        state_script.switch_block(self.state, "engineering", "one")
+        state_script.switch_block(self.state, "core", "one")
 
-        self.assertEqual(state_script.enrolled(self.state), ["engineering"])
+        self.assertEqual(state_script.enrolled(self.state), ["core"])
         self.assertEqual(self.state["mastery"]["dsa.hashing"]["state"], "independent")
 
     def test_enrolling_opens_the_program_at_once(self):
@@ -425,11 +485,11 @@ class StateTransitionTests(unittest.TestCase):
     def test_any_enrolled_program_opens_whenever_the_learner_wants(self):
         store.save(self.workspace, self.state)
         with redirect_stdout(io.StringIO()):
-            for command in (["start", "engineering"], ["start", "applied-ai"], ["switch", "engineering"]):
+            for command in (["start", "core"], ["start", "applied-ai"], ["switch", "core"]):
                 self.assertEqual(self.run_cli(*command), 0)
 
         after = self.reload()
-        self.assertEqual(after["day"]["active_block"], "engineering")
+        self.assertEqual(after["day"]["active_block"], "core")
         self.assertNotIn("schedule_drift", after)
 
     def test_enrolment_refuses_what_it_cannot_use(self):
@@ -444,16 +504,18 @@ class StateTransitionTests(unittest.TestCase):
         self.assertIn("unknown setting(s): pace", str(broken.exception))
 
     def test_a_broken_file_never_hides_a_working_program(self):
-        write_program(
-            programs.workspace_dir(self.workspace), "engineering", replace=[("activity_kinds: code", "pace: fast")]
-        )
+        folder = programs.workspace_dir(self.workspace)
+        write_program(folder, "core-broken", prefix="brk", replace=[("activity_kinds: code", "pace: fast")])
 
-        state_script.enroll(self.state, self.workspace, "engineering")
+        state_script.enroll(self.state, self.workspace, "core")
 
-        self.assertEqual(state_script.enrolled(self.state), ["engineering"])
+        self.assertEqual(state_script.enrolled(self.state), ["core"])
+        with self.assertRaises(state_script.StateError) as refused:
+            state_script.enroll(self.state, self.workspace, "core-broken")
+        self.assertIn("unknown setting", str(refused.exception))
 
     def test_enrolment_refuses_a_program_that_shares_a_domain(self):
-        state_script.enroll(self.state, self.workspace, "engineering")
+        state_script.enroll(self.state, self.workspace, "core")
         write_program(programs.workspace_dir(self.workspace), "drills", domain_title="DSA", prefix="dsa")
 
         with self.assertRaises(state_script.StateError) as clash:
@@ -522,7 +584,7 @@ class StateTransitionTests(unittest.TestCase):
         self.assertEqual(statuses["sprint"], "active")
 
     def test_a_readable_state_is_available_beside_the_json(self):
-        state_script.enroll(self.state, self.workspace, "engineering")
+        state_script.enroll(self.state, self.workspace, "core")
         store.save(self.workspace, self.state)
 
         with redirect_stdout(io.StringIO()) as printed:
@@ -530,13 +592,13 @@ class StateTransitionTests(unittest.TestCase):
         rendered = printed.getvalue()
 
         self.assertIn("Programs", rendered)
-        self.assertIn("engineering", rendered)
+        self.assertIn("core", rendered)
         self.assertNotIn("{", rendered, "show renders for a person; export is the JSON")
 
     def test_a_covered_program_moves_to_maintenance_alone(self):
         write_program(programs.workspace_dir(self.workspace), "sprint", prefix="int", domain_title="Interviews")
         state_script.enroll(self.state, self.workspace, "sprint")
-        state_script.enroll(self.state, self.workspace, "engineering")
+        state_script.enroll(self.state, self.workspace, "core")
         known = state_script.known_subjects(self.state, self.workspace)
 
         state_script.set_mastery(self.state, "int.first", "discovered", "lu", "H0", known)
@@ -556,7 +618,7 @@ class StateTransitionTests(unittest.TestCase):
         self.assertIn("completed_at", kept["sprint"], "a stored enrolment keeps its own fields")
         statuses = {item["program"]: item["status"] for item in self.state["enrolments"]}
         self.assertEqual(statuses["sprint"], "maintenance")
-        self.assertEqual(statuses["engineering"], "active")
+        self.assertEqual(statuses["core"], "active")
 
     def test_now_prints_a_full_timestamp_from_the_system_clock(self):
         with redirect_stdout(io.StringIO()) as printed:
@@ -601,7 +663,7 @@ class StateTransitionTests(unittest.TestCase):
 
     def test_the_shipped_engineering_program_can_be_covered(self):
         found, _ = programs.discover(SKILL_ROOT, self.workspace)
-        engineering = found["engineering"]
+        engineering = found["core"]
         ceiling = engineering.settings["survey_ceiling"]
         self.state["mastery"] = {
             subject: {"state": ceiling if subject.startswith("survey.") else "transferred"}
@@ -612,15 +674,15 @@ class StateTransitionTests(unittest.TestCase):
 
     def test_coverage_counts_started_subjects(self):
         found, _ = programs.discover(SKILL_ROOT, self.workspace)
-        state_script.enroll(self.state, self.workspace, "engineering")
+        state_script.enroll(self.state, self.workspace, "core")
         state_script.set_mastery(self.state, "dsa.hashing", "independent", "two-sum", "H0", self.known)
 
-        measured = state_script.coverage(self.state, found["engineering"])
+        measured = state_script.coverage(self.state, found["core"])
 
         self.assertEqual(measured["started"], 1)
         self.assertEqual(measured["demonstrated"], 1)
         self.assertEqual(measured["states"]["independent"], 1)
-        self.assertLess(measured["share"], 0.05)
+        self.assertLess(measured["share"], 0.2)
 
     def test_ingesting_events_applies_only_mechanical_evidence(self):
         events = self.workspace / ".techne" / "events" / "browser.jsonl"
@@ -672,6 +734,9 @@ class StateTransitionTests(unittest.TestCase):
         self.assertEqual(migrated["legacy_mastery"]["dsa"]["evidence"], [{"task": "placement"}])
         self.assertEqual(migrated["browser"]["last_event_line"], 3)
         self.assertEqual(migrated["reviews_due"], [])
+        # The programs that workspace followed are gone; it starts one it still has.
+        with redirect_stdout(io.StringIO()):
+            self.assertEqual(self.run_cli("start", "core"), 0)
         self.assertEqual(self.run_cli("mastery", "dsa.hashing", "discovered"), 0)
 
     def test_migrates_a_second_format_workspace_with_its_queues_and_journal(self):
@@ -729,13 +794,13 @@ class StateTransitionTests(unittest.TestCase):
         self.assertFalse((self.workspace / ".techne" / "SCHEDULE.md").exists(), "Techne keeps no schedule")
 
     def test_warns_only_when_two_conversations_open_the_same_program(self):
-        self.assertIsNone(state_script.note_session(self.state, "session-a", "engineering"))
-        self.assertIsNone(state_script.note_session(self.state, "session-a", "engineering"))
+        self.assertIsNone(state_script.note_session(self.state, "session-a", "core"))
+        self.assertIsNone(state_script.note_session(self.state, "session-a", "core"))
         self.assertIsNone(state_script.note_session(self.state, "session-b", "applied-ai"), "two programs at once is normal")
-        warning = state_script.note_session(self.state, "session-b", "engineering")
+        warning = state_script.note_session(self.state, "session-b", "core")
 
         self.assertIsNotNone(warning)
-        self.assertEqual(self.state["sessions"]["session-b"]["program"], "engineering")
+        self.assertEqual(self.state["sessions"]["session-b"]["program"], "core")
 
     def test_the_browser_reads_a_rendered_view_not_the_store(self):
         view_path = store.progress_path(self.workspace / ".techne")
@@ -753,7 +818,7 @@ class StateTransitionTests(unittest.TestCase):
         return state_script.load(self.workspace)
 
     def test_cli_records_an_issue_with_its_context(self):
-        self.state["current"] = {"id": "l04-dicts", "track": "engineering"}
+        self.state["current"] = {"id": "l04-dicts", "track": "core"}
         store.save(self.workspace, self.state)
 
         self.assertEqual(self.run_cli("issue", "add", "--type", "bug", "--text", "  la trace refuse mes réponses  "), 0)
@@ -762,7 +827,7 @@ class StateTransitionTests(unittest.TestCase):
         self.assertEqual(len(recorded), 1)
         self.assertEqual(recorded[0]["id"], "f1")
         self.assertEqual(recorded[0]["text"], "la trace refuse mes réponses")
-        self.assertEqual((recorded[0]["activity"], recorded[0]["track"]), ("l04-dicts", "engineering"))
+        self.assertEqual((recorded[0]["activity"], recorded[0]["track"]), ("l04-dicts", "core"))
         self.assertEqual(recorded[0]["status"], "open")
 
     def test_cli_refuses_an_unknown_issue_type_or_empty_text(self):
@@ -773,7 +838,7 @@ class StateTransitionTests(unittest.TestCase):
 
     def test_cli_export_groups_by_type_and_hides_resolved_entries(self):
         for kind, text in (("bug", "trace cassée"), ("friction", "sortie bruyante"), ("idea", "un raccourci")):
-            self.run_cli("issue", "add", "--type", kind, "--text", text, "--activity", "l04", "--track", "engineering")
+            self.run_cli("issue", "add", "--type", kind, "--text", text, "--activity", "l04", "--track", "core")
         self.assertEqual(self.run_cli("issue", "resolve", "f3", "--status", "applied"), 0)
 
         with redirect_stdout(io.StringIO()) as printed:
@@ -783,7 +848,7 @@ class StateTransitionTests(unittest.TestCase):
         self.assertIn("## Bugs (1)", export)
         self.assertIn("## Frictions (1)", export)
         self.assertNotIn("## Ideas", export)
-        self.assertIn("l04 · engineering", export)
+        self.assertIn("l04 · core", export)
 
     def test_cli_listing_the_journal_leaves_the_store_untouched(self):
         self.run_cli("issue", "add", "--type", "bug", "--text", "trace cassée")

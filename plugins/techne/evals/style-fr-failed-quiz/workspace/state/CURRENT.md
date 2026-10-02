@@ -1,7 +1,7 @@
 # Current activity
 
 Status: in progress
-Program: engineering, working day 2, isolated morning
+Program: core, working day 2, isolated morning
 
 Activity: browser lesson 02, "the runtime boundary", subjects `ts.unknown-never`, `ts.narrowing`, `ts.type-predicates`.
 The learner was told to answer the four quiz questions and say when done.

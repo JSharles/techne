@@ -2,6 +2,12 @@
 
 Learner-visible changes, newest first. Versions match `plugins/techne/.claude-plugin/plugin.json`.
 
+## 0.17.0
+
+- Ten programmes ship with Techne, written for a senior frontend path and its neighbours: Frontend senior, Backend NestJS, DSA, System design, DevOps, Git, Design engineer, Product engineer, AI agent engineering and AI-native engineering. Each is a course of its own, with its own evidence; start the ones you want with `start`.
+- The T-shaped Product Engineer programme is retired. Techne ships Applied AI only; everything else is a programme you write with `new` or bring from elsewhere, which is how the courses you have built already work.
+- Nothing you proved is lost: evidence stays recorded, and subjects no programme teaches any more are shown as off-programme.
+
 ## 0.16.3
 
 - A recall now says where it comes from — the area and the work it follows — without naming the mechanism when that is what you are asked to find. Once you have answered, Techne names the subject and says where it now stands, so you can file it.

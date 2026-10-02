@@ -30,6 +30,7 @@ TRANSFER_DELAY_DAYS = 7
 BLOCKED_RETRY_DAYS = 14
 FAILURES_BEFORE_BLOCKED = 3
 EVIDENCE_KEPT = 5
+# The two programs Techne shipped when format 3 arrived; `engineering` was retired later.
 SHIPPED_AT_MIGRATION = ("engineering", "applied-ai")
 
 

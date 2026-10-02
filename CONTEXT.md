@@ -1,6 +1,6 @@
 # Techne
 
-Techne is one Agent Skill that runs an intensive twelve-week bootcamp for a single learner persona: a self-taught React/Node developer, bootcamp-trained rather than engineering-school-trained, who wants to stay employable as generative AI reshapes the job market. This glossary fixes the words used across the skill, its references, and learner-facing text.
+Techne is one Agent Skill that teaches the programs a learner follows, at the pace they set. It was built for a self-taught React/Node developer who wants to stay employable as generative AI reshapes the job market, and it ships one program, Applied AI; every other course is written by the learner. This glossary fixes the words used across the skill, its references, and learner-facing text.
 
 ## Language
 
@@ -66,7 +66,7 @@ The red-thread project's `docs/ROADMAP.md`, written while building the roadmap: 
 _Avoid_: backlog, plan
 
 **Core**:
-The set of subjects a program takes to demonstrated independence, for the T-shaped Product Engineer program: TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL and data modelling, DSA up to graphs, tests and debugging, applied architecture, and the delivery flow (Git, pull requests, review, CI).
+The set of subjects a program takes to demonstrated independence, as opposed to the ones it only surveys. Each program names its own.
 _Avoid_: priority lane, must-have
 
 **Survey**:

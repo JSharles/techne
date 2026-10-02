@@ -123,7 +123,7 @@ Exit evidence: a working application, an evaluation report, and a short case stu
 
 ## Subject catalogue
 
-Stable identifiers for the mastery map, used exactly like the catalogue of [Engineering](engineering.md#subject-catalogue).
+Stable identifiers for the mastery map: every lesson and exercise declares the subjects it teaches or evaluates, and Techne never invents one outside this list.
 
 ### Python — `py.*`
 

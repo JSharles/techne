@@ -2,10 +2,11 @@
 
 Techne is an intensive, adaptive bootcamp delivered as one Agent Skill for Codex, Claude Code, and compatible coding agents. It is designed for developers with a TypeScript/frontend background who want to reach a senior level and build LLM applications.
 
-Techne teaches **programs**: Markdown files describing what to learn. Two ship with it, and you can write or generate your own — a program never changes the method, only the content.
+Techne teaches **programs**: Markdown files describing what to learn. One ships with it, and you write or generate the others — a program never changes the method, only the content.
 
-- **T-shaped Product Engineer:** a core taken to independence (TypeScript and JavaScript, React and Next.js, NestJS and backend, SQL, algorithms up to graphs, tests and debugging, architecture, and the delivery flow: Git, pull requests, review, CI), plus a red-thread Next.js/NestJS application built alongside and presentable at the end;
-- **Applied AI:** Python, FastAPI, LLM applications, RAG with LangChain, agents with LangGraph, evaluation with LangSmith, and a final capstone.
+- **Applied AI:** Python, FastAPI, LLM applications, RAG with LangChain, agents with LangGraph, evaluation with LangSmith — built around one real application you choose, with Techne as your product owner and lead developer.
+
+Everything else you write yourself with `new`, or bring from elsewhere: a frontend course, a DSA course, a design course. Techne teaches whatever its programs describe.
 
 You follow as many programs as you like, and organise your time as you wish: enrol in a program and start it at once, open any of them whenever you want, for as long as you want.
 

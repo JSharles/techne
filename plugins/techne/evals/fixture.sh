@@ -10,9 +10,11 @@ skill="$(cd "$case_dir/../../skills/techne" && pwd)"
 state() { python3 "$skill/scripts/state.py" --workspace . "$@" >/dev/null; }
 
 python3 "$skill/scripts/init_workspace.py" . --language fr --registry "$HOME/.techne/config.json" >/dev/null
-state start engineering
+mkdir -p .techne/programs
+cp "$case_dir/../core.md" .techne/programs/core.md
+state start core
 state start applied-ai
-state switch engineering
+state switch core
 if [ -d "$case_dir/workspace" ]; then
   (cd "$case_dir/workspace" && find . -path ./state -prune -o -type f -print) | while read -r file; do
     mkdir -p "$(dirname "$file")"

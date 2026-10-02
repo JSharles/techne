@@ -85,4 +85,4 @@ Initialization is complete when:
 - the Applied AI track is marked `not_started`;
 - due-review scheduling can begin after the first successful evidence.
 
-Do not ask the learner to define an overarching learning objective. Techne ships the Engineering and Applied AI programs; the learner may add their own.
+Do not ask the learner to define an overarching learning objective. Techne ships the Applied AI program; everything else the learner writes with `new`, or brings from elsewhere.

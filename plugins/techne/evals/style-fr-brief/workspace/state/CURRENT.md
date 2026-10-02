@@ -1,7 +1,7 @@
 # Current activity
 
 Status: ready
-Program: engineering, working day 3, isolated morning
+Program: core, working day 3, isolated morning
 
 Activity: exercise s01-j02-doublons, subjects `dsa.iteration` and `dsa.hashing`.
 Lesson 03 was read and both of its checks passed.

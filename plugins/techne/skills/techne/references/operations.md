@@ -85,16 +85,10 @@ Before resuming:
 Name the active block at the top of the learning response, translated into the learning language:
 
 ```text
-TECHNE — T-SHAPED PRODUCT ENGINEER
-```
-
-or:
-
-```text
 TECHNE — APPLIED AI
 ```
 
-A program whose title is a name keeps it as is. For example, a French learner sees `TECHNE — T-SHAPED PRODUCT ENGINEER` and `TECHNE — IA APPLIQUÉE`.
+A program whose title is a name keeps it as is. For example, a French learner sees `TECHNE — IA APPLIQUÉE`, but `TECHNE — FRONTEND SENIOR` stays as its author wrote it.
 
 Do not expose internal file maintenance unless it blocks learning.
 
